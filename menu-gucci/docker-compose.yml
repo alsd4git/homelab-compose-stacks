@@ -1,0 +1,18 @@
+version: "3"
+
+# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
+# - ${DOCKER_DATA_BASEFOLDER}
+# - ${TELEGRAM_WHITELIST_USERS}
+# - ${TELEGRAM_BOT_TOKEN}
+
+services:
+  python-menu-gucci:
+    container_name: python-menu-gucci
+    image: python-menu-gucci
+    environment:
+      - BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+#      - WHITELISTED_USERS='["user1", "user2"]' #example of the old format
+      - WHITELISTED_USERS=${TELEGRAM_WHITELIST_USERS}
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/python-menuGucci/log:/app/log
+    restart: always
