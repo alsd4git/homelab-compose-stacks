@@ -1,0 +1,87 @@
+version: "3.5"
+
+# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
+# - ${TELEGRAM_CHAT_ID}
+# - ${TELEGRAM_BOT_TOKEN}
+# - ${DOCKER_DATA_BASEFOLDER}
+
+services:
+  notifier:
+    container_name: docker-telegram-notifier
+    image: lorcas/docker-telegram-notifier:latest
+    #documentation: https://github.com/luc-ass/docker-telegram-notifier/
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - TELEGRAM_NOTIFIER_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_NOTIFIER_CHAT_ID=${TELEGRAM_CHAT_ID}
+
+  diun:
+    container_name: diun
+    image: crazymax/diun:latest
+    #documentation: https://crazymax.dev/diun/
+    command: serve
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/diun/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: "Europe/Rome"
+      LOG_LEVEL: "info"
+      LOG_JSON: "false"
+      DIUN_WATCH_WORKERS: "20"
+      DIUN_WATCH_SCHEDULE: "0 */6 * * *" # This job runs every 6 hours
+      DIUN_WATCH_JITTER: "30s"
+      DIUN_PROVIDERS_DOCKER: "true"
+      DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT: "true"
+      #when using this format for env variables to use or not use "" shoule be the same
+      DIUN_NOTIF_TELEGRAM_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      DIUN_NOTIF_TELEGRAM_CHATIDS: "${TELEGRAM_CHAT_ID}"
+      # > (Folded Style): preserve line breaks but removes whitespace
+      DIUN_NOTIF_TELEGRAM_TEMPLATEBODY: >
+        Docker tag 
+        {{ if .Entry.Image.HubLink }}
+          [{{ .Entry.Image }}]({{ .Entry.Image.HubLink }})
+        {{ else }}
+          {{ .Entry.Image }}
+        {{ end }} 
+        which you subscribed to through {{ .Entry.Provider }} provider
+        has been 
+        {{ if (eq .Entry.Status "new") }}newly added{{ else }}updated{{ end }} 
+        to {{ escapeMarkdown .Meta.Version }} on {{ escapeMarkdown .Meta.Hostname }}.
+    restart: always
+
+  watchtower:
+    container_name: watchtower-notif
+    image: containrrr/watchtower:latest
+    #documentation: https://containrrr.dev/watchtower/
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: "Europe/Rome"
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_NOTIFICATION_REPORT: "true"
+      # WATCHTOWER_NOTIFICATIONS: "shoutrrr" #mabe we don't need this
+      # > (Folded Style): preserve line breaks but removes whitespace
+      WATCHTOWER_NOTIFICATION_URL: >
+        telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}
+      # | (Literal Style): preserve line breaks and also the same whitespace
+      WATCHTOWER_NOTIFICATION_TEMPLATE: |
+        {{- if .Report -}}
+          {{- with .Report -}}
+        {{len .Scanned}} Scanned, {{len .Updated}} Updated, {{len .Failed}} Failed
+              {{- range .Updated}}
+        - {{.Name}} ({{.ImageName}}): {{.CurrentImageID.ShortID}} updated to {{.LatestImageID.ShortID}}
+              {{- end -}}
+              {{- range .Fresh}}
+        - {{.Name}} ({{.ImageName}}): {{.State}}
+            {{- end -}}
+            {{- range .Skipped}}
+        - {{.Name}} ({{.ImageName}}): {{.State}}: {{.Error}}
+            {{- end -}}
+            {{- range .Failed}}
+        - {{.Name}} ({{.ImageName}}): {{.State}}: {{.Error}}
+            {{- end -}}
+          {{- end -}}
+        {{- else -}}
+          {{range .Entries -}}{{.Message}}{{"\n"}}{{- end -}}
+        {{- end -}}
