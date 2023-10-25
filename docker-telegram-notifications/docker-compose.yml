@@ -15,6 +15,7 @@ services:
     environment:
       - TELEGRAM_NOTIFIER_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_NOTIFIER_CHAT_ID=${TELEGRAM_CHAT_ID}
+    restart: always
 
   diun:
     container_name: diun
@@ -85,3 +86,4 @@ services:
         {{- else -}}
           {{range .Entries -}}{{.Message}}{{"\n"}}{{- end -}}
         {{- end -}}
+    restart: always
