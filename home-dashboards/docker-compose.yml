@@ -7,6 +7,7 @@ services:
   homepage:
     container_name: homepage
     image: ghcr.io/gethomepage/homepage:latest
+    #documentation: TODO: add documentation link
     ports:
       - 3000:3000
     volumes:
@@ -19,6 +20,7 @@ services:
   homarr:
     container_name: homarr
     image: ghcr.io/ajnart/homarr:latest
+    #documentation: TODO: add documentation link
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/homarr/configs:/app/data/configs
       - ${DOCKER_DATA_BASEFOLDER}/homarr/icons:/app/public/icons
