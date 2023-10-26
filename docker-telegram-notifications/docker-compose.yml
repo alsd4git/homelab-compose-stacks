@@ -67,7 +67,7 @@ services:
 
       # > (Folded Style): preserve line breaks but removes whitespace
       WATCHTOWER_NOTIFICATION_URL: >
-        telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}
+        telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=Markdown&preview=false
       # | (Literal Style): preserve line breaks and also the same whitespace
       WATCHTOWER_NOTIFICATION_TEMPLATE: |
         {{- if .Report -}}
@@ -75,19 +75,19 @@ services:
             {{len .Scanned}} Scanned, {{len .Updated}} Updated, {{len .Failed}} Failed
 
             {{- range .Updated }}
-              - {{.Name}} ({{.ImageName}}): {{.CurrentImageID.ShortID}} updated to {{.LatestImageID.ShortID}} ⬆️
+              - {{.Name}}: {{.CurrentImageID.ShortID}} updated to {{.LatestImageID.ShortID}} ⬆️
             {{- end -}}
 
             {{- range .Fresh }}
-              - {{.Name}} ({{.ImageName}}): {{.State}} 💚
+              - {{.Name}}: {{.State}} 💚
             {{- end -}}
 
             {{- range .Skipped }}
-              - {{.Name}} ({{.ImageName}}): {{.State}}: {{.Error}} ⌛
+              - {{.Name}}: {{.State}}: {{.Error}} ⌛
             {{- end -}}
 
             {{- range .Failed }}
-              - {{.Name}} ({{.ImageName}}): {{.State}}: {{.Error}} ❌
+              - {{.Name}}: {{.State}}: {{.Error}} ❌
             {{- end -}}
           {{- end -}}
         {{- else -}}
