@@ -62,6 +62,10 @@ services:
       TZ: "Europe/Rome"
       WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_NOTIFICATION_REPORT: "true"
+      #schedule format: https://pkg.go.dev/github.com/robfig/cron@v1.2.0#hdr-CRON_Expression_Format
+      #WATCHTOWER_SCHEDULE: "0 0 4 * * *" #4am everyday
+      #WATCHTOWER_SCHEDULE: "0 0 13 * * *" #1pm everyday
+      WATCHTOWER_SCHEDULE: "0 0 13 * * 1" #1pm every monday
 
       #WATCHTOWER_RUN_ONCE: "true" #per testing, lancia una volta e si chiude
 
