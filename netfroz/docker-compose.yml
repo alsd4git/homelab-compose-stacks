@@ -33,7 +33,7 @@ services:
     image: ghcr.io/mainkronos/anime_downloader:latest
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/animedownloader/data:/src/database/
-      - ${DOCKER_DATA_BASEFOLDER}/animedownloader/connections:/src/scripts
+      - ${DOCKER_DATA_BASEFOLDER}/animedownloader/connections:/src/script
       - ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/tv
       - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
     ports:
