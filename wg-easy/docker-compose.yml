@@ -1,0 +1,26 @@
+version: "3"
+
+# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
+# - ${DOCKER_DATA_BASEFOLDER}
+# - ${PASSWORD}
+# - ${DDNS}
+
+services:
+  wireguard:
+    image: weejewel/wg-easy:latest
+    container_name: wg-easy
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - WG_HOST=${DDNS}
+      - PASSWORD=${PASSWORD}
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/wg-easy:/etc/wireguard
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+    ports:
+      - 51820:51820/udp
+      - 51821:51821/tcp
+    restart: always
