@@ -1,0 +1,44 @@
+version: "3.7"
+
+# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
+# - ${DOCKER_DATA_BASEFOLDER}
+# - ${TELEGRAM_BOT_TOKEN}
+# - ${TELEGRAM_CHAT_ID}
+# - ${DYNU_DOMAIN}
+# - ${DYNU_PASSWORD}
+# - ${DYNU_USERNAME}
+
+services:
+  ddns-updater:
+    image: qmcgaw/ddns-updater
+    container_name: ddns-updater
+    network_mode: bridge
+    ports:
+      - 8001:8000/tcp
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/ddns-updater:/updater/data
+    environment:
+      - CONFIG={"settings":[{"provider":"dynu","domain":"${DYNU_DOMAIN}","host":"@","username":"${DYNU_USERNAME}","password":"${DYNU_PASSWORD}","ip_version":"ipv4","provider_ip":true}]}
+      - PERIOD=5m
+      - UPDATE_COOLDOWN_PERIOD=5m
+      - PUBLICIP_FETCHERS=all
+      - PUBLICIP_HTTP_PROVIDERS=all
+      - PUBLICIPV4_HTTP_PROVIDERS=all
+      - PUBLICIPV6_HTTP_PROVIDERS=all
+      - PUBLICIP_DNS_PROVIDERS=all
+      - PUBLICIP_DNS_TIMEOUT=3s
+      - HTTP_TIMEOUT=10s
+
+      # Web UI
+      - LISTENING_PORT=8001
+      - ROOT_URL=/
+
+      # Backup
+      - BACKUP_PERIOD=0 # 0 to disable
+      - BACKUP_DIRECTORY=/updater/data
+
+      # Other
+      - LOG_LEVEL=info
+      - LOG_CALLER=hidden
+      - SHOUTRRR_ADDRESSES=telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=Markdown&preview=false
+    restart: always
