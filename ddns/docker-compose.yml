@@ -30,7 +30,7 @@ services:
       - HTTP_TIMEOUT=10s
 
       # Web UI
-      - LISTENING_PORT=8001
+      - LISTENING_PORT=8000
       - ROOT_URL=/
 
       # Backup
