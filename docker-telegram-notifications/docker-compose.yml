@@ -49,7 +49,7 @@ services:
         which you subscribed to through {{ .Entry.Provider }} provider
         has been 
         {{ if (eq .Entry.Status "new") }}newly added{{ else }}updated{{ end }} 
-        to {{ escapeMarkdown .Meta.Version }} on {{ escapeMarkdown .Meta.Hostname }}.
+        on {{ escapeMarkdown .Meta.Hostname }}.
     restart: always
 
   watchtower:
