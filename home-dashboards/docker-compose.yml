@@ -22,6 +22,7 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/homarr/configs:/app/data/configs
       - ${DOCKER_DATA_BASEFOLDER}/homarr/icons:/app/public/icons
+      - ${DOCKER_DATA_BASEFOLDER}/homarr/data:/data
     ports:
       - 7575:7575
     restart: unless-stopped
