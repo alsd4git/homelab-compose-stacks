@@ -77,6 +77,8 @@ services:
       - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
     ports:
       - 9117:9117
+    labels:
+      diun.enable: false
     restart: unless-stopped
 
   jellyfin:
