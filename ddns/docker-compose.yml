@@ -12,7 +12,9 @@ services:
   ddns-updater:
     image: qmcgaw/ddns-updater
     container_name: ddns-updater
-    network_mode: bridge
+#    network_mode: bridge
+    dns:
+      - 1.1.1.1
     ports:
       - 8001:8000/tcp
     volumes:
@@ -21,10 +23,9 @@ services:
       - CONFIG={"settings":[{"provider":"dynu","domain":"${DYNU_DOMAIN}","host":"@","username":"${DYNU_USERNAME}","password":"${DYNU_PASSWORD}","ip_version":"ipv4","provider_ip":true}]}
       - PERIOD=5m
       - UPDATE_COOLDOWN_PERIOD=5m
-      - PUBLICIP_FETCHERS=all
-      - PUBLICIP_HTTP_PROVIDERS=all
-      - PUBLICIPV4_HTTP_PROVIDERS=all
-      - PUBLICIPV6_HTTP_PROVIDERS=all
+#      - PUBLICIP_FETCHERS=all
+#      - PUBLICIP_HTTP_PROVIDERS=all
+#      - PUBLICIPV4_HTTP_PROVIDERS=all
       - PUBLICIP_DNS_PROVIDERS=all
       - PUBLICIP_DNS_TIMEOUT=3s
       - HTTP_TIMEOUT=10s
@@ -38,7 +39,23 @@ services:
       - BACKUP_DIRECTORY=/updater/data
 
       # Other
-      - LOG_LEVEL=info
+      - LOG_LEVEL=debug
       - LOG_CALLER=hidden
+      - RESOLVER_ADDRESS=1.1.1.1:53
       - SHOUTRRR_ADDRESSES=telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=Markdown&preview=false
+
+    labels:
+      telegram-notifier.monitor: false # never monitor
+    restart: always
+
+
+  ddclient:
+    image: lscr.io/linuxserver/ddclient:latest
+    container_name: ddclient
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/ddclient/config:/config
     restart: always
