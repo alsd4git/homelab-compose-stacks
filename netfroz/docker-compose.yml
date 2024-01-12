@@ -5,7 +5,7 @@ version: "3"
 # - ${DOCKER_MEDIA_BASEFOLDER}
 # - ${DOCKER_LOCAL_IP}
 # - ${SONARR_API_KEY}
-#TODO: better map volumes inside apps
+#TODO: add bazarr and maybe other *arr
 
 services:
   sonarr:
@@ -17,8 +17,9 @@ services:
       - TZ=Europe/Rome
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/sonarr/config:/config
-      - ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/tv #optional
-      - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads #optional
+      - ${DOCKER_MEDIA_BASEFOLDER}:/media
+     # - ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/tv #optional
+     # - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads #optional
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -34,10 +35,13 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/animedownloader/data:/src/database/
       - ${DOCKER_DATA_BASEFOLDER}/animedownloader/connections:/src/script
-      - ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/tv
+      #- ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/media/tvseries
+      - ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/media/tvseries #this has to be the same as the one in
       - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
     ports:
       - 5000:5000
+#    dns:
+#      - 8.8.8.8
     environment:
       - SONARR_URL=http://${DOCKER_LOCAL_IP}:8989
       - API_KEY=${SONARR_API_KEY}
@@ -58,8 +62,9 @@ services:
       - TZ=Europe/Rome
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/radarr:/config
-      - ${DOCKER_MEDIA_BASEFOLDER}/movies:/movies
-      - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
+      - ${DOCKER_MEDIA_BASEFOLDER}:/media
+     # - ${DOCKER_MEDIA_BASEFOLDER}/movies:/movies #optional
+     # - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads #optional
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -77,8 +82,22 @@ services:
       - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
     ports:
       - 9117:9117
+
     labels:
       diun.enable: false
+    restart: unless-stopped
+
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Europe/London
+    ports:
+      - "${PORT:-8191}:8191"
     restart: unless-stopped
 
   jellyfin:
@@ -98,7 +117,6 @@ services:
       - 8920:8920 #optional
       - 7359:7359/udp #optional
     devices:
-      # dev/dri is used for hardware encoding, may be different on your system
       - dev/dri:/dev/dri
     restart: unless-stopped
 
