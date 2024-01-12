@@ -1,0 +1,31 @@
+version: '3.3'
+
+# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
+# - ${DOCKER_DATA_BASEFOLDER}
+# - ${DUCKDNSTOKEN}
+# - ${DUCKDNS_YOUR_URL}
+# - ${EXTRA_DOMAINS}
+
+services:
+    swag:
+        container_name: swag
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/Rome
+            - SUBDOMAINS=wildcard
+            - VALIDATION=duckdns
+            - DUCKDNSTOKEN=${DUCKDNSTOKEN}
+            - URL=${DUCKDNS_YOUR_URL}
+            - DOCKER_MODS=linuxserver/mods:swag-dashboard|linuxserver/mods:swag-auto-reload
+            - EXTRA_DOMAINS=${EXTRA_DOMAINS} #questi sono in caso sia irraggiungibile duckdns, ma non hanno un certificato valido
+        ports:
+            - '443:443'
+            - '80:80'
+            - '83:81' #dashboard
+        cap_add:
+          - NET_ADMIN
+        volumes:
+            - ${DOCKER_DATA_BASEFOLDER}/swag:/config
+        restart: unless-stopped
+        image: linuxserver/swag
