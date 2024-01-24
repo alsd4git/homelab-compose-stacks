@@ -3,6 +3,25 @@
 # - ${DOCKER_MEDIA_BASEFOLDER}
 
 services:
+  homeassistant:
+    container_name: homeassistant
+    image: lscr.io/linuxserver/homeassistant:latest
+    #documentation: TODO: add documentation link
+    network_mode: host #needed to discover some devices
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/homeassistant/config:/config
+      - /run/dbus:/run/dbus:ro #bluetooth (you need to install bluez on host machine)
+    ports:
+      - 8123:8123
+    restart: unless-stopped
+
   dozzle:
     container_name: dozzle
     image: amir20/dozzle:latest
