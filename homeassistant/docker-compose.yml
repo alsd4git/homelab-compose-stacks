@@ -1,5 +1,3 @@
-version: "2.1"
-
 # this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
 # - ${DOCKER_DATA_BASEFOLDER}
 
@@ -13,9 +11,12 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Rome
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/homeassistant/config:/config
-      - /run/dbus:/run/dbus:ro #bluetooth?
+      - /run/dbus:/run/dbus:ro #bluetooth
     ports:
       - 8123:8123 #optional
     restart: unless-stopped

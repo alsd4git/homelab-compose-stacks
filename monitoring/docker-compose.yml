@@ -1,4 +1,7 @@
-version: "3"
+# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
+# - ${DOCKER_DATA_BASEFOLDER}
+# - ${DOCKER_MEDIA_BASEFOLDER}
+
 services:
 
   dozzle:
@@ -33,12 +36,17 @@ services:
     #docs https://glances.readthedocs.io/en/latest/docker.html
     image: nicolargo/glances:latest-full
     container_name: glances
+    # network_mode: host
+    ports:
+      - 61208:61208
+    restart: always
     pid: host
-    network_mode: host
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - /etc/os-release:/etc/os-release:ro
+      - /home:/fs/home:ro
+      - ${DOCKER_MEDIA_BASEFOLDER}:/fs/media:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DOCKER_DATA_BASEFOLDER}/glances/glances.conf:/etc/glances.conf
+
     environment:
       - "GLANCES_OPT=-w"
-
-      
