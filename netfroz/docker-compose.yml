@@ -18,8 +18,6 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/sonarr/config:/config
       - ${DOCKER_MEDIA_BASEFOLDER}:/media
-     # - ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/tv #optional
-     # - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads #optional
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -35,8 +33,7 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/animedownloader/data:/src/database/
       - ${DOCKER_DATA_BASEFOLDER}/animedownloader/connections:/src/script
-      #- ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/media/tvseries
-      - ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/media/tvseries #this has to be the same as the one in
+      - ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/media/tvseries #this has to be the same as the one in sonarr
       - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
     ports:
       - 5000:5000
@@ -63,8 +60,6 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/radarr:/config
       - ${DOCKER_MEDIA_BASEFOLDER}:/media
-     # - ${DOCKER_MEDIA_BASEFOLDER}/movies:/movies #optional
-     # - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads #optional
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -85,6 +80,19 @@ services:
 
     labels:
       diun.enable: false
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/prowlarr:/config
+    ports:
+      - 9696:9696
     restart: unless-stopped
 
   flaresolverr:
