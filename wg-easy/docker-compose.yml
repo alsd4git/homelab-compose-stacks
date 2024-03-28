@@ -24,3 +24,10 @@ services:
       - 51820:51820/udp
       - 51821:51821/tcp
     restart: always
+    networks:
+      - pihole-bridge
+      
+networks:
+  pihole-bridge:
+    name: pihole-bridge
+    driver: bridge
