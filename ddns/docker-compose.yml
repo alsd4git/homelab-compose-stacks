@@ -4,9 +4,16 @@ version: "3.7"
 # - ${DOCKER_DATA_BASEFOLDER}
 # - ${TELEGRAM_BOT_TOKEN}
 # - ${TELEGRAM_CHAT_ID}
+
 # - ${DYNU_DOMAIN}
 # - ${DYNU_PASSWORD}
 # - ${DYNU_USERNAME}
+
+# - ${DYN6_DOMAIN}
+# - ${DYN6_TOKEN}
+
+# - ${DUCK_HOST}
+# - ${DUCK_TOKEN}
 
 services:
   ddns-updater:
@@ -20,7 +27,12 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/ddns-updater:/updater/data
     environment:
-      - CONFIG={"settings":[{"provider":"dynu","domain":"${DYNU_DOMAIN}","host":"@","username":"${DYNU_USERNAME}","password":"${DYNU_PASSWORD}","ip_version":"ipv4","provider_ip":true}]}
+      - CONFIG=
+        {"settings":[
+        {"provider":"dynu","domain":"${DYNU_DOMAIN}","host":"@","username":"${DYNU_USERNAME}","password":"${DYNU_PASSWORD}","ip_version":"ipv4","provider_ip":true},
+        {"provider":"dynv6","domain":"${DYN6_DOMAIN}","host":"@","token":"${DYN6_TOKEN}","ip_version":"ipv4","ipv6_suffix":"","provider_ip":true},
+        {"provider":"duckdns","host":"${DUCK_HOST}","token":"${DUCK_TOKEN}","ip_version":"ipv4","ipv6_suffix":"","provider_ip":true}
+        ]}
       - PERIOD=5m
       - UPDATE_COOLDOWN_PERIOD=5m
 #      - PUBLICIP_FETCHERS=all
@@ -49,13 +61,3 @@ services:
     restart: always
 
 
-  ddclient:
-    image: lscr.io/linuxserver/ddclient:latest
-    container_name: ddclient
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/ddclient/config:/config
-    restart: always
