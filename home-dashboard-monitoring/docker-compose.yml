@@ -31,18 +31,18 @@ services:
       - 8081:8080
     restart: always
 
-  pialert:
-    container_name: pialert
+  netalertx:
+    container_name: netalertx
     # use the below line if you want to test the latest dev image
-    # image: "jokobsk/pi.alert_dev:latest"
-    image: "jokobsk/pi.alert:latest"
+    # image: "jokobsk/netalertx-dev:latest" 
+    image: "jokobsk/netalertx:latest"
     restart: unless-stopped
     network_mode: "host"
     ports:
       - "80:20211/tcp"
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/pialert/config:/home/pi/pialert/config
-      - ${DOCKER_DATA_BASEFOLDER}/pialert/db:/home/pi/pialert/db
+      - ${DOCKER_DATA_BASEFOLDER}/pialert/config:/app/config
+      - ${DOCKER_DATA_BASEFOLDER}/pialert/db:/app/db
       # (optional) useful for debugging if you have issues setting up the container
       #- ${DOCKER_DATA_BASEFOLDER}/pialert/logs:/home/pi/pialert/front/log
     environment:
