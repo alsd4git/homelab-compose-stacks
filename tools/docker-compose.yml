@@ -33,7 +33,7 @@ services:
     restart: unless-stopped
 
   upsnap:
-    image: ghcr.io/seriousm4x/upsnap:3
+    image: ghcr.io/seriousm4x/upsnap:latest
     container_name: upsnap
     network_mode: host
     restart: unless-stopped
