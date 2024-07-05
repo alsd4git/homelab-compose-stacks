@@ -16,6 +16,7 @@ services:
       - DOCKER_ENABLE_SECURITY=false
       - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
       - LANGS=en_GB
+    restart: unless-stopped
 
   speedtest-tracker:
     container_name: speedtest-tracker
@@ -26,10 +27,16 @@ services:
         - PUID=1000
         - PGID=1000
         - DB_CONNECTION=sqlite
+        - APP_KEY=base64:xz6aCq7elg5Di1WCbBfCGdnXjtf9wQV3Ly3tERwQaGI=
+        - APP_TIMEZONE=Europe/Rome
+        - DISPLAY_TIMEZONE=Europe/Rome
+        - SPEEDTEST_SCHEDULE=*/30 * * * * # can be represented as a cron schedule same as before.
+        #- SPEEDTEST_SERVERS= # you can add one or many servers separated by a comma (i.e. "123456,654321,987654").
+        - PRUNE_RESULTS_OLDER_THAN=0 # the default is 0 which disables result pruning, this value is in days.
     volumes:
         - ${DOCKER_DATA_BASEFOLDER}/speedtest-tracker:/config
        # - /path/to-custom-ssl-keys:/config/keys
-    image: lscr.io/linuxserver/speedtest-tracker:latest
+    image: linuxserver/speedtest-tracker:latest
     restart: unless-stopped
 
   upsnap:

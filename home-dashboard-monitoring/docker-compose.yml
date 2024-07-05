@@ -5,7 +5,7 @@
 services:
   homeassistant:
     container_name: homeassistant
-    image: lscr.io/linuxserver/homeassistant:latest
+    image: linuxserver/homeassistant:latest
     #documentation: TODO: add documentation link
     network_mode: host #needed to discover some devices
     environment:

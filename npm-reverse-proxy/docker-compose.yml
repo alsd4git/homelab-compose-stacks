@@ -1,0 +1,24 @@
+version: '3.8'
+
+# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
+# - ${DOCKER_DATA_BASEFOLDER}
+
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      # These ports are in format <host-port>:<container-port>
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '83:81' # Admin Web Port
+
+    environment:
+     DISABLE_IPV6: 'true'
+     PUID: 1000
+     PGID: 1000
+
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/NPM/data:/data
+      - ${DOCKER_DATA_BASEFOLDER}/NPM/letsencrypt:/etc/letsencrypt

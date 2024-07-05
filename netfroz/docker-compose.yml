@@ -10,7 +10,7 @@ version: "3"
 services:
   sonarr:
     container_name: sonarr
-    image: lscr.io/linuxserver/sonarr:latest
+    image: linuxserver/sonarr:latest
     environment:
       - PUID=1000
       - PGID=1000
@@ -52,7 +52,7 @@ services:
 
   radarr:
     container_name: radarr
-    image: lscr.io/linuxserver/radarr:latest
+    image: linuxserver/radarr:latest
     environment:
       - PUID=1000
       - PGID=1000
@@ -83,7 +83,7 @@ services:
   #   restart: unless-stopped
 
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr:latest
+    image: linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
       - PUID=1000
@@ -110,7 +110,7 @@ services:
 
   jellyfin:
     container_name: jellyfin
-    image: lscr.io/linuxserver/jellyfin:latest
+    image: linuxserver/jellyfin:latest
     environment:
       - PUID=1000
       - PGID=1000
