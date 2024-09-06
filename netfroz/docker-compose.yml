@@ -3,7 +3,6 @@ version: "3"
 # this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
 # - ${DOCKER_DATA_BASEFOLDER}
 # - ${DOCKER_MEDIA_BASEFOLDER}
-# - ${DOCKER_LOCAL_IP}
 # - ${SONARR_API_KEY}
 #TODO: add bazarr and maybe other *arr
 
@@ -33,14 +32,16 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/animedownloader/data:/src/database/
       - ${DOCKER_DATA_BASEFOLDER}/animedownloader/connections:/src/script
+      #i could give the whole /media, but i don't trust it enough
       - ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/media/tvseries #this has to be the same as the one in sonarr
+      - ${DOCKER_MEDIA_BASEFOLDER}/anime:/media/anime #this has to be the same as the one in sonarr
       - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
     ports:
       - 5000:5000
 #    dns:
 #      - 8.8.8.8
     environment:
-      - SONARR_URL=http://${DOCKER_LOCAL_IP}:8989
+      - SONARR_URL=http://sonarr:8989
       - API_KEY=${SONARR_API_KEY}
       - TZ=Europe/Rome
       - PUID=1000
@@ -115,7 +116,6 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Rome
-      - JELLYFIN_PublishedServerUrl=${DOCKER_LOCAL_IP} #optional
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/jellyfin/library:/config
       - ${DOCKER_MEDIA_BASEFOLDER}:/media

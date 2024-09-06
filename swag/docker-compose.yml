@@ -17,7 +17,14 @@ services:
             - VALIDATION=duckdns
             - DUCKDNSTOKEN=${DUCKDNSTOKEN}
             - URL=${DUCKDNS_YOUR_URL}
-            - DOCKER_MODS=linuxserver/mods:swag-dashboard|linuxserver/mods:swag-auto-reload
+            #dbip --> geoblocking
+            #dashboard --> adds a dashboard for monitoring and summary
+            #auto-reload --> auto reload container when modifying config on the mounted folder
+            - DOCKER_MODS=
+              linuxserver/mods:swag-dbip|
+              linuxserver/mods:swag-dashboard| 
+              linuxserver/mods:swag-auto-reload 
+              
             - EXTRA_DOMAINS=${EXTRA_DOMAINS} #questi sono in caso sia irraggiungibile duckdns, ma non hanno un certificato valido
         ports:
             - '443:443'
