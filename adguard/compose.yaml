@@ -1,0 +1,46 @@
+version: '3'  # Specify the Docker Compose version
+
+services:
+  adguardhome:  # Define the service named 'adguardhome'
+    image: adguard/adguardhome  # Use the 'adguard/adguardhome' Docker image
+    container_name: adguardhome  # Set the container name to 'adguardhome'
+    restart: unless-stopped  # Restart the container automatically unless stopped manually
+    ports:  # Map container ports to host ports
+      # Expose port 53 on TCP and UDP for DNS queries
+      - "53:53/tcp"
+      - "53:53/udp"
+
+      # Expose port 67 on UDP for DHCP server
+      - "67:67/udp"
+
+      # Expose port 68 on UDP for DHCP client
+      # - "68:68/udp"
+
+      # Expose port 80 on TCP for HTTP web interface
+      - "81:80/tcp"
+
+      # Expose port 443 on TCP and UDP for HTTPS web interface
+      #- "443:443/tcp"
+      #- "443:443/udp"
+
+      # Expose port 3000 on TCP for AdGuard Home's API
+      - "3000:3000/tcp"
+
+      # Expose port 853 on TCP for DNS-over-TLS (DoT)
+      - "853:853/tcp"
+
+      # Expose port 784 on UDP for DNS-over-QUIC (DoQ)
+      - "784:784/udp"
+
+      # Expose port 853 on UDP for DNS-over-DTLS (DoT)
+      - "853:853/udp"
+
+      # Expose port 8853 on UDP for DNS-over-TLS (DoT)
+      - "8853:8853/udp"
+
+      # Expose port 5443 on TCP and UDP for DNSCrypt
+      - "5443:5443/tcp"
+      - "5443:5443/udp"
+    volumes:  # Mount host directories as volumes inside the container
+      - ${DOCKER_DATA_BASEFOLDER}/adguard-home/work:/opt/adguardhome/work  # Mount '/my/own/workdir' to '/opt/adguardhome/work'
+      - ${DOCKER_DATA_BASEFOLDER}/adguard-home/confdir:/opt/adguardhome/conf  # Mount '/my/own/confdir' to '/opt/adguardhome/conf'
