@@ -38,8 +38,8 @@ services:
       - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
     ports:
       - 5000:5000
-#    dns:
-#      - 8.8.8.8
+    #    dns:
+    #      - 8.8.8.8
     environment:
       - SONARR_URL=http://sonarr:8989
       - API_KEY=${SONARR_API_KEY}
@@ -108,6 +108,32 @@ services:
     ports:
       - "${PORT:-8191}:8191"
     restart: unless-stopped
+
+  # qBittorrent
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent-netfroz
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - WEBUI_PORT=8003
+      - TORRENTING_PORT=6881
+      - DOCKER_MODS=ghcr.io/gabe565/linuxserver-mod-vuetorrent
+      #- TORRENTING_PORT=6883
+      #- TORRENTING_PORT=50505
+      #- DOCKER_MODS=ghcr.io/t-anc/gsp-qbittorent-gluetun-sync-port-mod:main
+      #- GSP_GTN_ADDR=http://localhost:8880
+      #- GSP_QBT_ADDR=http://localhost:8003
+    ports:
+      - 8003:8003
+      - 6881:6881
+      - 6881:6881/udp
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/qbittorrent/config:/config
+      - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
+    #network_mode: service:gluetun
+    restart: always
 
   jellyfin:
     container_name: jellyfin
