@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   homebox:
-#   image: ghcr.io/hay-kot/homebox:latest
-    image: ghcr.io/hay-kot/homebox:latest-rootless
+ #  image: ghcr.io/sysadminsmedia/homebox:latest
+    image: ghcr.io/sysadminsmedia/homebox:latest-rootless
     container_name: homebox
     restart: always
     environment:
