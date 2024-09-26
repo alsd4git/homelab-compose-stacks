@@ -121,5 +121,5 @@ services:
       PORT: "8840"                      # optional, default: 8840
       TIMEOUT: "120"                    # optional, time in seconds, default: 120
       SHOUTRRR_URL: ""                  # optional, set url to notify
-      THEME: "cerulean"                 # optional
+      THEME: "sand"                     # optional
       COLOR: "dark"                     # optional

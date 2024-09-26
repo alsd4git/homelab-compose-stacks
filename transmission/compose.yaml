@@ -8,18 +8,16 @@ version: "2.1"
 
 services:
   transmission:
-    image: linuxserver/transmission:latest
+    image: linuxserver/transmission:4.0.6-r0-ls248
+
+    #image: linuxserver/transmission:latest
     container_name: transmission
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Rome
-      - TRANSMISSION_WEB_HOME= #optional
       - USER=${USERNAME}
       - PASS=${PASSWORD}
-      - WHITELIST= #optional
-      - PEERPORT= #optional
-      - HOST_WHITELIST= #optional
       - DOCKER_MODS=linuxserver/mods:transmission-floodui
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/transmission/config:/config

@@ -13,11 +13,11 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-#      - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+      #      - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
       - "81:80/tcp"
     environment:
-       TZ: 'Europe/Rome'
-       WEBPASSWORD: ${PASSWORD}
+      TZ: "Europe/Rome"
+      WEBPASSWORD: ${PASSWORD}
     # Volumes store your data between container upgrades
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/pihole/etc-pihole:/etc/pihole
@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
     networks:
       - pihole-bridge
-      
+
 networks:
   pihole-bridge:
     name: pihole-bridge

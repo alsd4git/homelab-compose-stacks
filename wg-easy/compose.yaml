@@ -30,7 +30,7 @@ services:
     restart: always
     networks:
       - pihole-bridge
-      
+
 networks:
   pihole-bridge:
     name: pihole-bridge
