@@ -1,5 +1,3 @@
-version: "3"
-
 # this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
 # - ${DOCKER_DATA_BASEFOLDER}
 # - ${DOCKER_MEDIA_BASEFOLDER}

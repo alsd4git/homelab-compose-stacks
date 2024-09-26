@@ -1,5 +1,3 @@
-version: "3" # Specify the Docker Compose version
-
 services:
   adguardhome: # Define the service named 'adguardhome'
     image: adguard/adguardhome # Use the 'adguard/adguardhome' Docker image
