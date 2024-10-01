@@ -2,23 +2,51 @@
 # - ${DOCKER_DATA_BASEFOLDER}
 
 services:
-  stirling-pdf:
-    container_name: stirling-pdf
-    #different tags explaination -> https://github.com/Stirling-Tools/Stirling-PDF/blob/main/Version-groups.md
-    image: frooodle/s-pdf:latest
-    # image: frooodle/s-pdf:latest-ultra-lite
+  convertx:
+    image: ghcr.io/c4illin/convertx
+    container_name: convertx
+    restart: always
     ports:
-      - "8082:8080"
+      - "3003:3000"
+    environment: # Defaults are listed below. All are optional.
+      - ACCOUNT_REGISTRATION=false # true or false, doesn't matter for the first account (e.g. keep this to false if you only want one account)
+      #- JWT_SECRET=aLongAndSecretStringUsedToSignTheJSONWebToken1234 # will use randomUUID() by default
+      - HTTP_ALLOWED=true # setting this to true is unsafe, only set this to true locally
+      - ALLOW_UNAUTHENTICATED=false # allows anyone to use the service without logging in, only set this to true locally
+      - AUTO_DELETE_EVERY_N_HOURS=24 # checks every n hours for files older then n hours and deletes them, set to 0 to disable
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/tessdata:/usr/share/tessdata #Required for extra OCR languages
-      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/configs:/configs
-    #      - /location/of/customFiles:/customFiles/
-    #      - /location/of/logs:/logs/
+      - ${DOCKER_DATA_BASEFOLDER}/convertx:/app/data
+
+  filebrowser:
+    container_name: filebrowser
     environment:
-      - DOCKER_ENABLE_SECURITY=false
-      - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
-      - LANGS=en_GB
-    restart: unless-stopped
+      - PGID=1000
+      - PUID=1000
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/test:/srv
+      - ${DOCKER_DATA_BASEFOLDER}/filebrowser/filebrowser.db:/database/filebrowser.db
+    ports:
+      - 8085:80
+    image: filebrowser/filebrowser:s6
+    restart: always
+
+  scrutiny:
+    stdin_open: true
+    tty: true
+    ports:
+      - 8083:8080
+      - 8086:8086
+    volumes:
+      - "${DOCKER_DATA_BASEFOLDER}/scrutiny/config:/opt/scrutiny/config"
+      - "${DOCKER_DATA_BASEFOLDER}/scrutiny/influxdb2:/opt/scrutiny/influxdb"
+      - /run/udev:/run/udev:ro
+    cap_add:
+      - SYS_RAWIO
+    devices:
+      - /dev/sda
+    container_name: scrutiny
+    image: ghcr.io/analogj/scrutiny:master-omnibus
+    restart: always
 
   speedtest-tracker:
     container_name: speedtest-tracker
@@ -39,13 +67,31 @@ services:
       - ${DOCKER_DATA_BASEFOLDER}/speedtest-tracker:/config
       # - /path/to-custom-ssl-keys:/config/keys
     image: linuxserver/speedtest-tracker:latest
-    restart: unless-stopped
+    restart: always
+
+  stirling-pdf:
+    container_name: stirling-pdf
+    #different tags explaination -> https://github.com/Stirling-Tools/Stirling-PDF/blob/main/Version-groups.md
+    image: frooodle/s-pdf:latest
+    # image: frooodle/s-pdf:latest-ultra-lite
+    ports:
+      - "8082:8080"
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/tessdata:/usr/share/tessdata #Required for extra OCR languages
+      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/configs:/configs
+    #      - /location/of/customFiles:/customFiles/
+    #      - /location/of/logs:/logs/
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+      - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
+      - LANGS=en_GB
+    restart: always
 
   upsnap:
     image: ghcr.io/seriousm4x/upsnap:latest
     container_name: upsnap
     network_mode: host
-    restart: unless-stopped
+    restart: always
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/mnt/docker-volumes}/upsnap/data:/app/pb_data
     environment:
@@ -54,51 +100,7 @@ services:
       - UPSNAP_SCAN_RANGE=192.168.0.0/24 # Scan range is used for device discovery on local network
       - UPSNAP_WEBSITE_TITLE=UpSnap # Custom website title
     entrypoint: /bin/sh -c "./upsnap serve --http 0.0.0.0:5001"
+    #entrypoint: /bin/sh -c "apk update && apk add --no-cache <YOUR_PACKAGE> && rm -rf /var/cache/apk/* && ./upsnap serve --http 0.0.0.0:8090"
     healthcheck:
       test: curl -fs "http://localhost:5001/api/health" || exit 1
       interval: 10s
-    #entrypoint: /bin/sh -c "apk update && apk add --no-cache <YOUR_PACKAGE> && rm -rf /var/cache/apk/* && ./upsnap serve --http 0.0.0.0:8090"
-
-  filebrowser:
-    container_name: filebrowser
-    environment:
-      - PGID=1000
-      - PUID=1000
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/test:/srv
-      - ${DOCKER_DATA_BASEFOLDER}/filebrowser/filebrowser.db:/database/filebrowser.db
-    ports:
-      - 8085:80
-    image: filebrowser/filebrowser:s6
-
-  convertx:
-    image: ghcr.io/c4illin/convertx
-    container_name: convertx
-    restart: unless-stopped
-    ports:
-      - "3003:3000"
-    environment: # Defaults are listed below. All are optional.
-      - ACCOUNT_REGISTRATION=false # true or false, doesn't matter for the first account (e.g. keep this to false if you only want one account)
-      #- JWT_SECRET=aLongAndSecretStringUsedToSignTheJSONWebToken1234 # will use randomUUID() by default
-      - HTTP_ALLOWED=true # setting this to true is unsafe, only set this to true locally
-      - ALLOW_UNAUTHENTICATED=false # allows anyone to use the service without logging in, only set this to true locally
-      - AUTO_DELETE_EVERY_N_HOURS=24 # checks every n hours for files older then n hours and deletes them, set to 0 to disable
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/convertx:/app/data
-
-  scrutiny:
-    stdin_open: true
-    tty: true
-    ports:
-      - 8083:8080
-      - 8086:8086
-    volumes:
-      - "${DOCKER_DATA_BASEFOLDER}/scrutiny/config:/opt/scrutiny/config"
-      - "${DOCKER_DATA_BASEFOLDER}/scrutiny/influxdb2:/opt/scrutiny/influxdb"
-      - /run/udev:/run/udev:ro
-    cap_add:
-      - SYS_RAWIO
-    devices:
-      - /dev/sda
-    container_name: scrutiny
-    image: ghcr.io/analogj/scrutiny:master-omnibus
