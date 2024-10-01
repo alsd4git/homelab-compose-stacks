@@ -22,31 +22,31 @@ services:
     environment:
       - PGID=1000
       - PUID=1000
+    image: filebrowser/filebrowser:s6
+    ports:
+      - '8085:80'
+    restart: always
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/test:/srv
       - ${DOCKER_DATA_BASEFOLDER}/filebrowser/filebrowser.db:/database/filebrowser.db
-    ports:
-      - 8085:80
-    image: filebrowser/filebrowser:s6
-    restart: always
 
   scrutiny:
-    stdin_open: true
-    tty: true
-    ports:
-      - 8083:8080
-      - 8086:8086
-    volumes:
-      - "${DOCKER_DATA_BASEFOLDER}/scrutiny/config:/opt/scrutiny/config"
-      - "${DOCKER_DATA_BASEFOLDER}/scrutiny/influxdb2:/opt/scrutiny/influxdb"
-      - /run/udev:/run/udev:ro
     cap_add:
       - SYS_RAWIO
+    container_name: scrutiny
     devices:
       - /dev/sda
-    container_name: scrutiny
     image: ghcr.io/analogj/scrutiny:master-omnibus
+    ports:
+      - '8083:8080'
+      - '8086:8086'
     restart: always
+    stdin_open: true
+    tty: true
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/scrutiny/config:/opt/scrutiny/config
+      - ${DOCKER_DATA_BASEFOLDER}/scrutiny/influxdb2:/opt/scrutiny/influxdb
+      - /run/udev:/run/udev:ro
 
   speedtest-tracker:
     container_name: speedtest-tracker
