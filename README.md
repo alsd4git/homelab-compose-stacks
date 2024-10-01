@@ -31,17 +31,17 @@ Here's an example of the folder structure:
 
 ```markdown
 - /stack1
-  - docker-compose.yml
+  - compose.yaml
   - .env
   - /resources
     - ... (files and directories specific to this stack)
 - /stack2
-  - docker-compose.yml
+  - compose.yaml
   - .env
   - /resources
     - ... (files and directories specific to this stack)
 - /stack3
-  - docker-compose.yml
+  - compose.yaml
   - .env
   - /resources
     - ... (files and directories specific to this stack)
@@ -49,7 +49,7 @@ Here's an example of the folder structure:
 
 Each stack folder should contain the following elements:
 
-- docker-compose.yml: The Docker Compose file for the specific service or application.
+- compose.yaml: The Docker Compose file for the specific service or application.
 - .env: An environment file containing necessary configuration settings, such as API keys, passwords, and other environment variables.
 - /resources: A directory for any additional resources or configuration files needed for the stack.
 
