@@ -110,8 +110,6 @@ services:
     image: "jokobsk/netalertx:latest"
     restart: unless-stopped
     network_mode: "host"
-    ports:
-      - "80:20211/tcp"
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/pialert/config:/app/config
       - ${DOCKER_DATA_BASEFOLDER}/pialert/db:/app/db
@@ -121,7 +119,7 @@ services:
       - TZ=Europe/Rome
       - HOST_USER_ID=1000
       - HOST_USER_GID=1000
-
+      - PORT=20211
   wyl:
     container_name: watchyourlan
     image: aceberg/watchyourlan:v2
