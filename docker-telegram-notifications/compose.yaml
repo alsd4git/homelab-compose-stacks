@@ -70,7 +70,7 @@ services:
 
       # > (Folded Style): preserve line breaks but removes whitespace
       WATCHTOWER_NOTIFICATION_URL: >
-        telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=Markdown&preview=false
+        telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=html&preview=false
       # | (Literal Style): preserve line breaks and also the same whitespace
       WATCHTOWER_NOTIFICATION_TEMPLATE: |
         {{- if .Report -}}
