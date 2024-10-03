@@ -1,0 +1,22 @@
+#based on https://github.com/ZoeyVid/NPMplus/blob/develop/compose.yaml
+
+services:
+  npmplus:
+    container_name: npmplus
+    image: zoeyvid/npmplus
+    restart: always
+    ports:
+      # These ports are in format <host-port>:<container-port>
+      - "808:80" # Public HTTP Port
+      - "4434:443" # Public HTTPS Port
+      - "85:82" # Admin Web Port
+    volumes:
+      - "${DOCKER_DATA_BASEFOLDER}/npmplus:/data"
+#      - "/var/www:/var/www" # optional, if you want to use it as webserver for html/php
+#      - "/opt/npm-letsencrypt:/etc/letsencrypt" # Only needed for first time migration from original nginx-proxy-manager to this fork
+    environment:
+      - "TZ=Europe/Rome" # set timezone, required
+      - "PUID=1000" # set group id, default 0 (root)
+      - "PGID=1000" # set user id, default 0 (root), requires PUID
+      - "NPM_PORT=82" # Port the NPM UI should be bound to, default 81, you need to change it, if you want to run multiple npm instances in network mode host
+      - "NPM_DISABLE_IPV6=true" # disable IPv6 for the NPM UI, overrides NPM_IPV6_BINDING, default false
