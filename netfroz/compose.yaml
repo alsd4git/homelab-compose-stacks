@@ -3,6 +3,7 @@
 # - ${DOCKER_MEDIA_BASEFOLDER}
 # - ${SONARR_API_KEY}
 #TODO: add bazarr and maybe other *arr
+name: netfroz
 
 services:
   animedownloader:

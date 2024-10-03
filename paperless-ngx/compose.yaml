@@ -30,6 +30,7 @@
 #
 # For more extensive installation and update instructions, refer to the
 # documentation.
+name: paperless-ngx
 
 services:
   broker:
