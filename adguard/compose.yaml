@@ -2,14 +2,14 @@
 # - ${DOCKER_DATA_BASEFOLDER}
 
 services:
-  adguardhome: # Define the service named 'adguardhome'
-    image: adguard/adguardhome # Use the 'adguard/adguardhome' Docker image
-    container_name: adguardhome # Set the container name to 'adguardhome'
-    restart: unless-stopped # Restart the container automatically unless stopped manually
-    ports: # Map container ports to host ports
+  adguardhome:  # Define the service named 'adguardhome'
+    image: adguard/adguardhome:latest  # Use the 'adguard/adguardhome' Docker image
+    container_name: adguardhome  # Set the container name to 'adguardhome'
+    restart: unless-stopped  # Restart the container automatically unless stopped manually
+    ports:  # Map container ports to host ports
       # Expose port 53 on TCP and UDP for DNS queries
-      - "53:53/tcp"
-      - "53:53/udp"
+      - "54:53/tcp"
+      - "54:53/udp"
 
       # Expose port 67 on UDP for DHCP server
       - "67:67/udp"
@@ -18,7 +18,7 @@ services:
       # - "68:68/udp"
 
       # Expose port 80 on TCP for HTTP web interface
-      - "81:80/tcp"
+      - "86:80/tcp"
 
       # Expose port 443 on TCP and UDP for HTTPS web interface
       #- "443:443/tcp"
@@ -42,6 +42,6 @@ services:
       # Expose port 5443 on TCP and UDP for DNSCrypt
       - "5443:5443/tcp"
       - "5443:5443/udp"
-    volumes: # Mount host directories as volumes inside the container
-      - ${DOCKER_DATA_BASEFOLDER}/adguard-home/work:/opt/adguardhome/work # Mount '/my/own/workdir' to '/opt/adguardhome/work'
-      - ${DOCKER_DATA_BASEFOLDER}/adguard-home/confdir:/opt/adguardhome/conf # Mount '/my/own/confdir' to '/opt/adguardhome/conf'
+    volumes:  # Mount host directories as volumes inside the container
+      - ${DOCKER_DATA_BASEFOLDER}/adguard-home/work:/opt/adguardhome/work  # Mount '/my/own/workdir' to '/opt/adguardhome/work'
+      - ${DOCKER_DATA_BASEFOLDER}/adguard-home/confdir:/opt/adguardhome/conf  # Mount '/my/own/confdir' to '/opt/adguardhome/conf'

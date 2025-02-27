@@ -111,15 +111,14 @@ services:
     restart: unless-stopped
     network_mode: "host"
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/pialert/config:/app/config
-      - ${DOCKER_DATA_BASEFOLDER}/pialert/db:/app/db
+      - ${DOCKER_DATA_BASEFOLDER}/netalertx/config:/app/config
+      - ${DOCKER_DATA_BASEFOLDER}/netalertx/db:/app/db
       # (optional) useful for debugging if you have issues setting up the container
-      #- ${DOCKER_DATA_BASEFOLDER}/pialert/logs:/home/pi/pialert/front/log
+      #- ${DOCKER_DATA_BASEFOLDER}/netalertx/logs:/home/pi/pialert/front/log
     environment:
       - TZ=Europe/Rome
-      - HOST_USER_ID=1000
-      - HOST_USER_GID=1000
       - PORT=20211
+
   wyl:
     container_name: watchyourlan
     image: aceberg/watchyourlan:v2

@@ -68,6 +68,7 @@ services:
     environment:
       - LOG_LEVEL=debug
       - TZ=Europe/Rome
+    user: "1000:1000"
     ports:
       - 5055:5055
     volumes:
