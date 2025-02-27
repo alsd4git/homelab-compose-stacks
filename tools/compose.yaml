@@ -24,7 +24,7 @@ services:
       - PUID=1000
     image: filebrowser/filebrowser:s6
     ports:
-      - '8085:80'
+      - "8085:80"
     restart: always
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/test:/srv
@@ -38,8 +38,8 @@ services:
       - /dev/sda
     image: ghcr.io/analogj/scrutiny:master-omnibus
     ports:
-      - '8083:8080'
-      - '8086:8086'
+      - "8083:8080"
+      - "8086:8086"
     restart: always
     stdin_open: true
     tty: true
@@ -72,20 +72,43 @@ services:
   stirling-pdf:
     container_name: stirling-pdf
     #different tags explaination -> https://github.com/Stirling-Tools/Stirling-PDF/blob/main/Version-groups.md
-    image: frooodle/s-pdf:latest
-    # image: frooodle/s-pdf:latest-ultra-lite
+    image: stirlingtools/stirling-pdf:latest
     ports:
       - "8082:8080"
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/tessdata:/usr/share/tessdata #Required for extra OCR languages
       - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/configs:/configs
-    #      - /location/of/customFiles:/customFiles/
-    #      - /location/of/logs:/logs/
+      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/customFiles:/customFiles/
+      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/logs:/logs/
+      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/pipeline:/pipeline/
     environment:
       - DOCKER_ENABLE_SECURITY=false
       - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
       - LANGS=en_GB
     restart: always
+
+  telegram-files:
+    container_name: telegram-files
+    image: ghcr.io/jarvis2f/telegram-files:latest
+    restart: always
+    # Default use 1000:1000 for user:group. If you want to use root, uncomment the line below.
+    # user: "root"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1/api/health" ]
+      interval: 30s
+      retries: 3
+      timeout: 10s
+      start_period: 10s
+    environment:
+      APP_ENV: "prod"
+      APP_ROOT: "/app/data"
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH}
+    ports:
+      - "6543:80"
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/tg-files:/app/data
+      - ${DOCKER_MEDIA_BASEFOLDER}/telegram:/media
 
   upsnap:
     image: ghcr.io/seriousm4x/upsnap:latest
@@ -104,3 +127,10 @@ services:
     healthcheck:
       test: curl -fs "http://localhost:5001/api/health" || exit 1
       interval: 10s
+
+  web-check:
+    container_name: Web-Check
+    image: lissy93/web-check
+    ports:
+      - 3006:3000
+    restart: unless-stopped
