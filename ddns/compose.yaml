@@ -13,12 +13,6 @@
 # - ${DUCK_HOST}
 # - ${DUCK_TOKEN}
 
-# - ${CLOUDFLARE_DOMAIN}
-# - ${CLOUDFLARE_DOMAIN_2}
-# - ${CLOUDFLARE_TOKEN}
-# - ${CLOUDFLARE_ZONE_ID}
-# - ${CLOUDFLARE_ZONE_ID_2}
-
 services:
   ddns-updater:
     #docs: https://github.com/qdm12/ddns-updater/tree/master/docs
@@ -36,11 +30,7 @@ services:
         {"settings":[
         {"provider":"dynu",      "domain":"${DYNU_DOMAIN}",          "username":"${DYNU_USERNAME}","password":"${DYNU_PASSWORD}",                        "ip_version":"ipv4"},
         {"provider":"dynv6",     "domain":"${DYN6_DOMAIN}",          "token":"${DYN6_TOKEN}",                                                            "ip_version":"ipv4"},
-        {"provider":"duckdns",   "domain":"${DUCK_HOST}",            "token":"${DUCK_TOKEN}",                                                            "ip_version":"ipv4"},
-        {"provider":"cloudflare","domain":"${CLOUDFLARE_DOMAIN}",    "token":"${CLOUDFLARE_TOKEN}","ttl":600,"zone_identifier":"${CLOUDFLARE_ZONE_ID}",  "ip_version":"ipv4"},
-        {"provider":"cloudflare","domain":"*.${CLOUDFLARE_DOMAIN}",  "token":"${CLOUDFLARE_TOKEN}","ttl":600,"zone_identifier":"${CLOUDFLARE_ZONE_ID}",  "ip_version":"ipv4"},
-        {"provider":"cloudflare","domain":"${CLOUDFLARE_DOMAIN_2}",  "token":"${CLOUDFLARE_TOKEN}","ttl":600,"zone_identifier":"${CLOUDFLARE_ZONE_ID_2}","ip_version":"ipv4"},
-        {"provider":"cloudflare","domain":"*.${CLOUDFLARE_DOMAIN_2}","token":"${CLOUDFLARE_TOKEN}","ttl":600,"zone_identifier":"${CLOUDFLARE_ZONE_ID_2}","ip_version":"ipv4"}
+        {"provider":"duckdns",   "domain":"${DUCK_HOST}",            "token":"${DUCK_TOKEN}",                                                            "ip_version":"ipv4"}
         ]}
       - PERIOD=60m
       - UPDATE_COOLDOWN_PERIOD=5m
