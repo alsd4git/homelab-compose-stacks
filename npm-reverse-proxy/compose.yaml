@@ -18,3 +18,22 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/NPM/data:/data
       - ${DOCKER_DATA_BASEFOLDER}/NPM/letsencrypt:/etc/letsencrypt
+      - ${DOCKER_DATA_BASEFOLDER}/step/certs/root_ca.crt:/etc/nginx/ssl/homelab/root_ca.crt:ro # Optional, only if you are using a custom CA
+
+    #then, in the advanced tab of the NPM UI, add the following lines to the SSL tab of your proxy host:
+    #
+    # ssl_client_certificate /etc/nginx/ssl/homelab/root_ca.crt;
+    # ssl_verify_client on;
+  # have a look at the following link for more information on how to set up the NPM with a custom CA for mTLS: https://github.com/alsd4git/mtls-cli
+
+  step-ca:
+    image: smallstep/step-ca
+    container_name: step-ca
+    ports:
+      - "9001:9000"
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/step:/home/step
+    environment:
+      - DOCKER_STEPCA_INIT_NAME=${STEP_CA_NAME}
+      - DOCKER_STEPCA_INIT_DNS_NAMES=${STEP_CA_DNS_NAMES}
+      - DOCKER_STEPCA_INIT_PASSWORD=${STEP_CA_PASSWORD}
