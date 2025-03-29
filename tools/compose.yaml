@@ -17,6 +17,16 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/convertx:/app/data
 
+  cup:
+    image: ghcr.io/sergi0g/cup:latest
+    container_name: cup # Optional
+    restart: unless-stopped
+    command: serve
+    ports:
+      - 8004:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   filebrowser:
     container_name: filebrowser
     environment:
@@ -94,7 +104,7 @@ services:
     # Default use 1000:1000 for user:group. If you want to use root, uncomment the line below.
     # user: "root"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://127.0.0.1/api/health" ]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1/api/health"]
       interval: 30s
       retries: 3
       timeout: 10s
