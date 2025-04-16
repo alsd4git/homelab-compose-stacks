@@ -7,7 +7,7 @@
 
 services:
   wireguard:
-    image: weejewel/wg-easy:latest
+    image: ghcr.io/wg-easy/wg-easy:14	
     container_name: wg-easy
     cap_add:
       - NET_ADMIN
@@ -15,7 +15,7 @@ services:
     environment:
       - WG_HOST=${DDNS}
       # - PASSWORD=${PASSWORD}
-      - PASSWORD_HASH=${PASSWORD_HASH} #https://github.com/wg-easy/wg-easy/blob/master/How_to_generate_an_bcrypt_hash.md
+      - PASSWORD_HASH=${PASSWORD_HASH} #https://github.com/wg-easy/wg-easy/blob/c6dce0f6fb2e28e7e40ddac1498bd67e9bb17cba/How_to_generate_an_bcrypt_hash.md
       - WG_DEFAULT_DNS=${PI-HOLE-IP} #default DNS for new clients (pointing to pi-hole docker IP)
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/wg-easy:/etc/wireguard
