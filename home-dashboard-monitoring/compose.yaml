@@ -48,12 +48,13 @@ services:
   homeassistant:
     container_name: homeassistant
     image: linuxserver/homeassistant:latest
-    #documentation: TODO: add documentation link
+    #documentation: https://docs.linuxserver.io/images/docker-homeassistant
     network_mode: host #needed to discover some devices
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Rome
+      - DOCKER_MODS=linuxserver/mods:homeassistant-hacs
     cap_add:
       - NET_ADMIN
       - NET_RAW
