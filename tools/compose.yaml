@@ -1,5 +1,15 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
-# - ${DOCKER_DATA_BASEFOLDER}
+# Tools Stack
+# This stack provides a collection of useful tools and utilities for your homelab environment.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
+#
+# Optional environment variables:
+# - TELEGRAM_API_ID: Telegram API ID for telegram-files
+# - TELEGRAM_API_HASH: Telegram API hash for telegram-files
 
 services:
   convertx:
@@ -7,62 +17,79 @@ services:
     container_name: convertx
     restart: always
     ports:
-      - "3003:3000"
-    environment: # Defaults are listed below. All are optional.
-      - ACCOUNT_REGISTRATION=false # true or false, doesn't matter for the first account (e.g. keep this to false if you only want one account)
-      #- JWT_SECRET=aLongAndSecretStringUsedToSignTheJSONWebToken1234 # will use randomUUID() by default
-      - HTTP_ALLOWED=true # setting this to true is unsafe, only set this to true locally
-      - ALLOW_UNAUTHENTICATED=false # allows anyone to use the service without logging in, only set this to true locally
-      - AUTO_DELETE_EVERY_N_HOURS=24 # checks every n hours for files older then n hours and deletes them, set to 0 to disable
+      - 3003:3000 # Web UI (external mapping)
+    expose:
+      - 3000 # Web UI (internal, for reverse proxy or internal access)
+    environment:
+      - ACCOUNT_REGISTRATION=false
+      - HTTP_ALLOWED=true
+      - ALLOW_UNAUTHENTICATED=false
+      - AUTO_DELETE_EVERY_N_HOURS=24
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/convertx:/app/data
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/convertx:/app/data
 
   cup:
     image: ghcr.io/sergi0g/cup:latest
-    container_name: cup # Optional
+    container_name: cup
     restart: unless-stopped
     command: serve
     ports:
-      - 8004:8000
+      - 8004:8000 # Web UI (external mapping)
+    expose:
+      - 8000 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - tools_network
 
   filebrowser:
+    image: filebrowser/filebrowser:s6
     container_name: filebrowser
+    restart: always
+    ports:
+      - 8085:80 # Web UI (external mapping)
+    expose:
+      - 80 # Web UI (internal, for reverse proxy or internal access)
     environment:
       - PGID=1000
       - PUID=1000
-    image: filebrowser/filebrowser:s6
-    ports:
-      - "8085:80"
-    restart: always
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/test:/srv
-      - ${DOCKER_DATA_BASEFOLDER}/filebrowser/filebrowser.db:/database/filebrowser.db
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/test:/srv
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/filebrowser/filebrowser.db:/database/filebrowser.db
+    networks:
+      - tools_network
 
   scrutiny:
+    image: ghcr.io/analogj/scrutiny:master-omnibus
+    container_name: scrutiny
+    restart: always
+    ports:
+      - 8083:8080 # Web UI (external mapping)
+      - 8086:8086 # InfluxDB (external mapping)
+    expose:
+      - 8080 # Web UI (internal, for reverse proxy or internal access)
+      - 8086 # InfluxDB (internal, for reverse proxy or internal access)
     cap_add:
       - SYS_RAWIO
-    container_name: scrutiny
     devices:
       - /dev/sda
-    image: ghcr.io/analogj/scrutiny:master-omnibus
-    ports:
-      - "8083:8080"
-      - "8086:8086"
-    restart: always
     stdin_open: true
     tty: true
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/scrutiny/config:/opt/scrutiny/config
-      - ${DOCKER_DATA_BASEFOLDER}/scrutiny/influxdb2:/opt/scrutiny/influxdb
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/scrutiny/config:/opt/scrutiny/config
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/scrutiny/influxdb2:/opt/scrutiny/influxdb
       - /run/udev:/run/udev:ro
+    networks:
+      - tools_network
 
   speedtest-tracker:
+    image: linuxserver/speedtest-tracker:latest
     container_name: speedtest-tracker
+    restart: always
     ports:
-      - 8084:80
-      # - 8443:443
+      - 8084:80 # Web UI (external mapping)
+    expose:
+      - 80 # Web UI (internal, for reverse proxy or internal access)
     environment:
       - PUID=1000
       - PGID=1000
@@ -70,77 +97,71 @@ services:
       - APP_KEY=base64:xz6aCq7elg5Di1WCbBfCGdnXjtf9wQV3Ly3tERwQaGI=
       - APP_TIMEZONE=Europe/Rome
       - DISPLAY_TIMEZONE=Europe/Rome
-      - SPEEDTEST_SCHEDULE=*/30 * * * * # can be represented as a cron schedule same as before.
-      #- SPEEDTEST_SERVERS= # you can add one or many servers separated by a comma (i.e. "123456,654321,987654").
-      - PRUNE_RESULTS_OLDER_THAN=0 # the default is 0 which disables result pruning, this value is in days.
+      - SPEEDTEST_SCHEDULE=*/30 * * * *
+      - PRUNE_RESULTS_OLDER_THAN=0
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/speedtest-tracker:/config
-      # - /path/to-custom-ssl-keys:/config/keys
-    image: linuxserver/speedtest-tracker:latest
-    restart: always
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/speedtest-tracker:/config
+    networks:
+      - tools_network
 
   stirling-pdf:
-    container_name: stirling-pdf
-    #different tags explaination -> https://github.com/Stirling-Tools/Stirling-PDF/blob/main/Version-groups.md
     image: stirlingtools/stirling-pdf:latest
+    container_name: stirling-pdf
+    restart: always
     ports:
-      - "8082:8080"
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/tessdata:/usr/share/tessdata #Required for extra OCR languages
-      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/configs:/configs
-      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/customFiles:/customFiles/
-      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/logs:/logs/
-      - ${DOCKER_DATA_BASEFOLDER}/stirling-pdf/pipeline:/pipeline/
+      - 8082:8080 # Web UI (external mapping)
+    expose:
+      - 8080 # Web UI (internal, for reverse proxy or internal access)
     environment:
       - DOCKER_ENABLE_SECURITY=false
       - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
       - LANGS=en_GB
-    restart: always
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/tessdata:/usr/share/tessdata
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/configs:/configs
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/customFiles:/customFiles
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/logs:/logs
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/pipeline:/pipeline
+    networks:
+      - tools_network
 
   telegram-files:
-    container_name: telegram-files
     image: ghcr.io/jarvis2f/telegram-files:latest
+    container_name: telegram-files
     restart: always
-    # Default use 1000:1000 for user:group. If you want to use root, uncomment the line below.
-    # user: "root"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1/api/health"]
-      interval: 30s
-      retries: 3
-      timeout: 10s
-      start_period: 10s
-    environment:
-      APP_ENV: "prod"
-      APP_ROOT: "/app/data"
-      TELEGRAM_API_ID: ${TELEGRAM_API_ID}
-      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH}
     ports:
-      - "6543:80"
+      - 6543:80 # Web UI (external mapping)
+    expose:
+      - 80 # Web UI (internal, for reverse proxy or internal access)
+    environment:
+      - APP_ENV=prod
+      - APP_ROOT=/app/data
+      - TELEGRAM_API_ID=${TELEGRAM_API_ID}
+      - TELEGRAM_API_HASH=${TELEGRAM_API_HASH}
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/tg-files:/app/data
-      - ${DOCKER_MEDIA_BASEFOLDER}/telegram:/media
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/tg-files:/app/data
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/telegram:/media
+    networks:
+      - tools_network
 
   upsnap:
     image: ghcr.io/seriousm4x/upsnap:latest
     container_name: upsnap
-    network_mode: host
     restart: always
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/mnt/docker-volumes}/upsnap/data:/app/pb_data
+    network_mode: host
+    expose:
+      - 5001 # Web UI (exposed via host networking, for reverse proxy or internal access)
     environment:
-      - TZ=Europe/Rome # Set container timezone for cron schedules
-      - UPSNAP_INTERVAL=@every 10s # Sets the interval in which the devices are pinged
-      - UPSNAP_SCAN_RANGE=192.168.0.0/24 # Scan range is used for device discovery on local network
-      - UPSNAP_WEBSITE_TITLE=UpSnap # Custom website title
+      - TZ=Europe/Rome
+      - UPSNAP_INTERVAL=@every 10s
+      - UPSNAP_SCAN_RANGE=192.168.0.0/24
+      - UPSNAP_WEBSITE_TITLE=UpSnap
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/upsnap/data:/app/pb_data
     entrypoint: /bin/sh -c "./upsnap serve --http 0.0.0.0:5001"
-    #entrypoint: /bin/sh -c "apk update && apk add --no-cache <YOUR_PACKAGE> && rm -rf /var/cache/apk/* && ./upsnap serve --http 0.0.0.0:8090"
-    healthcheck:
-      test: curl -fs "http://localhost:5001/api/health" || exit 1
-      interval: 10s
+    # Note: UpSnap uses host networking, so port 5001 is exposed directly on the host.
 
-  web-check:
-    container_name: Web-Check
-    image: lissy93/web-check
-    ports:
-      - 3006:3000
-    restart: unless-stopped
+networks:
+  tools_network:
+    name: tools_network
+    driver: bridge

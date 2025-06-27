@@ -1,48 +1,53 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
-# - ${DOCKER_DATA_BASEFOLDER}
-# - ${PASSWORD}
+# Pi-hole Stack
+# This stack provides a network-wide ad blocking solution using Pi-hole.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - PASSWORD: Web interface password
+#
+# Optional configuration:
+# - Uncomment DHCP ports if using Pi-hole as DHCP server
+# - Uncomment capabilities if using DHCP or NTP
 
-# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
 services:
   pihole:
     container_name: pihole
+    hostname: pi.hole-docker
     image: pihole/pihole:latest
-    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
     ports:
-      # DNS Ports
-      - "53:53/tcp"
-      - "53:53/udp"
-      # Default HTTP Port
-      - "81:80/tcp"
-      # Default HTTPs Port. FTL will generate a self-signed certificate
-      #- "443:443/tcp"
-      # Uncomment the below if using Pi-hole as your DHCP Server
-      #- "67:67/udp"
+      - 53:53/tcp      # DNS (TCP, external mapping)
+      - 53:53/udp      # DNS (UDP, external mapping)
+      # - 81:80/tcp    # Web interface (external mapping, recommended to use reverse proxy instead)
+      # - 443:443/tcp  # HTTPS (self-signed cert, external mapping, recommended to use reverse proxy instead)
+      # - 67:67/udp    # DHCP server (external mapping, optional)
+    expose:
+      - 80  # Web interface (internal, for reverse proxy or internal access)
+      - 443  # HTTPS (self-signed cert, internal, for reverse proxy or internal access)
+      - 53  # DNS (internal, for internal container communication)
+      - 67  # DHCP (internal, for internal container communication)
     environment:
-      # Set the appropriate timezone for your location (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), e.g:
-      TZ: "Europe/Rome"
-      # Set a password to access the web interface. Not setting one will result in a random password being assigned
+      TZ: Europe/Rome
       FTLCONF_webserver_api_password: ${PASSWORD}
-      # If using Docker's default `bridge` network setting the dns listening mode should be set to 'all'
-      FTLCONF_dns_listeningMode: "all"
-    # Volumes store your data between container upgrades
+      FTLCONF_dns_listeningMode: all
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/pihole/etc-pihole:/etc/pihole
-      - ${DOCKER_DATA_BASEFOLDER}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/pihole/etc-pihole:/etc/pihole
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
     # cap_add:
-      # See https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-      # Required if you are using Pi-hole as your DHCP server, else not needed
-      # - NET_ADMIN
-      # Required if you are using Pi-hole as your NTP client to be able to set the host's system time
-      # - SYS_TIME
-      # Optional, if Pi-hole should get some more processing time
-      # - SYS_NICE
+      # - NET_ADMIN    # Required for DHCP
+      # - SYS_TIME     # Required for NTP
+      # - SYS_NICE     # Optional, for better performance
     restart: unless-stopped
     networks:
-      - pihole-bridge
+      - pihole_network
+      - npm_network
 
 networks:
-  pihole-bridge:
-    name: pihole-bridge
+  pihole_network:
+    name: pihole_network
     driver: bridge
+  npm_network: # to expose container to NPM for reverse proxy
+    name: npm_network
+    driver: bridge
+    external: true

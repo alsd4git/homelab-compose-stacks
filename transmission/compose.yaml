@@ -1,28 +1,42 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
-# - ${DOCKER_DATA_BASEFOLDER}
-# - ${DOCKER_MEDIA_BASEFOLDER}
-# - ${PASSWORD}
-# - ${USERNAME}
+# Transmission Stack
+# This stack provides a BitTorrent client with a web interface.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
+# - USERNAME: Web interface username
+# - PASSWORD: Web interface password
 
 services:
   transmission:
-    image: linuxserver/transmission:4.0.6-r0-ls248
-
-    #image: linuxserver/transmission:latest
     container_name: transmission
+    image: linuxserver/transmission:4.0.6-r0-ls248
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Rome
-      - USER=${USERNAME}
-      - PASS=${PASSWORD}
-      - DOCKER_MODS=linuxserver/mods:transmission-floodui
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Rome
+      USER: ${USERNAME}
+      PASS: ${PASSWORD}
+      DOCKER_MODS: linuxserver/mods:transmission-floodui
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/transmission/config:/config
-      - ${DOCKER_DATA_BASEFOLDER}/transmission/watch:/watch
-      - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/transmission/config:/config
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/transmission/watch:/watch
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads:/downloads
     ports:
-      - 9091:9091
-      - 51413:51413
-      - 51413:51413/udp
-    restart: always
+      - 9091:9091 # Web UI (external mapping)
+      - 51413:51413 # Torrent (TCP, external mapping)
+      - 51413:51413/udp # Torrent (UDP, external mapping)
+    expose:
+      - 9091 # Web UI (internal, for reverse proxy or internal access)
+      - 51413 # Torrent (TCP, internal, for internal container communication)
+      - 51413/udp # Torrent (UDP, internal, for internal container communication)
+    restart: unless-stopped
+    networks:
+      - transmission_network
+
+networks:
+  transmission_network:
+    name: transmission_network
+    driver: bridge

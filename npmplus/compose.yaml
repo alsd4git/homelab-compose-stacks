@@ -1,4 +1,9 @@
-#based on https://github.com/ZoeyVid/NPMplus/blob/develop/compose.yaml
+# NPM Plus Stack
+# This stack provides a reverse proxy solution with additional features.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Based on https://github.com/ZoeyVid/NPMplus/blob/develop/compose.yaml
 
 services:
   npmplus:
@@ -7,9 +12,13 @@ services:
     restart: always
     ports:
       # These ports are in format <host-port>:<container-port>
-      - "808:80" # Public HTTP Port
-      - "4434:443" # Public HTTPS Port
-      - "85:82" # Admin Web Port
+      - "808:80"   # Public HTTP Port (external mapping)
+      - "4434:443" # Public HTTPS Port (external mapping)
+      - "85:82"    # Admin Web Port (external mapping)
+    expose:
+      - 80   # HTTP (internal, for reverse proxy or internal access)
+      - 443  # HTTPS (internal, for reverse proxy or internal access)
+      - 82   # Admin Web UI (internal, for reverse proxy or internal access)
     volumes:
       - "${DOCKER_DATA_BASEFOLDER}/npmplus:/data"
 #      - "/var/www:/var/www" # optional, if you want to use it as webserver for html/php

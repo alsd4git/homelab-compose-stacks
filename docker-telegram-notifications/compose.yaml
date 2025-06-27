@@ -1,3 +1,9 @@
+# Docker Compose stack for Telegram notifications
+# This stack combines three services:
+# 1. docker-telegram-notifier: Sends Docker events to Telegram
+# 2. diun: Monitors Docker images for updates
+# 3. watchtower: Automatically updates containers
+
 # this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
 # - ${TELEGRAM_CHAT_ID}
 # - ${TELEGRAM_BOT_TOKEN}
@@ -7,36 +13,32 @@ services:
   notifier:
     container_name: docker-telegram-notifier
     image: lorcas/docker-telegram-notifier:latest
-    #documentation: https://github.com/luc-ass/docker-telegram-notifier/
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      - TELEGRAM_NOTIFIER_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - TELEGRAM_NOTIFIER_CHAT_ID=${TELEGRAM_CHAT_ID}
+      TELEGRAM_NOTIFIER_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_NOTIFIER_CHAT_ID: ${TELEGRAM_CHAT_ID}
     restart: always
 
   diun:
     container_name: diun
     image: crazymax/diun:latest
-    #documentation: https://crazymax.dev/diun/
     command: serve
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/diun/data:/data
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/diun/data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      TZ: "Europe/Rome"
-      LOG_LEVEL: "info"
-      LOG_JSON: "false"
-      DIUN_WATCH_WORKERS: "20"
-      DIUN_WATCH_SCHEDULE: "0 */6 * * *" # This job runs every 6 hours
-      DIUN_WATCH_JITTER: "30s"
-      DIUN_PROVIDERS_DOCKER: "true"
-      DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT: "true"
-      #when using this format for env variables to use or not use "" shoule be the same
+      TZ: Europe/Rome
+      LOG_LEVEL: info
+      LOG_JSON: false
+      DIUN_WATCH_WORKERS: 20
+      DIUN_WATCH_SCHEDULE: 0 */6 * * *
+      DIUN_WATCH_JITTER: 30s
+      DIUN_PROVIDERS_DOCKER: true
+      DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT: true
       DIUN_NOTIF_TELEGRAM_TOKEN: ${TELEGRAM_BOT_TOKEN}
-      DIUN_NOTIF_TELEGRAM_CHATIDS: "${TELEGRAM_CHAT_ID}"
-      # > (Folded Style): preserve line breaks but removes whitespace
-      DIUN_NOTIF_TELEGRAM_TEMPLATEBODY: >
+      DIUN_NOTIF_TELEGRAM_CHATIDS: ${TELEGRAM_CHAT_ID}
+      DIUN_NOTIF_TELEGRAM_TEMPLATEBODY: |
         DIUN 🐳:
         Docker tag 
         {{ if .Entry.Image.HubLink }}
@@ -53,25 +55,15 @@ services:
   watchtower:
     container_name: watchtower-notif
     image: containrrr/watchtower:latest
-    #documentation: https://containrrr.dev/watchtower/
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      TZ: "Europe/Rome"
-      WATCHTOWER_CLEANUP: "true"
-      WATCHTOWER_NOTIFICATION_REPORT: "true"
-      #schedule format: https://pkg.go.dev/github.com/robfig/cron@v1.2.0#hdr-CRON_Expression_Format
-      #WATCHTOWER_SCHEDULE: "0 0 4 * * *" #4am everyday
-      #WATCHTOWER_SCHEDULE: "0 0 13 * * *" #1pm everyday
-      #WATCHTOWER_SCHEDULE: "0 0 13 * * 1" #1pm every Monday
-      WATCHTOWER_SCHEDULE: "0 0 13 * * 1,3,5" #1pm every Monday+Wednesday+Friday
-
-      #WATCHTOWER_RUN_ONCE: "true" #per testing, lancia una volta e si chiude
-
-      # > (Folded Style): preserve line breaks but removes whitespace
-      WATCHTOWER_NOTIFICATION_URL: >
+      TZ: Europe/Rome
+      WATCHTOWER_CLEANUP: true
+      WATCHTOWER_NOTIFICATION_REPORT: true
+      WATCHTOWER_SCHEDULE: 0 0 13 * * 1,3,5
+      WATCHTOWER_NOTIFICATION_URL: |
         telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=html&preview=false
-      # | (Literal Style): preserve line breaks and also the same whitespace
       WATCHTOWER_NOTIFICATION_TEMPLATE: |
         {{- if .Report -}}
           {{- with .Report -}}
@@ -96,5 +88,4 @@ services:
         {{- else -}}
           {{range .Entries -}}{{.Message}}{{"\n"}}{{- end -}}
         {{- end -}}
-
     restart: always

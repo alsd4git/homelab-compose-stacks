@@ -1,96 +1,134 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
-# - ${DOCKER_DATA_BASEFOLDER}
-# - ${DOCKER_MEDIA_BASEFOLDER}
-# - ${SONARR_API_KEY}
-#TODO: add bazarr and maybe other *arr
+# Netfroz Stack
+# This stack provides a comprehensive media management and automation solution.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
+# - SONARR_API_KEY: API key for Sonarr
+#
+# Optional environment variables:
+# - LOG_LEVEL: FlareSolverr log level (default: info)
+# - LOG_HTML: FlareSolverr HTML logging (default: false)
+# - CAPTCHA_SOLVER: FlareSolverr captcha solver (default: none)
+# - PORT: FlareSolverr port (default: 8191)
+
 name: netfroz
 
 services:
   animedownloader:
-    container_name: animedownloader
     image: ghcr.io/mainkronos/anime_downloader:latest
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/animedownloader/data:/src/database/
-      - ${DOCKER_DATA_BASEFOLDER}/animedownloader/connections:/src/script
-      #i could give the whole /media, but i don't trust it enough
-      - ${DOCKER_MEDIA_BASEFOLDER}/tvseries:/media/tvseries #this has to be the same as the one in sonarr
-      - ${DOCKER_MEDIA_BASEFOLDER}/anime:/media/anime #this has to be the same as the one in sonarr
-      - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
+    container_name: animedownloader
+    restart: always
     ports:
-      - 5000:5000
-    #    dns:
-    #      - 8.8.8.8
+      - 5000:5000 # Web UI/API (external mapping)
+    expose:
+      - 5000 # Web UI/API (internal, for reverse proxy or internal access)
     environment:
       - SONARR_URL=http://sonarr:8989
       - API_KEY=${SONARR_API_KEY}
       - TZ=Europe/Rome
       - PUID=1000
       - PGID=1000
-    restart: always
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/animedownloader/data:/src/database
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/animedownloader/connections:/src/script
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/tvseries:/media/tvseries
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/anime:/media/anime
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads:/downloads
     depends_on:
       sonarr:
         condition: service_healthy
+    networks:
+      - netfroz_network
 
   flaresolverr:
-    # DockerHub mirror flaresolverr/flaresolverr:latest
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
+    restart: unless-stopped
+    ports:
+      - ${PORT:-8191}:8191 # API (external mapping)
+    expose:
+      - 8191 # API (internal, for reverse proxy or internal access)
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - LOG_HTML=${LOG_HTML:-false}
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
       - TZ=Europe/London
-    ports:
-      - "${PORT:-8191}:8191"
-    restart: unless-stopped
+    networks:
+      - netfroz_network
 
   jellyfin:
-    container_name: jellyfin
     image: linuxserver/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - 8096:8096 # Web UI (external mapping)
+      - 8920:8920 # HTTPS (external mapping)
+      - 7359:7359/udp # Auto-discovery (external mapping)
+    expose:
+      - 8096 # Web UI (internal, for reverse proxy or internal access)
+      - 8920 # HTTPS (internal, for reverse proxy or internal access)
+      - 7359/udp # Auto-discovery (internal, for internal container communication)
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Rome
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/jellyfin/library:/config
-      - ${DOCKER_MEDIA_BASEFOLDER}:/media
-    ports:
-      - 8096:8096
-      - 8920:8920 #optional
-      - 7359:7359/udp #optional
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/jellyfin/library:/config
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/media
     devices:
-      - dev/dri:/dev/dri
-    restart: unless-stopped
+      - /dev/dri:/dev/dri
+    networks:
+      - netfroz_network
 
   jellyseerr:
-    container_name: jellyseerr
     image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    restart: unless-stopped
+    ports:
+      - 5055:5055 # Web UI (external mapping)
+    expose:
+      - 5055 # Web UI (internal, for reverse proxy or internal access)
     environment:
       - LOG_LEVEL=debug
       - TZ=Europe/Rome
     user: "1000:1000"
-    ports:
-      - 5055:5055
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/jellyseerr/config:/app/config
-    restart: unless-stopped
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/jellyseerr/config:/app/config
+    networks:
+      - netfroz_network
 
   prowlarr:
     image: linuxserver/prowlarr:latest
     container_name: prowlarr
+    restart: unless-stopped
+    ports:
+      - 9696:9696 # Web UI/API (external mapping)
+    expose:
+      - 9696 # Web UI/API (internal, for reverse proxy or internal access)
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/prowlarr:/config
-    ports:
-      - 9696:9696
-    restart: unless-stopped
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/prowlarr:/config
+    networks:
+      - netfroz_network
 
   qbittorrent:
     image: linuxserver/qbittorrent:latest
     container_name: qbittorrent-netfroz
+    restart: always
+    ports:
+      - 8003:8003 # Web UI (external mapping)
+      - 6881:6881 # Torrent (TCP, external mapping)
+      - 6881:6881/udp # Torrent (UDP, external mapping)
+    expose:
+      - 8003 # Web UI (internal, for reverse proxy or internal access)
+      - 6881 # Torrent (TCP, internal, for internal container communication)
+      - 6881/udp # Torrent (UDP, internal, for internal container communication)
     environment:
       - PUID=1000
       - PGID=1000
@@ -98,50 +136,54 @@ services:
       - WEBUI_PORT=8003
       - TORRENTING_PORT=6881
       - DOCKER_MODS=ghcr.io/gabe565/linuxserver-mod-vuetorrent
-      #- TORRENTING_PORT=6883
-      #- TORRENTING_PORT=50505
-      #- DOCKER_MODS=ghcr.io/t-anc/gsp-qbittorent-gluetun-sync-port-mod:main
-      #- GSP_GTN_ADDR=http://localhost:8880
-      #- GSP_QBT_ADDR=http://localhost:8003
-    ports:
-      - 8003:8003
-      - 6881:6881
-      - 6881:6881/udp
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/qbittorrent/config:/config
-      - ${DOCKER_MEDIA_BASEFOLDER}/downloads:/downloads
-    #network_mode: service:gluetun
-    restart: always
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/qbittorrent/config:/config
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads:/downloads
+    networks:
+      - netfroz_network
 
   radarr:
-    container_name: radarr
     image: linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+    ports:
+      - 7878:7878 # Web UI/API (external mapping)
+    expose:
+      - 7878 # Web UI/API (internal, for reverse proxy or internal access)
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Rome
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/radarr:/config
-      - ${DOCKER_MEDIA_BASEFOLDER}:/media
-    ports:
-      - 7878:7878
-    restart: unless-stopped
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/radarr:/config
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/media
+    networks:
+      - netfroz_network
 
   sonarr:
-    container_name: sonarr
     image: linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: unless-stopped
+    ports:
+      - 8989:8989 # Web UI/API (external mapping)
+    expose:
+      - 8989 # Web UI/API (internal, for reverse proxy or internal access)
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Rome
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/sonarr/config:/config
-      - ${DOCKER_MEDIA_BASEFOLDER}:/media
-    ports:
-      - 8989:8989
-    restart: unless-stopped
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/sonarr/config:/config
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/media
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://127.0.0.1:8989"]
       interval: 30s
       timeout: 10s
       retries: 5
+    networks:
+      - netfroz_network
+
+networks:
+  netfroz_network:
+    name: netfroz_network
+    driver: bridge

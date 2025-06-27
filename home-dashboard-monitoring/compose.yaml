@@ -1,55 +1,70 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
-# - ${DOCKER_DATA_BASEFOLDER}
-# - ${DOCKER_MEDIA_BASEFOLDER}
+# Home Dashboard & Monitoring Stack
+# This stack provides tools for home monitoring, dashboard management, and system metrics visualization.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
 
 services:
   dash:
-    container_name: dashdot
     image: mauricenino/dashdot:latest
+    container_name: dashdot
     restart: unless-stopped
     privileged: true
-    environment:
-      DASHDOT_SHOW_HOST: "true"
-      DASHDOT_SHOW_DASH_VERSION: "true"
-      DASHDOT_ENABLE_CPU_TEMPS: "true"
-      DASHDOT_ALWAYS_SHOW_PERCENTAGES: "true"
     ports:
-      - "3002:3001"
+      - 3002:3001 # Web UI (external mapping)
+    expose:
+      - 3001 # Web UI (internal, for reverse proxy or internal access)
+    environment:
+      - DASHDOT_SHOW_HOST=true
+      - DASHDOT_SHOW_DASH_VERSION=true
+      - DASHDOT_ENABLE_CPU_TEMPS=true
+      - DASHDOT_ALWAYS_SHOW_PERCENTAGES=true
     volumes:
       - /:/mnt/host:ro
+    networks:
+      - monitoring_network
 
   dozzle:
-    container_name: dozzle
     image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: always
+    ports:
+      - 8081:8080 # Web UI (external mapping)
+    expose:
+      - 8080 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - 8081:8080
-    restart: always
+    networks:
+      - monitoring_network
 
   glances:
-    #docs https://glances.readthedocs.io/en/latest/docker.html
     image: nicolargo/glances:latest-full
     container_name: glances
-    # network_mode: host
-    ports:
-      - 61208:61208
     restart: always
+    ports:
+      - 61208:61208 # Web UI/API (external mapping)
+    expose:
+      - 61208 # Web UI/API (internal, for reverse proxy or internal access)
     pid: host
     volumes:
       - /etc/os-release:/etc/os-release:ro
       - /home:/fs/home:ro
-      - ${DOCKER_MEDIA_BASEFOLDER}:/fs/media:ro
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/fs/media:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${DOCKER_DATA_BASEFOLDER}/glances/glances.conf:/etc/glances.conf
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/glances/glances.conf:/etc/glances.conf
     environment:
-      - "GLANCES_OPT=-w"
+      - GLANCES_OPT=-w
+    networks:
+      - monitoring_network
 
   homeassistant:
-    container_name: homeassistant
     image: linuxserver/homeassistant:latest
-    #documentation: https://docs.linuxserver.io/images/docker-homeassistant
-    network_mode: host #needed to discover some devices
+    container_name: homeassistant
+    restart: unless-stopped
+    network_mode: host
     environment:
       - PUID=1000
       - PGID=1000
@@ -59,80 +74,103 @@ services:
       - NET_ADMIN
       - NET_RAW
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/homeassistant/config:/config
-      - /run/dbus:/run/dbus:ro #bluetooth (you need to install bluez on host machine)
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homeassistant/config:/config
+      - /run/dbus:/run/dbus:ro
     ports:
-      - 8123:8123
-    restart: unless-stopped
+      - 8123:8123 # Web UI (external mapping)
+    expose:
+      - 8123 # Web UI (internal, for reverse proxy or internal access)
 
   homepage:
-    container_name: homepage
     image: ghcr.io/gethomepage/homepage:latest
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/homepage/config:/app/config # Make sure your local config directory exists
-      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
-    ports:
-      - 3001:3000
+    container_name: homepage
     restart: unless-stopped
+    ports:
+      - 3001:3000 # Web UI (external mapping)
+    expose:
+      - 3000 # Web UI (internal, for reverse proxy or internal access)
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - monitoring_network
 
   homebox:
-    #  image: ghcr.io/sysadminsmedia/homebox:latest
     image: ghcr.io/sysadminsmedia/homebox:latest-rootless
     container_name: homebox
     restart: always
+    ports:
+      - 3100:7745 # Web UI (external mapping)
+    expose:
+      - 7745 # Web UI (internal, for reverse proxy or internal access)
     environment:
       - HBOX_LOG_LEVEL=info
       - HBOX_LOG_FORMAT=text
       - HBOX_WEB_MAX_UPLOAD_SIZE=10
       - HBOX_OPTIONS_ALLOW_REGISTRATION=false
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/homebox:/data
-    ports:
-      - 3100:7745
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homebox:/data
     user: "1000:1000"
+    networks:
+      - monitoring_network
 
   homarr:
-    container_name: homarr
     image: ghcr.io/ajnart/homarr:latest
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/homarr/configs:/app/data/configs
-      - ${DOCKER_DATA_BASEFOLDER}/homarr/icons:/app/public/icons
-      - ${DOCKER_DATA_BASEFOLDER}/homarr/background:/app/public/imgs/background
-      - ${DOCKER_DATA_BASEFOLDER}/homarr/data:/data
-      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-    ports:
-      - 7575:7575
+    container_name: homarr
     restart: unless-stopped
+    ports:
+      - 7575:7575 # Web UI (external mapping)
+    expose:
+      - 7575 # Web UI (internal, for reverse proxy or internal access)
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/configs:/app/data/configs
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/icons:/app/public/icons
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/background:/app/public/imgs/background
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - monitoring_network
 
   netalertx:
+    image: jokobsk/netalertx:latest
     container_name: netalertx
-    # use the below line if you want to test the latest dev image
-    # image: "jokobsk/netalertx-dev:latest"
-    image: "jokobsk/netalertx:latest"
     restart: unless-stopped
-    network_mode: "host"
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/netalertx/config:/app/config
-      - ${DOCKER_DATA_BASEFOLDER}/netalertx/db:/app/db
+    network_mode: host
     environment:
       - TZ=Europe/Rome
       - PORT=20211
       - PUID=1000
       - PGID=1000
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/netalertx/config:/app/config
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/netalertx/db:/app/db
+    ports:
+      - 20211:20211 # Web UI (external mapping)
+    expose:
+      - 20211 # Web UI (internal, for reverse proxy or internal access)
 
   wyl:
-    container_name: watchyourlan
     image: aceberg/watchyourlan:v2
-    network_mode: "host"
+    container_name: watchyourlan
     restart: unless-stopped
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/wyl2:/data/WatchYourLAN
+    network_mode: host
     environment:
-      TZ: Europe/Rome                   # required: needs your TZ for correct time
-      IFACES: "eth0"                    # required: 1 or more interface
-      HOST: "0.0.0.0"                   # optional, default: 0.0.0.0
-      PORT: "8840"                      # optional, default: 8840
-      TIMEOUT: "120"                    # optional, time in seconds, default: 120
-      SHOUTRRR_URL: ""                  # optional, set url to notify
-      THEME: "sand"                     # optional
-      COLOR: "dark"                     # optional
+      - TZ=Europe/Rome
+      - IFACES=eth0
+      - HOST=0.0.0.0
+      - PORT=8840
+      - TIMEOUT=120
+      - SHOUTRRR_URL=
+      - THEME=sand
+      - COLOR=dark
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/wyl2:/data/WatchYourLAN
+    ports:
+      - 8840:8840 # Web UI (external mapping)
+    expose:
+      - 8840 # Web UI (internal, for reverse proxy or internal access)
+
+networks:
+  monitoring_network:
+    name: monitoring_network
+    driver: bridge

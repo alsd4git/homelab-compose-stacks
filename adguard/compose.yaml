@@ -1,4 +1,9 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
+# AdGuard Home Stack
+# This stack provides network-wide ad blocking and DNS filtering.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Required environment variables:
 # - ${DOCKER_DATA_BASEFOLDER}
 
 services:
@@ -7,41 +12,35 @@ services:
     container_name: adguardhome  # Set the container name to 'adguardhome'
     restart: unless-stopped  # Restart the container automatically unless stopped manually
     ports:  # Map container ports to host ports
-      # Expose port 53 on TCP and UDP for DNS queries
-      - "54:53/tcp"
-      - "54:53/udp"
-
-      # Expose port 67 on UDP for DHCP server
-      - "67:67/udp"
-
-      # Expose port 68 on UDP for DHCP client
-      # - "68:68/udp"
-
-      # Expose port 80 on TCP for HTTP web interface
-      - "86:80/tcp"
-
-      # Expose port 443 on TCP and UDP for HTTPS web interface
-      #- "443:443/tcp"
-      #- "443:443/udp"
-
-      # Expose port 3000 on TCP for AdGuard Home's API
-      - "3000:3000/tcp"
-
-      # Expose port 853 on TCP for DNS-over-TLS (DoT)
-      - "853:853/tcp"
-
-      # Expose port 784 on UDP for DNS-over-QUIC (DoQ)
-      - "784:784/udp"
-
-      # Expose port 853 on UDP for DNS-over-DTLS (DoT)
-      - "853:853/udp"
-
-      # Expose port 8853 on UDP for DNS-over-TLS (DoT)
-      - "8853:8853/udp"
-
-      # Expose port 5443 on TCP and UDP for DNSCrypt
-      - "5443:5443/tcp"
-      - "5443:5443/udp"
+      - "54:53/tcp"      # DNS (TCP, external mapping)
+      - "54:53/udp"      # DNS (UDP, external mapping)
+      # - "67:67/udp"      # DHCP server (UDP, external mapping, optional)
+      # - "68:68/udp"    # DHCP client (UDP, external mapping, optional)
+      - "86:80/tcp"      # HTTP web interface (external mapping)
+      # - "443:443/tcp"  # HTTPS web interface (external mapping, optional)
+      # - "443:443/udp"  # HTTPS web interface (UDP, external mapping, optional)
+      - "3000:3000/tcp"  # API - First time setup (external mapping)
+      - "853:853/tcp"    # DNS-over-TLS (DoT, external mapping)
+      - "784:784/udp"    # DNS-over-QUIC (DoQ, external mapping)
+      - "853:853/udp"    # DNS-over-DTLS (DoT, external mapping)
+      - "8853:8853/udp"  # DNS-over-TLS (DoT, external mapping)
+      - "5443:5443/tcp"  # DNSCrypt (TCP, external mapping)
+      - "5443:5443/udp"  # DNSCrypt (UDP, external mapping)
+    expose:
+      - 53/tcp    # DNS (TCP, internal, for reverse proxy or internal access)
+      - 53/udp    # DNS (UDP, internal, for reverse proxy or internal access)
+      - 67/udp    # DHCP server (internal, for reverse proxy or internal access)
+      - 68/udp    # DHCP client (internal, for reverse proxy or internal access)
+      - 80/tcp    # HTTP web interface (internal, for reverse proxy or internal access)
+      - 443/tcp   # HTTPS web interface (internal, for reverse proxy or internal access)
+      - 443/udp   # HTTPS web interface (internal, for reverse proxy or internal access)
+      - 3000/tcp  # API - First time setup (internal, for reverse proxy or internal access)
+      - 853/tcp   # DNS-over-TLS (DoT, internal, for reverse proxy or internal access)
+      - 784/udp   # DNS-over-QUIC (DoQ, internal, for reverse proxy or internal access)
+      - 853/udp   # DNS-over-DTLS (DoT, internal, for reverse proxy or internal access)
+      - 8853/udp  # DNS-over-TLS (DoT, internal, for reverse proxy or internal access)
+      - 5443/tcp  # DNSCrypt (TCP, internal, for reverse proxy or internal access)
+      - 5443/udp  # DNSCrypt (UDP, internal, for reverse proxy or internal access)
     volumes:  # Mount host directories as volumes inside the container
       - ${DOCKER_DATA_BASEFOLDER}/adguard-home/work:/opt/adguardhome/work  # Mount '/my/own/workdir' to '/opt/adguardhome/work'
       - ${DOCKER_DATA_BASEFOLDER}/adguard-home/confdir:/opt/adguardhome/conf  # Mount '/my/own/confdir' to '/opt/adguardhome/conf'

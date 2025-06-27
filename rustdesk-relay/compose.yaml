@@ -1,5 +1,15 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
-# - ${DOCKER_DATA_BASEFOLDER}
+# RustDesk Relay Stack
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base folder for persistent data
+#
+# Note: This stack uses host networking for optimal performance. All required ports are documented below. The long-term plan is to reduce direct port exposure and use reverse proxying where possible, but host networking is required for RustDesk relay.
+#
+# Ports (required for RustDesk relay):
+# - 21115/tcp: HBBS - ID registration
+# - 21116/tcp: HBBS - Relay connections
+# - 21117/tcp: HBBR - NAT traversal
+# - 21118/tcp: HBBS - TCP hole punching
+# - 21119/tcp: HBBR - TCP hole punching
 
 services:
   hbbs:
@@ -7,9 +17,12 @@ services:
     image: rustdesk/rustdesk-server:latest
     command: hbbs
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/RustDesk:/root
+      - ${DOCKER_DATA_BASEFOLDER:-/docker/data}/RustDesk:/root
     network_mode: "host"
-
+    expose:
+      - 21115 # ID registration (tcp)
+      - 21116 # Relay connections (tcp)
+      - 21118 # TCP hole punching (tcp)
     depends_on:
       - hbbr
     restart: unless-stopped
@@ -19,6 +32,9 @@ services:
     image: rustdesk/rustdesk-server:latest
     command: hbbr
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/RustDesk:/root
+      - ${DOCKER_DATA_BASEFOLDER:-/docker/data}/RustDesk:/root
     network_mode: "host"
+    expose:
+      - 21117 # NAT traversal (tcp)
+      - 21119 # TCP hole punching (tcp)
     restart: unless-stopped

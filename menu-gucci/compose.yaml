@@ -1,4 +1,9 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
+# Menu Gucci Stack
+# This stack provides a Telegram bot for menu management and notifications.
+#
+# Note: If the service exposes a web UI or API, mapped and exposed ports should be documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services. If the service is Telegram-bot only, no ports are exposed.
+#
+# Required environment variables:
 # - ${DOCKER_DATA_BASEFOLDER}
 # - ${TELEGRAM_WHITELIST_USERS}
 # - ${TELEGRAM_BOT_TOKEN}
@@ -13,4 +18,5 @@ services:
       - WHITELISTED_USERS=${TELEGRAM_WHITELIST_USERS}
     volumes:
       - ${DOCKER_DATA_BASEFOLDER}/python-menuGucci/log:/app/log
+    # No ports exposed: this is a Telegram bot and does not provide a web UI or API
     restart: always

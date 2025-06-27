@@ -1,66 +1,111 @@
-# Docker Compose Stacks for Portainer
+# Dockerini - Docker Compose Stacks Collection
 
-This GitHub repository contains a collection of Docker Compose files, along with their associated environment files and resources, to simplify the deployment of various services and applications using Portainer. Each Portainer stack has its dedicated folder for easy management and modularity.
+A comprehensive collection of Docker Compose stacks for various services and applications, designed for easy deployment and management using Portainer. **All stacks in this repository are fully standardized and documented.**
 
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [Getting Started](#getting-started)
+- [Available Stacks](#available-stacks)
+- [Standardization Status](#standardization-status)
 - [Folder Structure](#folder-structure)
 - [Usage](#usage)
+- [Documentation](#documentation)
 
 ## Introduction
 
-Portainer is a powerful container management tool that simplifies Docker container deployment. This repository aims to provide a collection of Docker Compose stacks for various services and applications, making it easy to deploy and manage these containers using Portainer.
+Dockerini provides a collection of Docker Compose stacks for various services and applications, making it easy to deploy and manage containers using Portainer. Each stack is carefully standardized with:
+
+- Consistent formatting and structure
+- Fallback values for environment variables
+- Standardized network naming
+- Comprehensive documentation
+- Security best practices
 
 ## Getting Started
 
-To get started, you'll need to have Docker and Portainer installed on your system. If you haven't already set up Portainer, please follow the official [Portainer installation guide](https://www.portainer.io/installation).
+### Prerequisites
 
-Clone this repository to your local machine:
+- Docker installed on your system
+- Portainer installed and configured
+- Basic understanding of Docker and Docker Compose
 
-```bash
-git clone https://github.com/alsd4git/dockerini.git
-```
+### Installation
+
+1. Clone this repository:
+
+   ```bash
+   git clone https://github.com/alsd4git/dockerini.git
+   ```
+
+2. Navigate to the repository:
+
+   ```bash
+   cd dockerini
+   ```
+
+3. Configure your environment variables:
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+## Available Stacks
+
+- [DDNS Stack](ddns/README.md) - Dynamic DNS updater
+- [NPM Stack](npm-reverse-proxy/README.md) - Nginx Proxy Manager
+- [Pi-hole Stack](pihole/README.md) - DNS sinkhole and ad blocker
+- [WG-Easy Stack](wg-easy/README.md) - WireGuard VPN management
+- [Tools Stack](tools/README.md) - Collection of utility tools
+- [Netfroz Stack](netfroz/README.md) - Media management and automation
+- [Home Dashboard & Monitoring Stack](home-dashboard-monitoring/README.md) - System monitoring and dashboards
+- [RustDesk Relay Stack](rustdesk-relay/README.md) - Remote desktop relay
+- [KaraKeep Stack](karakeep/README.md) - Media/bookmark organization
+- [Transmission Stack](transmission/README.md) - Torrent client
+- [Paperless-ngx Stack](paperless-ngx/README.md) - Document management
+- [NPM Plus Stack](npmplus/README.md) - Enhanced Nginx Proxy Manager
+- [Menu Gucci Stack](menu-gucci/README.md) - Service menu Telegram bot
+- [Immich Stack](immich/README.md) - Photo management
+- [AdGuard Stack](adguard/README.md) - DNS ad blocker
+
+## Standardization Status
+
+Each stack follows our standardization guidelines:
+
+- ✅ Consistent formatting
+- ✅ Environment variable fallbacks
+- ✅ Standardized network naming
+- ✅ Comprehensive documentation
+- ✅ Security best practices
+
+For detailed status of each stack, see [recap.md](recap.md).
 
 ## Folder Structure
 
-The repository is organized into folders, with each folder representing a specific Portainer stack. This modular structure helps maintain an organized and clean layout for your Docker Compose files.
+Each stack folder contains:
 
-Here's an example of the folder structure:
-
-```markdown
-- /stack1
-  - compose.yaml
-  - .env
-  - /resources
-    - ... (files and directories specific to this stack)
-- /stack2
-  - compose.yaml
-  - .env
-  - /resources
-    - ... (files and directories specific to this stack)
-- /stack3
-  - compose.yaml
-  - .env
-  - /resources
-    - ... (files and directories specific to this stack)
+```bash
+/stack-name
+├── compose.yaml      # Docker Compose configuration
+├── README.md         # Stack documentation
+├── .env.example      # Example environment variables
+└── /resources        # Additional resources
 ```
-
-Each stack folder should contain the following elements:
-
-- compose.yaml: The Docker Compose file for the specific service or application.
-- .env: An environment file containing necessary configuration settings, such as API keys, passwords, and other environment variables.
-- /resources: A directory for any additional resources or configuration files needed for the stack.
 
 ## Usage
 
-1. Navigate to the specific stack folder you want to deploy.
+1. Choose a stack from the [Available Stacks](#available-stacks) section
+2. Review the stack's README.md for specific requirements
+3. Configure the environment variables
+4. Deploy using Docker Compose:
 
-2. Customize the `.env` file with your specific configuration settings.
+   ```bash
+   docker compose up -d
+   ```
 
-3. Deploy the stack using Docker Compose:
+## Documentation
 
-```bash
-docker-compose up -d
-```
+- [recap.md](recap.md) - Comprehensive service overview
+- [TODO.md](TODO.md) - Project roadmap and tasks
+- Individual stack READMEs for detailed documentation

@@ -1,61 +1,62 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
-# - ${DOCKER_DATA_BASEFOLDER}
-# - ${TELEGRAM_BOT_TOKEN}
-# - ${TELEGRAM_CHAT_ID}
-
-# - ${DYNU_DOMAIN}
-# - ${DYNU_PASSWORD}
-# - ${DYNU_USERNAME}
-
-# - ${DYN6_DOMAIN}
-# - ${DYN6_TOKEN}
-
-# - ${DUCK_HOST}
-# - ${DUCK_TOKEN}
+# DDNS Updater Stack
+# This stack provides a unified solution for updating multiple Dynamic DNS (DDNS) services
+# using qmcgaw/ddns-updater to manage multiple providers simultaneously.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - TELEGRAM_BOT_TOKEN: Telegram bot token for notifications
+# - TELEGRAM_CHAT_ID: Telegram chat ID for notifications
+#
+# Provider-specific variables:
+# - DYNU_DOMAIN, DYNU_USERNAME, DYNU_PASSWORD: Dynu configuration
+# - DYN6_DOMAIN, DYN6_TOKEN: Dynv6 configuration
+# - DUCK_HOST, DUCK_TOKEN: DuckDNS configuration
+#
+# Note: Exposed ports are documented for internal service mapping and future reverse proxy use. The long-term plan is to reduce direct port exposure in favor of reverse proxying.
 
 services:
   ddns-updater:
-    #docs: https://github.com/qdm12/ddns-updater/tree/master/docs
-    image: qmcgaw/ddns-updater
     container_name: ddns-updater
-    #    network_mode: bridge
+    image: qmcgaw/ddns-updater
     dns:
       - 1.1.1.1
     ports:
-      - 8001:8000/tcp
+      - 8001:8000/tcp # Web UI for monitoring and management (external mapping)
+    expose:
+      - 8000 # Internal Web UI port for reverse proxy or internal access
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/ddns-updater:/updater/data
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/ddns-updater:/updater/data
     environment:
-      - CONFIG=
+      CONFIG: |
         {"settings":[
         {"provider":"dynu",      "domain":"${DYNU_DOMAIN}",          "username":"${DYNU_USERNAME}","password":"${DYNU_PASSWORD}",                        "ip_version":"ipv4"},
         {"provider":"dynv6",     "domain":"${DYN6_DOMAIN}",          "token":"${DYN6_TOKEN}",                                                            "ip_version":"ipv4"},
         {"provider":"duckdns",   "domain":"${DUCK_HOST}",            "token":"${DUCK_TOKEN}",                                                            "ip_version":"ipv4"}
         ]}
-      - PERIOD=60m
-      - UPDATE_COOLDOWN_PERIOD=5m
-      - TZ=Europe/Rome
-      - PUBLICIP_FETCHERS=all
-      - PUBLICIP_HTTP_PROVIDERS=all
-      - PUBLICIPV4_HTTP_PROVIDERS=all
-      - PUBLICIP_DNS_PROVIDERS=all
-      - PUBLICIP_DNS_TIMEOUT=3s
-      - HTTP_TIMEOUT=10s
-
-      # Web UI
-      - LISTENING_PORT=8000
-      - ROOT_URL=/
-
-      # Backup
-      - BACKUP_PERIOD=0 # 0 to disable
-      - BACKUP_DIRECTORY=/updater/data
-
-      # Other
-      - LOG_LEVEL=debug
-      - LOG_CALLER=hidden
-      - RESOLVER_ADDRESS=1.1.1.1:53
-      - SHOUTRRR_ADDRESSES=telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=Markdown&preview=false
-
+      PERIOD: 60m
+      UPDATE_COOLDOWN_PERIOD: 5m
+      TZ: Europe/Rome
+      PUBLICIP_FETCHERS: all
+      PUBLICIP_HTTP_PROVIDERS: all
+      PUBLICIPV4_HTTP_PROVIDERS: all
+      PUBLICIP_DNS_PROVIDERS: all
+      PUBLICIP_DNS_TIMEOUT: 3s
+      HTTP_TIMEOUT: 10s
+      LISTENING_PORT: 8000
+      ROOT_URL: /
+      BACKUP_PERIOD: 0
+      BACKUP_DIRECTORY: /updater/data
+      LOG_LEVEL: debug
+      LOG_CALLER: hidden
+      RESOLVER_ADDRESS: 1.1.1.1:53
+      SHOUTRRR_ADDRESSES: telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=Markdown&preview=false
     labels:
-      telegram-notifier.monitor: false # never monitor
-    restart: always
+      telegram-notifier.monitor: false
+    restart: unless-stopped
+    networks:
+      - ddns_network
+
+networks:
+  ddns_network:
+    name: ddns_network
+    driver: bridge

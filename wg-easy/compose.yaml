@@ -1,35 +1,41 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
-# - ${DOCKER_DATA_BASEFOLDER}
-# - ${PASSWORD}
-# - ${PASSWORD_HASH}
-# - ${DDNS}
-# - ${PI-HOLE-IP}
+# WireGuard Easy Stack
+# This stack provides a simple WireGuard VPN solution with web-based management.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - DDNS: Your public domain or IP
+# - PASSWORD_HASH: bcrypt hash of your admin password
+# - LOCAL_DNS: Your DNS IP address
 
 services:
   wireguard:
-    image: ghcr.io/wg-easy/wg-easy:14	
+    image: ghcr.io/wg-easy/wg-easy:14
     container_name: wg-easy
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
     environment:
       - WG_HOST=${DDNS}
-      # - PASSWORD=${PASSWORD}
       - PASSWORD_HASH=${PASSWORD_HASH} #https://github.com/wg-easy/wg-easy/blob/c6dce0f6fb2e28e7e40ddac1498bd67e9bb17cba/How_to_generate_an_bcrypt_hash.md
-      - WG_DEFAULT_DNS=${PI-HOLE-IP} #default DNS for new clients (pointing to pi-hole docker IP)
+      - WG_DEFAULT_DNS=${LOCAL_DNS} #default DNS for new clients
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/wg-easy:/etc/wireguard
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/wg-easy:/etc/wireguard
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
       - net.ipv4.ip_forward=1
     ports:
-      - 51820:51820/udp
-      - 51821:51821/tcp
+      - 51820:51820/udp    # WireGuard VPN (external mapping)
+      - 51821:51821/tcp    # Web interface (external mapping)
+    expose:
+      - 51820/udp # WireGuard VPN (internal, for reverse proxy or internal access)
+      - 51821/tcp # Web interface (internal, for reverse proxy or internal access)
     restart: always
     networks:
-      - pihole-bridge
+      - pihole_network
 
 networks:
-  pihole-bridge:
-    name: pihole-bridge
+  pihole_network:
+    name: pihole_network
     driver: bridge

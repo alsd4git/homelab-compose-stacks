@@ -1,3 +1,14 @@
+# KaraKeep Stack
+# This stack provides a modern bookmarks/media organization and management platform.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base folder for persistent data
+# Optional environment variables:
+# - KARAKEEP_VERSION: Version of KaraKeep to use (default: release)
+# - OPENAI_API_KEY: API key for OpenAI features
+
 #docs https://docs.karakeep.app/Installation/docker
 #migrated from hoarder
 services:
@@ -6,22 +17,21 @@ services:
     container_name: karakeep
     restart: unless-stopped
     volumes:
-      # By default, the data is stored in a docker volume called "data".
-      # If you want to mount a custom directory, change the volume mapping to:
-      # - /path/to/your/directory:/data
       - data:/data
     ports:
-      - 3005:3000
+      - 3005:3000 # Web UI (external mapping)
+    expose:
+      - 3000 # Web UI (internal, for reverse proxy or internal access)
     env_file:
       - stack.env #for portainer
     environment:
       MEILI_ADDR: http://meilisearch:7700
       BROWSER_WEB_URL: http://chrome:9222
-      # OPENAI_API_KEY: ...
-
-      # You almost never want to change the value of the DATA_DIR variable.
-      # If you want to mount a custom directory, change the volume mapping above instead.
-      DATA_DIR: /data # DON'T CHANGE THIS
+      # OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      DATA_DIR: /data
+    depends_on:
+      - chrome
+      - meilisearch
   chrome:
     image: gcr.io/zenika-hub/alpine-chrome:123
     container_name: karakeep-chrome
@@ -33,6 +43,8 @@ services:
       - --remote-debugging-address=0.0.0.0
       - --remote-debugging-port=9222
       - --hide-scrollbars
+    expose:
+      - 9222 # Chrome remote debugging (internal, for reverse proxy or internal access)
   meilisearch:
     image: getmeili/meilisearch:v1.13.3
     container_name: karakeep-meilisearch
@@ -43,6 +55,8 @@ services:
       MEILI_NO_ANALYTICS: "true"
     volumes:
       - meilisearch:/meili_data
+    expose:
+      - 7700 # MeiliSearch API (internal, for reverse proxy or internal access)
 
 volumes:
   meilisearch:

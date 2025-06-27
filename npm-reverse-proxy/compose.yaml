@@ -1,39 +1,58 @@
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
-# - ${DOCKER_DATA_BASEFOLDER}
+# Nginx Proxy Manager Stack
+# This stack provides a reverse proxy solution with optional mTLS support.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+#
+# Optional environment variables (for mTLS):
+# - STEP_CA_NAME: Name of your Certificate Authority
+# - STEP_CA_DNS_NAMES: DNS names for your CA
+# - STEP_CA_PASSWORD: Password for your CA
 
 services:
   app:
-    image: "jc21/nginx-proxy-manager:latest"
     container_name: nginx-proxy-manager
+    image: jc21/nginx-proxy-manager:latest
     restart: unless-stopped
     ports:
-      # These ports are in format <host-port>:<container-port>
-      - "80:80" # Public HTTP Port
-      - "443:443" # Public HTTPS Port
-      - "83:81" # Admin Web Port
+      - 80:80 # Public HTTP Port (external mapping)
+      - 443:443 # Public HTTPS Port (external mapping)
+      - 83:81 # Admin Web Port (external mapping)
+    expose:
+      - 80 # Internal HTTP port for reverse proxy or internal access
+      - 443 # Internal HTTPS port for reverse proxy or internal access
+      - 81 # Internal Admin Web port for reverse proxy or internal access
     environment:
-      DISABLE_IPV6: "true"
+      DISABLE_IPV6: true
       PUID: 1000
       PGID: 1000
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/NPM/data:/data
-      - ${DOCKER_DATA_BASEFOLDER}/NPM/letsencrypt:/etc/letsencrypt
-      - ${DOCKER_DATA_BASEFOLDER}/step/certs/root_ca.crt:/etc/nginx/ssl/homelab/root_ca.crt:ro # Optional, only if you are using a custom CA
-
-    #then, in the advanced tab of the NPM UI, add the following lines to the SSL tab of your proxy host:
-    #
-    # ssl_client_certificate /etc/nginx/ssl/homelab/root_ca.crt;
-    # ssl_verify_client on;
-  # have a look at the following link for more information on how to set up the NPM with a custom CA for mTLS: https://github.com/alsd4git/mtls-cli
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/data:/data
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/letsencrypt:/etc/letsencrypt
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/step/certs/root_ca.crt:/etc/nginx/ssl/homelab/root_ca.crt:ro
+    networks:
+      - npm_network
 
   step-ca:
-    image: smallstep/step-ca
     container_name: step-ca
+    image: smallstep/step-ca
+    restart: unless-stopped
     ports:
-      - "9001:9000"
+      - 9001:9000 # Step CA API (external mapping)
+    expose:
+      - 9000 # Internal Step CA API port for reverse proxy or internal access
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/step:/home/step
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/step:/home/step
     environment:
-      - DOCKER_STEPCA_INIT_NAME=${STEP_CA_NAME}
-      - DOCKER_STEPCA_INIT_DNS_NAMES=${STEP_CA_DNS_NAMES}
-      - DOCKER_STEPCA_INIT_PASSWORD=${STEP_CA_PASSWORD}
+      DOCKER_STEPCA_INIT_NAME: ${STEP_CA_NAME}
+      DOCKER_STEPCA_INIT_DNS_NAMES: ${STEP_CA_DNS_NAMES}
+      DOCKER_STEPCA_INIT_PASSWORD: ${STEP_CA_PASSWORD}
+    networks:
+      - npm_network
+
+networks:
+  npm_network:
+    name: npm_network
+    driver: bridge
