@@ -202,6 +202,13 @@ This document provides a comprehensive overview of all services in the Dockerini
 | AdGuard Home | exposed | 5443/tcp | - | DNSCrypt (TCP, internal, for reverse proxy or internal access) | ✅ Standardized |
 | AdGuard Home | exposed | 5443/udp | - | DNSCrypt (UDP, internal, for reverse proxy or internal access) | ✅ Standardized |
 
+### Beszel Stack
+| Service | Port Type | Internal Port | External Port | Usage | Status |
+|---------|-----------|--------------|---------------|-------|---------|
+| Beszel | mapped | 8090 | 8090 | Web interface (external) | ✅ Standardized |
+| Beszel | exposed | 8090 | - | Web interface (internal, for reverse proxy or internal access) | ✅ Standardized |
+| Beszel Agent | none | - | - | No ports exposed (uses host networking) | ✅ Standardized |
+
 ## TODO Items
 
 ### High Priority

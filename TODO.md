@@ -14,6 +14,7 @@
 - [x] Create comprehensive README for Home Dashboard & Monitoring stack
 - [x] Create comprehensive README for RustDesk Relay stack
 - [x] Create comprehensive README for KaraKeep stack
+- [x] Create comprehensive README for Beszel stack
 - [x] Review and update DDNS stack for port mapping comments, exposed ports, and documentation consistency
 - [x] Review and update NPM stack for step-ca mapped/exposed ports and restart policy consistency
 - [x] Review and update Pi-hole stack for port mapping comments, exposed ports, and documentation consistency
@@ -29,6 +30,7 @@
 - [x] Review and update KaraKeep stack for port mapping comments, exposed ports, and documentation consistency
 - [x] Review and update NPM Plus stack for port mapping comments, exposed ports, and documentation consistency
 - [x] Review and update Immich stack for port mapping comments, exposed ports, and documentation consistency
+- [x] Review and update Beszel stack for port mapping comments, exposed ports, and documentation consistency
 
 ### Standardization
 - [x] Standardize DDNS compose file
@@ -40,6 +42,7 @@
 - [x] Standardize Home Dashboard & Monitoring compose file
 - [x] Standardize RustDesk Relay compose file
 - [x] Standardize KaraKeep compose file
+- [x] Standardize Beszel compose file
 
 ## In Progress
 
@@ -103,4 +106,5 @@
 - NPM Plus Stack
 - Menu Gucci Stack
 - Immich Stack
-- AdGuard Stack 
+- AdGuard Stack
+- Beszel Stack 
