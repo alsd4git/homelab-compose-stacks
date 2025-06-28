@@ -50,11 +50,11 @@ services:
       - 61208 # Web UI/API (internal, for reverse proxy or internal access)
     pid: host
     volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/glances/glances.conf:/etc/glances.conf
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/fs/media:ro
       - /etc/os-release:/etc/os-release:ro
       - /home:/fs/home:ro
-      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/fs/media:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/glances/glances.conf:/etc/glances.conf
     environment:
       - GLANCES_OPT=-w
     networks:

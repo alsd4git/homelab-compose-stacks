@@ -32,11 +32,11 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/animedownloader/data:/src/database
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/animedownloader/connections:/src/script
-      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/tvseries:/media/tvseries
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/animedownloader/data:/src/database
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/anime:/media/anime
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads:/downloads
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/tvseries:/media/tvseries
     depends_on:
       sonarr:
         condition: service_healthy
