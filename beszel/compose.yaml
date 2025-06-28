@@ -1,0 +1,33 @@
+# Beszel Stack
+# This stack provides simple, lightweight server monitoring with Docker stats, historical data, and alerts.
+#
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - BESZEL_SSH_KEY: SSH public key for authentication
+
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+    ports:
+      - 8090:8090  # Web interface (external mapping)
+    expose:
+      - 8090  # Web interface (internal, for reverse proxy or internal access)
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_data:/beszel_data
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_socket:/beszel_socket
+
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_socket:/beszel_socket
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      LISTEN: /beszel_socket/beszel.sock
+      KEY: ${BESZEL_SSH_KEY}
