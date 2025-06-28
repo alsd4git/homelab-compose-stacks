@@ -24,6 +24,7 @@ services:
     container_name: diun
     image: crazymax/diun:latest
     command: serve
+    hostname: Docker-DIUN-Notifier
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/diun/data:/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -38,13 +39,14 @@ services:
       DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT: true
       DIUN_NOTIF_TELEGRAM_TOKEN: ${TELEGRAM_BOT_TOKEN}
       DIUN_NOTIF_TELEGRAM_CHATIDS: ${TELEGRAM_CHAT_ID}
-      DIUN_NOTIF_TELEGRAM_TEMPLATEBODY: |
+      # > (Folded Style): preserve line breaks but removes whitespace
+      DIUN_NOTIF_TELEGRAM_TEMPLATEBODY: >
         DIUN 🐳:
         Docker tag 
         {{ if .Entry.Image.HubLink }}
-          [{{ .Entry.Image }}]({{ .Entry.Image.HubLink }})
+        [{{ .Entry.Image }}]({{ .Entry.Image.HubLink }})
         {{ else }}
-          {{ .Entry.Image }}
+        {{ .Entry.Image }}
         {{ end }} 
         which you subscribed to through {{ .Entry.Provider }} provider
         has been 
@@ -55,13 +57,15 @@ services:
   watchtower:
     container_name: watchtower-notif
     image: containrrr/watchtower:latest
+    hostname: Docker-Watchtower-Notifier
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       TZ: Europe/Rome
       WATCHTOWER_CLEANUP: true
       WATCHTOWER_NOTIFICATION_REPORT: true
-      WATCHTOWER_SCHEDULE: 0 0 13 * * 1,3,5
+      WATCHTOWER_SCHEDULE: 0 0 13 * * 1,3,5 
+      #WATCHTOWER_RUN_ONCE: "true" #per testing, lancia una volta e si chiude
       WATCHTOWER_NOTIFICATION_URL: |
         telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=html&preview=false
       WATCHTOWER_NOTIFICATION_TEMPLATE: |
@@ -70,19 +74,19 @@ services:
             {{len .Scanned}} Scanned, {{len .Updated}} Updated, {{len .Failed}} Failed
 
             {{- range .Updated }}
-              - {{.Name}}: {{.CurrentImageID.ShortID}} updated to {{.LatestImageID.ShortID}} ⬆️
+              - ⬆️ {{.Name}}: {{.CurrentImageID.ShortID}} updated to {{.LatestImageID.ShortID}}
             {{- end -}}
 
             {{- range .Fresh }}
-              - {{.Name}}: {{.State}} 💚
+              - 💚 {{.Name}}: {{.State}}
             {{- end -}}
 
             {{- range .Skipped }}
-              - {{.Name}}: {{.State}}: {{.Error}} ⌛
+              - ⌛ {{.Name}}: {{.State}}: {{.Error}}
             {{- end -}}
 
             {{- range .Failed }}
-              - {{.Name}}: {{.State}}: {{.Error}} ❌
+              - ❌ {{.Name}}: {{.State}}: {{.Error}}
             {{- end -}}
           {{- end -}}
         {{- else -}}
