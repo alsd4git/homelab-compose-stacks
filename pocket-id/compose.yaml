@@ -1,0 +1,32 @@
+# Pocket ID Stack
+#
+# Required environment variables:
+# - ${DOCKER_DATA_BASEFOLDER}
+
+services:
+  pocket-id:
+    image: ghcr.io/pocket-id/pocket-id:v1
+    container_name: pocket-id
+    restart: unless-stopped
+    # this part is important to read variables from inside the container
+    env_file:
+      - stack.env # for portainer
+    expose:
+      - 1411 # web interface
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER}/pocket-id:/app/data
+    # Optional healthcheck
+    healthcheck:
+      test: "curl -f http://localhost:1411/healthz"
+      interval: 1m30s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
+    networks:
+      - npm_network
+
+networks:
+  npm_network: # to expose container to NPM for reverse proxy
+    name: npm_network
+    driver: bridge
+    external: true
