@@ -5,6 +5,10 @@
 #
 # Required environment variables:
 # - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - YOUR_DOMAIN: your domain name (e.g., your-domain.duckdns.org)
+# - TINYAUTH_SECRET: Secret key for TinyAuth
+# - POCKET_ID_CLIENT_ID: Client ID for Pocket ID integration
+# - POCKET_ID_CLIENT_SECRET: Client Secret for Pocket ID integration
 #
 # Optional environment variables (for mTLS):
 # - STEP_CA_NAME: Name of your Certificate Authority
@@ -32,6 +36,27 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/data:/data
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/letsencrypt:/etc/letsencrypt
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/step/certs/root_ca.crt:/etc/nginx/ssl/homelab/root_ca.crt:ro
+    networks:
+      - npm_network
+
+  tinyauth:
+    container_name: tinyauth
+    image: ghcr.io/steveiliop56/tinyauth:v3
+    restart: unless-stopped
+    environment:
+      # https://tinyauth.app/docs/getting-started.html
+      - SECRET=${TINYAUTH_SECRET} # openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 32
+      - APP_URL=https://tinyauth.${YOUR_DOMAIN:-example.com}
+      #- USERS=user:$$2a$$10$$UdLYoJ5lgPsC0RKqYH/jMua7zIn0g9kPqWmhYayJYLaZQ/FTmH2/u # user:password
+
+      #Pocket ID configuration from: https://tinyauth.app/docs/guides/pocket-id
+      - GENERIC_CLIENT_ID=${POCKET_ID_CLIENT_ID}
+      - GENERIC_CLIENT_SECRET=${POCKET_ID_CLIENT_SECRET}
+      - GENERIC_AUTH_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/authorize
+      - GENERIC_TOKEN_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/api/oidc/token
+      - GENERIC_USER_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/api/oidc/userinfo
+      - GENERIC_SCOPES=openid email profile groups
+      - GENERIC_NAME=Pocket ID
     networks:
       - npm_network
 
