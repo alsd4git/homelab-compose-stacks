@@ -114,12 +114,12 @@ services:
     networks:
       - monitoring_network
 
-  homarr:
-    image: ghcr.io/ajnart/homarr:latest
+  homarr-old:
+    image: ghcr.io/ajnart/homarr:0.16.0
     container_name: homarr
     restart: unless-stopped
     ports:
-      - 7575:7575 # Web UI (external mapping)
+      - 7576:7575 # Web UI (external mapping)
     expose:
       - 7575 # Web UI (internal, for reverse proxy or internal access)
     volumes:
@@ -130,6 +130,19 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - monitoring_network
+  homarr-new:
+    container_name: homarr-new
+    image: ghcr.io/homarr-labs/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr_v1/appdata:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=3efb1c8682f32be71f00ebd033c000ee451a84aed3788f38b687ca6ce0c3db2f # <--- can be generated with `openssl rand -hex 32`
+    ports:
+      - 7575:7575 # Web UI (external mapping)
+    expose:
+      - 7575 # Web UI (internal, for reverse proxy or internal access)
 
   netalertx:
     image: jokobsk/netalertx:latest
