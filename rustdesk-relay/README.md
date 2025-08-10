@@ -27,17 +27,14 @@ DOCKER_DATA_BASEFOLDER=/path/to/your/data
 The stack uses host network mode and requires the following ports:
 
 - **HBBS (ID/Relay Server)**:
-  - TCP 21115: ID registration
-  - TCP 21116: Relay connections
-  - TCP 21117: NAT traversal
-  - TCP 21118: TCP hole punching
-  - TCP 21119: TCP hole punching
+  - TCP 21115: used for the NAT type test.
+  - TCP 21116: used for TCP hole punching and connection service.
+  - UDP 21116: used for the ID registration and heartbeat service.
+  - TCP 21118: used to support web clients.
 
 - **HBBR (Relay Server)**:
-  - TCP 21116: Relay connections
-  - TCP 21117: NAT traversal
-  - TCP 21118: TCP hole punching
-  - TCP 21119: TCP hole punching
+  - TCP 21117: used for the Relay services.
+  - TCP 21119: used to support web clients.
 
 ## Usage
 

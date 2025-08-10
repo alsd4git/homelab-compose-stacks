@@ -4,12 +4,14 @@
 #
 # Note: This stack uses host networking for optimal performance. All required ports are documented below. The long-term plan is to reduce direct port exposure and use reverse proxying where possible, but host networking is required for RustDesk relay.
 #
+# docs https://rustdesk.com/docs/en/self-host/rustdesk-server-oss/docker/#requirements
 # Ports (required for RustDesk relay):
-# - 21115/tcp: HBBS - ID registration
-# - 21116/tcp: HBBS - Relay connections
-# - 21117/tcp: HBBR - NAT traversal
-# - 21118/tcp: HBBS - TCP hole punching
-# - 21119/tcp: HBBR - TCP hole punching
+# - 21115/tcp: HBBS - used for the NAT type test.
+# - 21116/tcp: HBBS - used for TCP hole punching and connection service.
+# - 21116/udp: HBBS - used for the ID registration and heartbeat service.
+# - 21117/tcp: HBBR - used for the Relay services.
+# - 21118/tcp: HBBS - used to support web clients.
+# - 21119/tcp: HBBR - used to support web clients.
 
 services:
   hbbs:
@@ -20,9 +22,9 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/docker/data}/RustDesk:/root
     network_mode: "host"
     expose:
-      - 21115 # ID registration (tcp)
-      - 21116 # Relay connections (tcp)
-      - 21118 # TCP hole punching (tcp)
+      - 21115 # NAT type test (tcp)
+      - 21116 # TCP hole punching and connection service (tcp & udp)
+      - 21118 # Web client support (tcp)
     depends_on:
       - hbbr
     restart: unless-stopped
@@ -35,6 +37,6 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/docker/data}/RustDesk:/root
     network_mode: "host"
     expose:
-      - 21117 # NAT traversal (tcp)
-      - 21119 # TCP hole punching (tcp)
+      - 21117 # Relay services (tcp)
+      - 21119 # Web client support (tcp)
     restart: unless-stopped
