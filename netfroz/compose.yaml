@@ -12,7 +12,6 @@
 # - LOG_LEVEL: FlareSolverr log level (default: info)
 # - LOG_HTML: FlareSolverr HTML logging (default: false)
 # - CAPTCHA_SOLVER: FlareSolverr captcha solver (default: none)
-# - PORT: FlareSolverr port (default: 8191)
 
 name: netfroz
 
@@ -21,8 +20,8 @@ services:
     image: ghcr.io/mainkronos/anime_downloader:latest
     container_name: animedownloader
     restart: always
-    ports:
-      - 5000:5000 # Web UI/API (external mapping)
+    # ports:
+    #   - 5000:5000 # Web UI/API (external mapping)
     expose:
       - 5000 # Web UI/API (internal, for reverse proxy or internal access)
     environment:
@@ -42,13 +41,14 @@ services:
         condition: service_healthy
     networks:
       - netfroz_network
+      - npm_network
 
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
     restart: unless-stopped
-    ports:
-      - ${PORT:-8191}:8191 # API (external mapping)
+    # ports:
+    #   - 8191:8191 # API (external mapping)
     expose:
       - 8191 # API (internal, for reverse proxy or internal access)
     environment:
@@ -58,15 +58,16 @@ services:
       - TZ=Europe/London
     networks:
       - netfroz_network
+      - npm_network
 
   jellyfin:
     image: linuxserver/jellyfin:latest
     container_name: jellyfin
     restart: unless-stopped
-    ports:
-      - 8096:8096 # Web UI (external mapping)
-      - 8920:8920 # HTTPS (external mapping)
-      - 7359:7359/udp # Auto-discovery (external mapping)
+    # ports:
+    #   - 8096:8096 # Web UI (external mapping)
+    #   - 8920:8920 # HTTPS (external mapping)
+    #   - 7359:7359/udp # Auto-discovery (external mapping)
     expose:
       - 8096 # Web UI (internal, for reverse proxy or internal access)
       - 8920 # HTTPS (internal, for reverse proxy or internal access)
@@ -82,13 +83,14 @@ services:
       - /dev/dri:/dev/dri
     networks:
       - netfroz_network
+      - npm_network
 
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
     restart: unless-stopped
-    ports:
-      - 5055:5055 # Web UI (external mapping)
+    # ports:
+    #   - 5055:5055 # Web UI (external mapping)
     expose:
       - 5055 # Web UI (internal, for reverse proxy or internal access)
     environment:
@@ -99,6 +101,7 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/jellyseerr/config:/app/config
     networks:
       - netfroz_network
+      - npm_network
 
   prowlarr:
     image: linuxserver/prowlarr:latest
@@ -116,6 +119,7 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/prowlarr:/config
     networks:
       - netfroz_network
+      - npm_network
 
   qbittorrent:
     image: linuxserver/qbittorrent:latest
@@ -141,6 +145,7 @@ services:
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads:/downloads
     networks:
       - netfroz_network
+      - npm_network
 
   radarr:
     image: linuxserver/radarr:latest
@@ -159,6 +164,7 @@ services:
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/media
     networks:
       - netfroz_network
+      - npm_network
 
   sonarr:
     image: linuxserver/sonarr:latest
@@ -182,8 +188,13 @@ services:
       retries: 5
     networks:
       - netfroz_network
+      - npm_network
 
 networks:
   netfroz_network:
     name: netfroz_network
     driver: bridge
+  npm_network: # to expose container to NPM for reverse proxy
+    name: npm_network
+    driver: bridge
+    external: true
