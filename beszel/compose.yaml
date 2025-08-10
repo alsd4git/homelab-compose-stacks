@@ -13,21 +13,31 @@ services:
     container_name: beszel
     restart: unless-stopped
     ports:
-      - 8090:8090  # Web interface (external mapping)
+      - 8090:8090 # Web interface (external mapping)
     expose:
-      - 8090  # Web interface (internal, for reverse proxy or internal access)
+      - 8090 # Web interface (internal, for reverse proxy or internal access)
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_data:/beszel_data
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_socket:/beszel_socket
-
+    networks:
+      - npm_network
   beszel-agent:
     image: henrygd/beszel-agent:latest
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
     volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_agent_data:/var/lib/beszel-agent
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_socket:/beszel_socket
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      # monitor other disks / partitions by mounting a folder in /extra-filesystems
+      # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
     environment:
       LISTEN: /beszel_socket/beszel.sock
       KEY: ${BESZEL_SSH_KEY}
+
+networks:
+  npm_network: # to expose container to NPM for reverse proxy
+    name: npm_network
+    driver: bridge
+    external: true
