@@ -27,7 +27,8 @@ services:
       - AUTO_DELETE_EVERY_N_HOURS=24
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/convertx:/app/data
-
+    networks:
+      - tools_network
   cup:
     image: ghcr.io/sergi0g/cup:latest
     container_name: cup
@@ -42,20 +43,25 @@ services:
     networks:
       - tools_network
 
-  filebrowser:
-    image: filebrowser/filebrowser:s6
-    container_name: filebrowser
-    restart: always
-    ports:
-      - 8085:80 # Web UI (external mapping)
-    expose:
-      - 80 # Web UI (internal, for reverse proxy or internal access)
+  filebrowser-quantum:
+    image: gtstef/filebrowser
+    container_name: filebrowser-quantum
     environment:
-      - PGID=1000
-      - PUID=1000
+      FILEBROWSER_CONFIG: "data/config.yaml"
+      FILEBROWSER_ADMIN_PASSWORD: admin
+      TZ: "Europe/Rome"
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/test:/srv
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/filebrowser/filebrowser.db:/database/filebrowser.db
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/filebrowser-quantum/data:/home/filebrowser/data # mount the data folder you created with the config file.
+      # Advanced: If you plan to run with a different user besides root or filebrowser, you will need to mount a tmp directory.
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/filebrowser-quantum/tmp/:/home/filebrowser/tmp/
+    ports:
+      - "8087:80"
+    expose:
+      - 80 # Web UI (internal, for reverse proxy or internal access)
+    # Optionally run as non-root filebrowser user
+    user: "1000:1000"
+    restart: unless-stopped
     networks:
       - tools_network
 
@@ -73,6 +79,7 @@ services:
       - SYS_RAWIO
     devices:
       - /dev/sda
+      - /dev/sdb
     stdin_open: true
     tty: true
     volumes:
