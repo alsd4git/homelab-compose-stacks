@@ -54,9 +54,10 @@ services:
       telegram-notifier.monitor: false
     restart: unless-stopped
     networks:
-      - ddns_network
+      - npm_network
 
 networks:
-  ddns_network:
-    name: ddns_network
+  npm_network: # to expose container to NPM for reverse proxy
+    name: npm_network
     driver: bridge
+    external: true
