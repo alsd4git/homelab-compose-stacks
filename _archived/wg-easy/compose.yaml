@@ -26,8 +26,8 @@ services:
       - net.ipv4.conf.all.src_valid_mark=1
       - net.ipv4.ip_forward=1
     ports:
-      - 51820:51820/udp    # WireGuard VPN (external mapping)
-      - 51821:51821/tcp    # Web interface (external mapping)
+      - 51820:51820/udp # WireGuard VPN (external mapping)
+      - 51821:51821/tcp # Web interface (external mapping)
     expose:
       - 51820/udp # WireGuard VPN (internal, for reverse proxy or internal access)
       - 51821/tcp # Web interface (internal, for reverse proxy or internal access)

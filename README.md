@@ -63,7 +63,6 @@ Dockerini provides a collection of Docker Compose stacks for various services an
 - [Pi-hole Stack](pihole/README.md) - DNS sinkhole and network ad blocker
 - [RustDesk Relay Stack](rustdesk-relay/README.md) - Remote desktop relay server
 - [Tools Stack](tools/README.md) - Collection of utility services
-- [WG-Easy Stack](wg-easy/README.md) - WireGuard VPN management and UI
 
 ## Standardization Status
 

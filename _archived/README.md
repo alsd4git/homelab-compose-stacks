@@ -13,6 +13,10 @@ This directory contains stacks that have been consolidated into larger infrastru
 - **Reason**: No longer actively used in homelab
 - **Original service**: Telegram bot service menu
 
+### WG-Easy (archived Nov 2025)
+- **Reason**: No longer actively used in homelab
+- **Original service**: WireGuard VPN management UI
+
 ## Stack Consolidation
 
 ### DDNS (archived Nov 2025)
