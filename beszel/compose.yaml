@@ -3,6 +3,13 @@
 #
 # Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
 #
+# Security Warning: Docker Socket Access
+# The beszel-agent service mounts /var/run/docker.sock, which grants full access to the Docker daemon.
+# This is required for container monitoring but poses a security risk in untrusted networks.
+# - Only enable this in trusted internal networks
+# - Consider network_mode: host implications (bypasses Docker network isolation)
+# - See: https://docs.docker.com/engine/security/
+#
 # Required environment variables:
 # - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
 # - BESZEL_SSH_KEY: SSH public key for authentication

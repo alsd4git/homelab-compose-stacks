@@ -19,6 +19,10 @@ This stack provides a comprehensive solution for monitoring Docker containers an
 - **Purpose**: Automatically updates running Docker containers to their latest version
 - **Documentation**: [Official Documentation](https://containrrr.dev/watchtower/)
 
+## Security Considerations
+
+**⚠️ Docker Socket Access**: This stack mounts `/var/run/docker.sock` to monitor Docker container events. This grants the containers access to the Docker daemon, which requires elevated privileges. Only deploy in trusted networks. For more information, see [Docker Security Documentation](https://docs.docker.com/engine/security/).
+
 ## Configuration
 
 1. Create a `.env` file based on `.env.example`

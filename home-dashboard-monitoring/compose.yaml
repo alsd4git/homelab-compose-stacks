@@ -3,9 +3,20 @@
 #
 # Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
 #
+# Security Warning: Docker Socket & Privileged Access
+# Several services in this stack require elevated privileges:
+# - dashdot: runs as privileged=true (full host access) for system metrics
+# - homeassistant: runs as privileged=true and network_mode=host (required for Bluetooth)
+# - dozzle, glances, homarr-new, homepage: mount /var/run/docker.sock (Docker daemon access)
+# These are necessary for monitoring functionality but should only be used in trusted networks.
+# See: https://docs.docker.com/engine/security/
+#
 # Required environment variables:
 # - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
 # - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
+#
+# Optional environment variables:
+# - HOMARR_SECRET_ENCRYPTION_KEY: Secret key for Homarr (generate with: openssl rand -hex 32)
 
 services:
   dash:
@@ -37,6 +48,9 @@ services:
       - 8080 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOZZLE_ENABLE_ACTIONS=true
+      - DOZZLE_ENABLE_SHELL=true
     networks:
       - monitoring_network
 
@@ -65,17 +79,18 @@ services:
     container_name: homeassistant
     restart: unless-stopped
     network_mode: host
+    privileged: true  # Required for Bluetooth
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Rome
       - DOCKER_MODS=linuxserver/mods:homeassistant-hacs
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
+    # cap_add: #cap_add is not needed when using privileged: true
+    #   - NET_ADMIN
+    #   - NET_RAW
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homeassistant/config:/config
-      - /run/dbus:/run/dbus:ro
+      - /run/dbus:/run/dbus:ro # Required for Bluetooth, you also need Bluez on the host
     ports:
       - 8123:8123 # Web UI (external mapping)
     expose:
@@ -114,22 +129,6 @@ services:
     networks:
       - monitoring_network
 
-  homarr-old:
-    image: ghcr.io/ajnart/homarr:0.16.0
-    container_name: homarr
-    restart: unless-stopped
-    ports:
-      - 7576:7575 # Web UI (external mapping)
-    expose:
-      - 7575 # Web UI (internal, for reverse proxy or internal access)
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/configs:/app/data/configs
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/icons:/app/public/icons
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/background:/app/public/imgs/background
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - monitoring_network
   homarr-new:
     container_name: homarr-new
     image: ghcr.io/homarr-labs/homarr:latest
@@ -138,11 +137,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr_v1/appdata:/appdata
     environment:
-      - SECRET_ENCRYPTION_KEY=3efb1c8682f32be71f00ebd033c000ee451a84aed3788f38b687ca6ce0c3db2f # <--- can be generated with `openssl rand -hex 32`
+      - SECRET_ENCRYPTION_KEY=${HOMARR_SECRET_ENCRYPTION_KEY}
     ports:
       - 7575:7575 # Web UI (external mapping)
     expose:
       - 7575 # Web UI (internal, for reverse proxy or internal access)
+    networks:
+      - monitoring_network
 
   netalertx:
     image: jokobsk/netalertx:latest

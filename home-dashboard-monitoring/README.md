@@ -189,12 +189,32 @@ DOCKER_MEDIA_BASEFOLDER=/path/to/media
 
 Most services use a bridge network for internal communication. However, some services (Home Assistant, NetAlertX, WatchYourLAN) require host network mode for proper device discovery and monitoring.
 
-## Security Notes
+## Security Considerations
 
-1. **Network Access**: Some services require host network mode for proper functionality
-2. **Authentication**: Enable authentication on all services
-3. **File Permissions**: Ensure proper permissions for mounted volumes
-4. **Updates**: Keep all services updated to the latest versions
+**⚠️ Privileged Access**:
+- **Dashdot** (`privileged: true`): Full host access for system metrics
+- **Home Assistant** (`privileged: true` + `network_mode: host`): Required for Bluetooth support
+
+**⚠️ Docker Socket Access**: The following services mount `/var/run/docker.sock`:
+- **Dozzle**: Docker container log viewing
+- **Glances**: System monitoring with Docker integration
+- **Homepage**: Service status monitoring with Docker integration
+- **Homarr**: Dashboard with Docker integration
+
+These mounts grant access to the Docker daemon, which requires elevated privileges. Only deploy in trusted networks. See [Docker Security Documentation](https://docs.docker.com/engine/security/).
+
+**⚠️ Host Network Mode**: Services using `network_mode: host`:
+- **Home Assistant**: Required for Bluetooth and device discovery
+- **NetAlertX**: Required for network monitoring
+- **WatchYourLAN**: Required for network scanning
+
+**Best Practices**:
+1. Only deploy in trusted networks
+2. Enable authentication on all services
+3. Ensure proper file permissions for mounted volumes
+4. Keep all services updated to the latest versions
+5. Use a reverse proxy for external access
+6. Monitor container logs for suspicious activity
 
 ## Troubleshooting
 
