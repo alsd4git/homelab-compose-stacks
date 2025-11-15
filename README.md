@@ -78,13 +78,6 @@ Each stack follows our standardization guidelines:
 - ✅ Comprehensive documentation
 - ✅ Security best practices
 
-## Image Versioning Strategy
-
-This repository uses a **mixed versioning approach**:
-
-- **64% Latest Tags** (34/53 images): Used for non-critical services that benefit from automated updates (media servers, dashboards, development tools)
-- **36% Pinned Versions** (19/53 images): Used for critical infrastructure (databases, DNS, reverse proxies, certificate authorities)
-
 ### Recommended Practices
 
 1. **Critical Services** (pin specific versions):
@@ -100,7 +93,7 @@ This repository uses a **mixed versioning approach**:
    - Automation services (Sonarr, Radarr)
 
 3. **Update Strategy**:
-   - Enable [Watchtower](docker-telegram-notifications/README.md) for automatic updates of latest-tagged services
+    - Enable [Watchtower](automation/README.md) for automatic updates of latest-tagged services
    - Pin versions for critical infrastructure and manually test updates
    - Use a reverse proxy and monitoring to catch issues quickly
 
@@ -122,7 +115,7 @@ Used for services that can tolerate manual stops:
 
 Used for critical background services that must stay running:
 
-- **Automation services**: [Watchtower](docker-telegram-notifications/README.md) (automatic updates), DIUN (image monitoring)
+- **Automation services**: [Watchtower](automation/README.md) (automatic updates), DIUN (image monitoring)
 - **Notification services**: Telegram notifiers and alert delivery
 - **Core infrastructure**: Services critical for other containers to function
 - **Monitoring agents**: Services providing essential observability

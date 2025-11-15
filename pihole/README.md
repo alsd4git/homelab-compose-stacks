@@ -147,6 +147,6 @@ dhcp-range=192.168.1.100,192.168.1.200,12h
 - [Pi-hole Documentation](https://docs.pi-hole.net/)
 - [dnsmasq Documentation](https://thekelleys.org.uk/dnsmasq/docs/dnsmasq-man.html)
 - [Pi-hole GitHub Repository](https://github.com/pi-hole/docker-pi-hole/)
-
-
-TODO: add sections about: https://github.com/anudeepND/whitelist -- https://v.firebog.net/ -- https://github.com/WaLLy3K/wally3k.github.io
+- [Blocklist Collections](https://github.com/anudeepND/whitelist)
+- [FireBog Blocklists](https://v.firebog.net/)
+- [WaLLy3K Blocklist Repository](https://github.com/WaLLy3K/wally3k.github.io)

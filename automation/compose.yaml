@@ -1,5 +1,6 @@
-# Docker Compose stack for Telegram notifications
-# This stack combines three services:
+# Automation Stack
+# This stack provides Docker event automation, image monitoring, and container updates.
+# Services:
 # 1. docker-telegram-notifier: Sends Docker events to Telegram
 # 2. diun: Monitors Docker images for updates
 # 3. watchtower: Automatically updates containers
@@ -15,6 +16,8 @@
 # - TELEGRAM_CHAT_ID: Telegram chat ID for notifications
 # - TELEGRAM_BOT_TOKEN: Telegram bot token for sending messages
 # - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+
+name: automation
 
 services:
   diun:

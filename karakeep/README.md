@@ -56,9 +56,9 @@ The stack uses the following named volumes for data persistence:
    - Set `NEXTAUTH_URL` to your public URL if using a reverse proxy
 
 2. **Start the Stack**:
-   ```bash
-   docker-compose up -d
-   ```
+    ```bash
+    docker compose up -d
+    ```
 
 3. **Access Web Interface**:
    - Navigate to `http://your-server:3005`
@@ -132,16 +132,16 @@ The stack uses the following named volumes for data persistence:
 ### Verification Steps
 
 1. Check container status:
-   ```bash
-   docker-compose ps
-   ```
+    ```bash
+    docker compose ps
+    ```
 
 2. View service logs:
-   ```bash
-   docker-compose logs web
-   docker-compose logs chrome
-   docker-compose logs meilisearch
-   ```
+    ```bash
+    docker compose logs web
+    docker compose logs chrome
+    docker compose logs meilisearch
+    ```
 
 3. Test web interface accessibility:
    ```bash

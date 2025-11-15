@@ -11,6 +11,8 @@
 # - Uncomment DHCP ports if using Pi-hole as DHCP server
 # - Uncomment capabilities if using DHCP or NTP
 
+name: pihole
+
 services:
   pihole:
     container_name: pihole

@@ -1,34 +1,20 @@
-# Docker Compose file for running paperless from the docker container registry.
-# This file contains everything paperless needs to run.
-# Paperless supports amd64, arm and arm64 hardware.
-# All compose files of paperless configure paperless in the following way:
+# Paperless-ngx Stack
+# This stack provides a document management system with OCR, full-text search, and organization capabilities.
 #
-# - Paperless is (re)started on system boot, if it was running before shutdown.
-# - Docker volumes for storing data are managed by Docker.
-# - Folders for importing and exporting files are created in the same directory
-#   as this file and mounted to the correct folders inside the container.
-# - Paperless listens on port 8000.
+# Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
 #
-# SQLite is used as the database. The SQLite file is stored in the data volume.
+# Features:
+# - Apache Tika and Gotenberg for document conversion
+# - SQLite database with persistent storage
+# - OCR and full-text search capabilities
+# - Import/export folder support
 #
-# In addition to that, this Docker Compose file adds the following optional
-# configurations:
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
 #
-# - Apache Tika and Gotenberg servers are started with paperless and paperless
-#   is configured to use these services. These provide support for consuming
-#   Office documents (Word, Excel, Power Point and their LibreOffice counter-
-#   parts.
-#
-# To install and update paperless with this file, do the following:
-#
-# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
-#   and '.env' into a folder.
-# - Run 'docker compose pull'.
-# - Run 'docker compose run --rm webserver createsuperuser' to create a user.
-# - Run 'docker compose up -d'.
-#
-# For more extensive installation and update instructions, refer to the
-# documentation.
+# Official documentation:
+# https://docs.paperless-ngx.com/
+
 name: paperless-ngx
 
 services:
@@ -45,6 +31,8 @@ services:
       retries: 3
     volumes:
       - redisdata:/data
+    networks:
+      - paperless_network
 
   gotenberg:
     image: docker.io/gotenberg/gotenberg:8.7
@@ -52,13 +40,14 @@ services:
     restart: unless-stopped
     expose:
       - 3000 # Internal Gotenberg port for paperless
-
     # The gotenberg chromium route is used to convert .eml files. We do not
     # want to allow external content like tracking pixels or even javascript.
     command:
       - "gotenberg"
       - "--chromium-disable-javascript=true"
       - "--chromium-allow-list=file:///tmp/.*"
+    networks:
+      - paperless_network
 
   tika:
     image: docker.io/apache/tika:latest
@@ -66,22 +55,24 @@ services:
     restart: unless-stopped
     expose:
       - 9998 # Internal Tika port for paperless
+    networks:
+      - paperless_network
 
   webserver:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
     container_name: paperless-ngx
     user: "1000:1000"
-    #https://github.com/paperless-ngx/paperless-ngx/blob/main/docker/compose/docker-compose.sqlite-tika.yml
-    #https://docs.paperless-ngx.com/setup/#installation
+    # https://github.com/paperless-ngx/paperless-ngx/blob/main/docker/compose/docker-compose.sqlite-tika.yml
+    # https://docs.paperless-ngx.com/setup/#installation
     restart: unless-stopped
     depends_on:
       - broker
       - gotenberg
       - tika
     ports:
-      - "8002:8000"
+      - 8002:8000 # Web UI (external mapping)
     expose:
-      - 8000 # Internal webserver port for reverse proxy or internal access
+      - 8000 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - data:/usr/src/paperless/data
       - media:/usr/src/paperless/media
@@ -92,6 +83,18 @@ services:
       PAPERLESS_TIKA_ENABLED: 1
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
       PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+    networks:
+      - paperless_network
+      - npm_network
+
+networks:
+  paperless_network:
+    name: paperless_network
+    driver: bridge
+  npm_network:
+    name: npm_network
+    driver: bridge
+    external: true
 
 volumes:
   data:

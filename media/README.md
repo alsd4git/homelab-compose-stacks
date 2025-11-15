@@ -1,10 +1,11 @@
-# Netfroz Stack
+# Media Stack
 
 A comprehensive media management and automation stack for your homelab environment. This stack includes tools for media organization, downloading, and streaming.
 
 ## Features
 
 ### Media Management
+
 - **Sonarr**: TV show management and automation
 - **Radarr**: Movie management and automation
 - **Prowlarr**: Indexer management for Sonarr and Radarr
@@ -12,6 +13,7 @@ A comprehensive media management and automation stack for your homelab environme
 - **Jellyfin**: Media streaming server
 
 ### Download Management
+
 - **qBittorrent**: Torrent client with Vuetorrent UI
 - **FlareSolverr**: Cloudflare bypass solution
 - **Anime Downloader**: Automated anime downloading and management
@@ -19,7 +21,9 @@ A comprehensive media management and automation stack for your homelab environme
 ## Configuration
 
 ### Required Environment Variables
+
 Create a `.env` file with the following variables:
+
 ```env
 DOCKER_DATA_BASEFOLDER=/path/to/data
 DOCKER_MEDIA_BASEFOLDER=/path/to/media
@@ -27,6 +31,7 @@ SONARR_API_KEY=your_sonarr_api_key
 ```
 
 ### Optional Environment Variables
+
 ```env
 LOG_LEVEL=info                    # FlareSolverr log level
 LOG_HTML=false                    # FlareSolverr HTML logging
@@ -37,6 +42,7 @@ PORT=8191                        # FlareSolverr port
 ## Services
 
 ### Sonarr
+
 - **Port**: 8989
 - **Features**:
   - TV show management
@@ -46,6 +52,7 @@ PORT=8191                        # FlareSolverr port
 - **Health Check**: Enabled
 
 ### Radarr
+
 - **Port**: 7878
 - **Features**:
   - Movie management
@@ -54,6 +61,7 @@ PORT=8191                        # FlareSolverr port
   - Custom naming formats
 
 ### Prowlarr
+
 - **Port**: 9696
 - **Features**:
   - Indexer management
@@ -61,7 +69,8 @@ PORT=8191                        # FlareSolverr port
   - Automatic indexer synchronization
 
 ### Jellyfin
-- **Ports**: 
+
+- **Ports**:
   - 8096 (Web UI)
   - 8920 (HTTPS)
   - 7359/UDP (Auto-discovery)
@@ -72,6 +81,7 @@ PORT=8191                        # FlareSolverr port
   - Multiple client support
 
 ### Jellyseerr
+
 - **Port**: 5055
 - **Features**:
   - Media requests
@@ -80,6 +90,7 @@ PORT=8191                        # FlareSolverr port
   - Request approval workflow
 
 ### qBittorrent
+
 - **Ports**:
   - 8003 (Web UI)
   - 6881 (Torrent)
@@ -90,6 +101,7 @@ PORT=8191                        # FlareSolverr port
   - Bandwidth control
 
 ### FlareSolverr
+
 - **Port**: 8191
 - **Features**:
   - Cloudflare bypass
@@ -98,6 +110,7 @@ PORT=8191                        # FlareSolverr port
   - Configurable logging
 
 ### Anime Downloader
+
 - **Port**: 5000
 - **Features**:
   - Automated anime downloading
@@ -145,6 +158,7 @@ PORT=8191                        # FlareSolverr port
 ## Usage
 
 1. **Initial Setup**:
+
    ```bash
    # Create required directories
    mkdir -p ${DOCKER_DATA_BASEFOLDER}/{sonarr,radarr,prowlarr,jellyfin,jellyseerr,qbittorrent,animedownloader}
@@ -152,6 +166,7 @@ PORT=8191                        # FlareSolverr port
    ```
 
 2. **Start the Stack**:
+
    ```bash
    docker compose up -d
    ```
@@ -202,4 +217,4 @@ All services are connected through a bridge network for internal communication. 
 - [Jellyfin Documentation](https://jellyfin.org/docs)
 - [qBittorrent Documentation](https://github.com/qbittorrent/qBittorrent/wiki)
 - [FlareSolverr Documentation](https://github.com/FlareSolverr/FlareSolverr)
-- [Anime Downloader Documentation](https://github.com/mainkronos/anime_downloader) 
+- [Anime Downloader Documentation](https://github.com/mainkronos/anime_downloader)

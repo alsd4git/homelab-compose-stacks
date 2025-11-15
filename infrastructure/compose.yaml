@@ -29,6 +29,8 @@
 # - STEP_CA_DNS_NAMES: DNS names for your CA
 # - STEP_CA_PASSWORD: Password for your CA
 
+name: infrastructure
+
 services:
   ddns-updater:
     container_name: ddns-updater

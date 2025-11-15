@@ -1,4 +1,4 @@
-# Tools Stack
+# Utilities Stack
 # This stack provides file management, document processing, and utility services for your homelab.
 #
 # Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
@@ -17,6 +17,8 @@
 # - TELEGRAM_API_ID: Telegram API ID for telegram-files
 # - TELEGRAM_API_HASH: Telegram API hash for telegram-files
 # - FILEBROWSER_ADMIN_PASSWORD: Admin password for FileBrowser (default: admin)
+
+name: utilities
 
 services:
   convertx:

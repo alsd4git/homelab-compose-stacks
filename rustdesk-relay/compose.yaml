@@ -1,10 +1,15 @@
 # RustDesk Relay Stack
+# This stack provides a self-hosted RustDesk relay server for remote desktop connections.
+#
+# Note: This stack uses host networking for optimal performance. All required ports are exposed directly on the host.
+# The long-term plan is to reduce direct port exposure and use reverse proxying where possible, but host networking
+# is required for RustDesk relay to function correctly.
+#
 # Required environment variables:
-# - DOCKER_DATA_BASEFOLDER: Base folder for persistent data
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
 #
-# Note: This stack uses host networking for optimal performance. All required ports are documented below. The long-term plan is to reduce direct port exposure and use reverse proxying where possible, but host networking is required for RustDesk relay.
-#
-# docs https://rustdesk.com/docs/en/self-host/rustdesk-server-oss/docker/#requirements
+# Official documentation:
+# https://rustdesk.com/docs/en/self-host/rustdesk-server-oss/docker/#requirements
 # Ports (required for RustDesk relay):
 # - 21115/tcp: HBBS - used for the NAT type test.
 # - 21116/tcp: HBBS - used for TCP hole punching and connection service.
@@ -12,6 +17,8 @@
 # - 21117/tcp: HBBR - used for the Relay services.
 # - 21118/tcp: HBBS - used to support web clients.
 # - 21119/tcp: HBBR - used to support web clients.
+
+name: rustdesk-relay
 
 services:
   hbbs:

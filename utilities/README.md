@@ -1,6 +1,6 @@
-# Tools Stack
+# Utilities Stack
 
-This stack provides a collection of useful tools and utilities for your homelab environment.
+File management, document processing, and utility services for your homelab. This stack provides tools for file browsing, document conversion, and format transformation.
 
 ## Included Tools
 

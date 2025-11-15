@@ -1,6 +1,6 @@
-# Home Dashboard & Monitoring Stack
+# Monitoring Stack
 
-A comprehensive stack for home monitoring, dashboard management, and system metrics visualization. This stack provides tools for monitoring system resources, managing home automation, and creating customizable dashboards.
+System monitoring, observability, and dashboarding for your homelab. This stack provides real-time metrics, log viewing, network monitoring, and customizable dashboards for service discovery and management.
 
 ## Features
 
@@ -192,10 +192,12 @@ Most services use a bridge network for internal communication. However, some ser
 ## Security Considerations
 
 **⚠️ Privileged Access**:
+
 - **Dashdot** (`privileged: true`): Full host access for system metrics
 - **Home Assistant** (`privileged: true` + `network_mode: host`): Required for Bluetooth support
 
 **⚠️ Docker Socket Access**: The following services mount `/var/run/docker.sock`:
+
 - **Dozzle**: Docker container log viewing
 - **Glances**: System monitoring with Docker integration
 - **Homepage**: Service status monitoring with Docker integration
@@ -204,11 +206,13 @@ Most services use a bridge network for internal communication. However, some ser
 These mounts grant access to the Docker daemon, which requires elevated privileges. Only deploy in trusted networks. See [Docker Security Documentation](https://docs.docker.com/engine/security/).
 
 **⚠️ Host Network Mode**: Services using `network_mode: host`:
+
 - **Home Assistant**: Required for Bluetooth and device discovery
 - **NetAlertX**: Required for network monitoring
 - **WatchYourLAN**: Required for network scanning
 
 **Best Practices**:
+
 1. Only deploy in trusted networks
 2. Enable authentication on all services
 3. Ensure proper file permissions for mounted volumes

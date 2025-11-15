@@ -1,5 +1,5 @@
-# Netfroz Stack
-# This stack provides a comprehensive media management and automation solution.
+# Media Stack
+# This stack provides media servers, media downloaders, and automation services.
 #
 # Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
 #
@@ -13,7 +13,7 @@
 # - LOG_HTML: FlareSolverr HTML logging (default: false)
 # - CAPTCHA_SOLVER: FlareSolverr captcha solver (default: none)
 
-name: netfroz
+name: media
 
 services:
   animedownloader:
@@ -41,7 +41,7 @@ services:
       sonarr:
         condition: service_healthy
     networks:
-      - netfroz_network
+      - media_network
       - npm_network
 
   flaresolverr:
@@ -59,7 +59,7 @@ services:
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
       - TZ=Europe/London
     networks:
-      - netfroz_network
+      - media_network
       - npm_network
 
   jellyfin:
@@ -85,7 +85,7 @@ services:
     devices:
       - /dev/dri:/dev/dri
     networks:
-      - netfroz_network
+      - media_network
       - npm_network
 
   jellyseerr:
@@ -104,7 +104,7 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/jellyseerr/config:/app/config
     networks:
-      - netfroz_network
+      - media_network
       - npm_network
 
   prowlarr:
@@ -122,13 +122,13 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/prowlarr:/config
     networks:
-      - netfroz_network
+      - media_network
       - npm_network
 
   qbittorrent:
     image: linuxserver/qbittorrent:latest
-    container_name: qbittorrent-netfroz
-    restart: always
+    container_name: qbittorrent
+    restart: unless-stopped
     ports:
       - 8003:8003 # Web UI (external mapping)
       - 6881:6881 # Torrent (TCP, external mapping)
@@ -148,7 +148,7 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/qbittorrent/config:/config
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads:/downloads
     networks:
-      - netfroz_network
+      - media_network
       - npm_network
 
   radarr:
@@ -167,7 +167,7 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/radarr:/config
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/media
     networks:
-      - netfroz_network
+      - media_network
       - npm_network
 
   sonarr:
@@ -191,12 +191,12 @@ services:
       timeout: 10s
       retries: 5
     networks:
-      - netfroz_network
+      - media_network
       - npm_network
 
 networks:
-  netfroz_network:
-    name: netfroz_network
+  media_network:
+    name: media_network
     driver: bridge
   npm_network: # to expose container to NPM for reverse proxy
     name: npm_network

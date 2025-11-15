@@ -1,6 +1,6 @@
-# Docker Telegram Notifications Stack
+# Automation Stack
 
-This stack provides a comprehensive solution for monitoring Docker containers and receiving notifications via Telegram. It combines three powerful tools:
+A comprehensive automation and monitoring solution for Docker. This stack provides Docker event notifications, image monitoring, and automatic container updates through Telegram.
 
 ## Components
 

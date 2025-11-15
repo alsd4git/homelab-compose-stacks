@@ -5,12 +5,16 @@
 #
 # Required environment variables:
 # - DOCKER_DATA_BASEFOLDER: Base folder for persistent data
+#
 # Optional environment variables:
 # - KARAKEEP_VERSION: Version of KaraKeep to use (default: release)
 # - OPENAI_API_KEY: API key for OpenAI features
 
-#docs https://docs.karakeep.app/Installation/docker
-#migrated from hoarder
+# docs https://docs.karakeep.app/Installation/docker
+# migrated from hoarder
+
+name: karakeep
+
 services:
   chrome:
     image: gcr.io/zenika-hub/alpine-chrome:123
@@ -33,7 +37,7 @@ services:
     container_name: karakeep-meilisearch
     restart: unless-stopped
     env_file:
-      - stack.env #for portainer
+      - stack.env # for portainer
     environment:
       MEILI_NO_ANALYTICS: "true"
     volumes:
@@ -54,7 +58,7 @@ services:
     expose:
       - 3000 # Web UI (internal, for reverse proxy or internal access)
     env_file:
-      - stack.env #for portainer
+      - stack.env # for portainer
     environment:
       MEILI_ADDR: http://meilisearch:7700
       BROWSER_WEB_URL: http://chrome:9222
@@ -77,5 +81,5 @@ networks:
     external: true
 
 volumes:
-   meilisearch:
-   data:
+  meilisearch:
+  data:

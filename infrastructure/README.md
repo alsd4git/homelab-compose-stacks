@@ -1,6 +1,6 @@
-# Nginx Proxy Manager Stack
+# Infrastructure Stack
 
-This stack provides a reverse proxy solution using [Nginx Proxy Manager](https://nginxproxymanager.com/) with optional mTLS support through [Step CA](https://smallstep.com/docs/step-ca).
+Core infrastructure services for your homelab including reverse proxy, DNS updates, and authentication. This stack provides the foundation for managing external access and identity across your services.
 
 ## Features
 

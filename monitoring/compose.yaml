@@ -1,5 +1,5 @@
-# Home Dashboard & Monitoring Stack
-# This stack provides tools for home monitoring, dashboard management, system metrics visualization, and server monitoring.
+# Monitoring Stack
+# This stack provides system monitoring, dashboards, and observability tools.
 #
 # Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
 #
@@ -22,6 +22,8 @@
 # Optional environment variables:
 # - HOMARR_SECRET_ENCRYPTION_KEY: Secret key for Homarr (generate with: openssl rand -hex 32)
 # - SPEEDTEST_TRACKER_APP_KEY: App key for Speedtest Tracker (generate with: openssl rand -base64 32)
+
+name: monitoring
 
 services:
   beszel:
@@ -133,24 +135,10 @@ services:
     expose:
       - 8123 # Web UI (internal, for reverse proxy or internal access)
 
-  homepage:
-    image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
-    restart: unless-stopped
-    ports:
-      - 3001:3000 # Web UI (external mapping)
-    expose:
-      - 3000 # Web UI (internal, for reverse proxy or internal access)
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homepage/config:/app/config
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - monitoring_network
-
   homebox:
     image: ghcr.io/sysadminsmedia/homebox:latest-rootless
     container_name: homebox
-    restart: always
+    restart: unless-stopped
     ports:
       - 3100:7745 # Web UI (external mapping)
     expose:
@@ -166,13 +154,13 @@ services:
     networks:
       - monitoring_network
 
-  homarr-new:
-    container_name: homarr-new
+  homarr:
+    container_name: homarr
     image: ghcr.io/homarr-labs/homarr:latest
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr_v1/appdata:/appdata
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/appdata:/appdata
     environment:
       - SECRET_ENCRYPTION_KEY=${HOMARR_SECRET_ENCRYPTION_KEY}
     ports:
@@ -214,7 +202,6 @@ services:
       - SYS_RAWIO
     devices:
       - /dev/sda
-      - /dev/sdb
     stdin_open: true
     tty: true
     volumes:
@@ -236,7 +223,7 @@ services:
       - PUID=1000
       - PGID=1000
       - DB_CONNECTION=sqlite
-      - APP_KEY=${SPEEDTEST_TRACKER_APP_KEY:-base64:xz6aCq7elg5Di1WCbBfCGdnXjtf9wQV3Ly3tERwQaGI=}
+      - APP_KEY=${SPEEDTEST_TRACKER_APP_KEY}
       - APP_TIMEZONE=Europe/Rome
       - DISPLAY_TIMEZONE=Europe/Rome
       - SPEEDTEST_SCHEDULE=*/30 * * * *
