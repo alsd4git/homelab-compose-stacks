@@ -1,11 +1,18 @@
-# Nginx Proxy Manager Stack
-# This stack provides a reverse proxy solution with optional authentication (TinyAuth), mTLS support, and identity management (Pocket ID).
+# Infrastructure Stack (Nginx Proxy Manager, DDNS, Pocket ID, Authentication)
+# This stack provides core infrastructure: reverse proxy, DNS updates, identity management, and authentication.
 #
 # Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
 #
 # Required environment variables:
 # - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
 # - YOUR_DOMAIN: your domain name (e.g., your-domain.duckdns.org)
+#
+# Optional environment variables (DDNS Updater):
+# - TELEGRAM_BOT_TOKEN: Telegram bot token for DDNS notifications
+# - TELEGRAM_CHAT_ID: Telegram chat ID for DDNS notifications
+# - DYNU_DOMAIN, DYNU_USERNAME, DYNU_PASSWORD: Dynu DNS provider configuration
+# - DYN6_DOMAIN, DYN6_TOKEN: Dynv6 DNS provider configuration
+# - DUCK_HOST, DUCK_TOKEN: DuckDNS DNS provider configuration
 #
 # Optional environment variables (TinyAuth v4 + Pocket ID):
 # - POCKET_ID_CLIENT_ID: Client ID for Pocket ID OAuth application
@@ -23,96 +30,158 @@
 # - STEP_CA_PASSWORD: Password for your CA
 
 services:
-   app:
-     container_name: nginx-proxy-manager
-     image: jc21/nginx-proxy-manager:latest
-     restart: unless-stopped
-     ports:
-       - 80:80 # Public HTTP Port (external mapping)
-       - 443:443 # Public HTTPS Port (external mapping)
-       - 83:81 # Admin Web Port (external mapping)
-     expose:
-       - 80 # Internal HTTP port for reverse proxy or internal access
-       - 443 # Internal HTTPS port for reverse proxy or internal access
-       - 81 # Internal Admin Web port for reverse proxy or internal access
-     environment:
-       DISABLE_IPV6: true # Disable IPv6 support in Nginx
-       PUID: 1000 # Process UID (user ID for file permissions)
-       PGID: 1000 # Process GID (group ID for file permissions)
-     volumes:
-       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/data:/data
-       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/letsencrypt:/etc/letsencrypt
-       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/step/certs/root_ca.crt:/etc/nginx/ssl/homelab/root_ca.crt:ro
-     healthcheck:
-       test: ["CMD", "curl", "-f", "http://127.0.0.1:81"]
-       interval: 30s
-       timeout: 10s
-       retries: 3
-       start_period: 40s
-     networks:
-       - npm_network
+  ddns-updater:
+    container_name: ddns-updater
+    image: qmcgaw/ddns-updater
+    dns:
+      - 1.1.1.1
+    ports:
+      - 8001:8000/tcp # Web UI for monitoring and management (external mapping)
+    expose:
+      - 8000 # Internal Web UI port for reverse proxy or internal access
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/ddns-updater:/updater/data
+    environment:
+      CONFIG: |
+        {"settings":[
+        {"provider":"dynu",     "domain":"${DYNU_DOMAIN}",  "username":"${DYNU_USERNAME}","password":"${DYNU_PASSWORD}",  "ip_version":"ipv4"},
+        {"provider":"dynv6",    "domain":"${DYN6_DOMAIN}",  "token":"${DYN6_TOKEN}",                                      "ip_version":"ipv4"},
+        {"provider":"duckdns",  "domain":"${DUCK_HOST}",    "token":"${DUCK_TOKEN}",                                      "ip_version":"ipv4"}
+        ]}
+      PERIOD: 60m
+      UPDATE_COOLDOWN_PERIOD: 5m
+      TZ: Europe/Rome
+      PUBLICIP_FETCHERS: all
+      PUBLICIP_HTTP_PROVIDERS: all
+      PUBLICIPV4_HTTP_PROVIDERS: all
+      PUBLICIP_DNS_PROVIDERS: all
+      PUBLICIP_DNS_TIMEOUT: 3s
+      HTTP_TIMEOUT: 10s
+      LISTENING_PORT: 8000
+      ROOT_URL: /
+      BACKUP_PERIOD: 0
+      BACKUP_DIRECTORY: /updater/data
+      LOG_LEVEL: debug
+      LOG_CALLER: hidden
+      RESOLVER_ADDRESS: 1.1.1.1:53
+      SHOUTRRR_ADDRESSES: telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=Markdown&preview=false
+    labels:
+      telegram-notifier.monitor: false
+    restart: unless-stopped
+    networks:
+      - npm_network
 
-   step-ca:
-     container_name: step-ca
-     image: smallstep/step-ca
-     restart: unless-stopped
-     ports:
-       - 9001:9000 # Step CA API (external mapping)
-     expose:
-       - 9000 # Internal Step CA API port for reverse proxy or internal access
-     volumes:
-       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/step:/home/step
-     environment:
-       DOCKER_STEPCA_INIT_NAME: ${STEP_CA_NAME}
-       DOCKER_STEPCA_INIT_DNS_NAMES: ${STEP_CA_DNS_NAMES}
-       DOCKER_STEPCA_INIT_PASSWORD: ${STEP_CA_PASSWORD}
-     healthcheck:
-       test: ["CMD", "curl", "-f", "https://127.0.0.1:9000/health"]
-       interval: 30s
-       timeout: 10s
-       retries: 3
-     networks:
-       - npm_network
+  app:
+    container_name: nginx-proxy-manager
+    image: jc21/nginx-proxy-manager:latest
+    restart: unless-stopped
+    ports:
+      - 80:80 # Public HTTP Port (external mapping)
+      - 443:443 # Public HTTPS Port (external mapping)
+      - 83:81 # Admin Web Port (external mapping)
+    expose:
+      - 80 # Internal HTTP port for reverse proxy or internal access
+      - 443 # Internal HTTPS port for reverse proxy or internal access
+      - 81 # Internal Admin Web port for reverse proxy or internal access
+    environment:
+      DISABLE_IPV6: true # Disable IPv6 support in Nginx
+      PUID: 1000 # Process UID (user ID for file permissions)
+      PGID: 1000 # Process GID (group ID for file permissions)
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/data:/data
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/letsencrypt:/etc/letsencrypt
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/step/certs/root_ca.crt:/etc/nginx/ssl/homelab/root_ca.crt:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:81"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - npm_network
 
-   tinyauth:
-     container_name: tinyauth
-     image: ghcr.io/steveiliop56/tinyauth:v4
-     restart: unless-stopped
-     expose:
-       - 3000 # Internal TinyAuth port for reverse proxy or internal access
-     environment:
-       # https://tinyauth.app/docs/breaking-updates/3-to-4/
-       - APP_URL=https://tinyauth.${YOUR_DOMAIN:-example.com}
-       # Pocket ID OAuth provider configuration
-       # Provider ID: pocketid
-       # For Pocket ID, you need to register a new OAuth application in Pocket ID
-       # and configure it with the callback URL: https://tinyauth.{YOUR_DOMAIN}/api/oauth/callback/pocketid
-       - PROVIDERS_POCKETID_CLIENT_ID=${POCKET_ID_CLIENT_ID}
-       - PROVIDERS_POCKETID_CLIENT_SECRET=${POCKET_ID_CLIENT_SECRET}
-       - PROVIDERS_POCKETID_AUTH_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/authorize
-       - PROVIDERS_POCKETID_TOKEN_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/api/oidc/token
-       - PROVIDERS_POCKETID_USER_INFO_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/api/oidc/userinfo
-       - PROVIDERS_POCKETID_SCOPES=openid email profile groups
-       - PROVIDERS_POCKETID_NAME=Pocket ID
-       - PROVIDERS_POCKETID_REDIRECT_URL=https://tinyauth.${YOUR_DOMAIN:-example.com}/api/oauth/callback/pocketid
-     volumes:
-       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/tinyauth/data:/data
-     networks:
-       - npm_network
+  step-ca:
+    container_name: step-ca
+    image: smallstep/step-ca
+    restart: unless-stopped
+    ports:
+      - 9001:9000 # Step CA API (external mapping)
+    expose:
+      - 9000 # Internal Step CA API port for reverse proxy or internal access
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/step:/home/step
+    environment:
+      DOCKER_STEPCA_INIT_NAME: ${STEP_CA_NAME}
+      DOCKER_STEPCA_INIT_DNS_NAMES: ${STEP_CA_DNS_NAMES}
+      DOCKER_STEPCA_INIT_PASSWORD: ${STEP_CA_PASSWORD}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://127.0.0.1:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - npm_network
 
-   vaultls:
-     container_name: vaultls
-     image: ghcr.io/7ritn/vaultls:latest
-     expose:
-       - 80 # Internal VaultLS port for reverse proxy or internal access
-     volumes:
-       - vaultls-data:/app/data
-     environment:
-       - VAULTLS_API_SECRET=${VAULTLS_API_SECRET} # openssl rand -base64 32
-       - VAULTLS_URL=${VAULTLS_URL}
-     restart: unless-stopped
-     networks:
-       - npm_network
+  tinyauth:
+    container_name: tinyauth
+    image: ghcr.io/steveiliop56/tinyauth:v4
+    restart: unless-stopped
+    expose:
+      - 3000 # Internal TinyAuth port for reverse proxy or internal access
+    environment:
+      # https://tinyauth.app/docs/breaking-updates/3-to-4/
+      - APP_URL=https://tinyauth.${YOUR_DOMAIN:-example.com}
+      # Pocket ID OAuth provider configuration
+      # Provider ID: pocketid
+      # For Pocket ID, you need to register a new OAuth application in Pocket ID
+      # and configure it with the callback URL: https://tinyauth.{YOUR_DOMAIN}/api/oauth/callback/pocketid
+      - PROVIDERS_POCKETID_CLIENT_ID=${POCKET_ID_CLIENT_ID}
+      - PROVIDERS_POCKETID_CLIENT_SECRET=${POCKET_ID_CLIENT_SECRET}
+      - PROVIDERS_POCKETID_AUTH_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/authorize
+      - PROVIDERS_POCKETID_TOKEN_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/api/oidc/token
+      - PROVIDERS_POCKETID_USER_INFO_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/api/oidc/userinfo
+      - PROVIDERS_POCKETID_SCOPES=openid email profile groups
+      - PROVIDERS_POCKETID_NAME=Pocket ID
+      - PROVIDERS_POCKETID_REDIRECT_URL=https://tinyauth.${YOUR_DOMAIN:-example.com}/api/oauth/callback/pocketid
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/tinyauth/data:/data
+    networks:
+      - npm_network
+
+  pocket-id:
+    image: ghcr.io/pocket-id/pocket-id:v1
+    container_name: pocket-id
+    restart: unless-stopped
+    # this part is important to read variables from inside the container
+    env_file:
+      - stack.env # for portainer
+    expose:
+      - 1411 # web interface
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/pocket-id:/app/data
+    # Optional healthcheck
+    healthcheck:
+      test: "curl -f http://localhost:1411/healthz"
+      interval: 1m30s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
+    networks:
+      - npm_network
+
+  vaultls:
+    container_name: vaultls
+    image: ghcr.io/7ritn/vaultls:latest
+    expose:
+      - 80 # Internal VaultLS port for reverse proxy or internal access
+    volumes:
+      - vaultls-data:/app/data
+    environment:
+      - VAULTLS_API_SECRET=${VAULTLS_API_SECRET} # openssl rand -base64 32
+      - VAULTLS_URL=${VAULTLS_URL}
+    restart: unless-stopped
+    networks:
+      - npm_network
 
 networks:
   npm_network:
