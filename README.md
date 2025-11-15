@@ -53,21 +53,22 @@ Dockerini provides a collection of Docker Compose stacks for various services an
 
 ## Available Stacks
 
+- [AdGuard Stack](adguard/README.md) - DNS ad blocker and ad filtering
+- [Beszel Stack](beszel/README.md) - Server and container monitoring
 - [DDNS Stack](ddns/README.md) - Dynamic DNS updater
-- [NPM Stack](npm-reverse-proxy/README.md) - Nginx Proxy Manager
-- [Pi-hole Stack](pihole/README.md) - DNS sinkhole and ad blocker
-- [WG-Easy Stack](wg-easy/README.md) - WireGuard VPN management
-- [Tools Stack](tools/README.md) - Collection of utility tools
-- [Netfroz Stack](netfroz/README.md) - Media management and automation
+- [Docker Telegram Notifications Stack](docker-telegram-notifications/README.md) - Automated Docker event notifications
 - [Home Dashboard & Monitoring Stack](home-dashboard-monitoring/README.md) - System monitoring and dashboards
-- [RustDesk Relay Stack](rustdesk-relay/README.md) - Remote desktop relay
-- [KaraKeep Stack](karakeep/README.md) - Media/bookmark organization
-- [Transmission Stack](transmission/README.md) - Torrent client
-- [Paperless-ngx Stack](paperless-ngx/README.md) - Document management
-- [NPM Plus Stack](npmplus/README.md) - Enhanced Nginx Proxy Manager
+- [Immich Stack](immich/README.md) - Photo management and backup
+- [KaraKeep Stack](karakeep/README.md) - Media and bookmark organization
 - [Menu Gucci Stack](menu-gucci/README.md) - Service menu Telegram bot
-- [Immich Stack](immich/README.md) - Photo management
-- [AdGuard Stack](adguard/README.md) - DNS ad blocker
+- [Netfroz Stack](netfroz/README.md) - Media management and automation
+- [NPM (Nginx Proxy Manager) Stack](npm-reverse-proxy/README.md) - Reverse proxy and SSL certificate management
+- [Paperless-ngx Stack](paperless-ngx/README.md) - Document management and archival
+- [Pi-hole Stack](pihole/README.md) - DNS sinkhole and network ad blocker
+- [Pocket ID Stack](pocket-id/README.md) - OpenID Connect provider and authentication
+- [RustDesk Relay Stack](rustdesk-relay/README.md) - Remote desktop relay server
+- [Tools Stack](tools/README.md) - Collection of utility services
+- [WG-Easy Stack](wg-easy/README.md) - WireGuard VPN management and UI
 
 ## Standardization Status
 
@@ -80,6 +81,67 @@ Each stack follows our standardization guidelines:
 - ✅ Security best practices
 
 For detailed status of each stack, see [recap.md](recap.md).
+
+## Image Versioning Strategy
+
+This repository uses a **mixed versioning approach**:
+
+- **64% Latest Tags** (34/53 images): Used for non-critical services that benefit from automated updates (media servers, dashboards, development tools)
+- **36% Pinned Versions** (19/53 images): Used for critical infrastructure (databases, DNS, reverse proxies, certificate authorities)
+
+### Recommended Practices
+
+1. **Critical Services** (pin specific versions):
+   - Databases (PostgreSQL, Redis, InfluxDB)
+   - DNS services (Pi-hole, AdGuard)
+   - Reverse proxies (Nginx Proxy Manager, Step CA)
+   - Authentication services (Pocket ID)
+
+2. **Non-Critical Services** (use latest tag):
+   - Media applications (Jellyfin, Immich)
+   - Monitoring tools (Glances, Dozzle)
+   - Utility services (File browsers, converters)
+   - Automation services (Sonarr, Radarr)
+
+3. **Update Strategy**:
+   - Enable [Watchtower](docker-telegram-notifications/README.md) for automatic updates of latest-tagged services
+   - Pin versions for critical infrastructure and manually test updates
+   - Use a reverse proxy and monitoring to catch issues quickly
+
+## Container Restart Policies
+
+This repository uses two restart policies strategically:
+
+### `restart: unless-stopped` (Default - 62% of services)
+
+Used for services that can tolerate manual stops:
+
+- **User-facing services**: Dashboards, media servers, web interfaces
+- **Non-critical services**: Monitoring displays, file browsers, converters
+- **Deployment tools**: Allows graceful shutdown without auto-restart
+
+**Behavior**: Container restarts automatically unless manually stopped
+
+### `restart: always` (Special Cases - 38% of services)
+
+Used for critical background services that must stay running:
+
+- **Automation services**: [Watchtower](docker-telegram-notifications/README.md) (automatic updates), DIUN (image monitoring)
+- **Notification services**: Telegram notifiers and alert delivery
+- **Core infrastructure**: Services critical for other containers to function
+- **Monitoring agents**: Services providing essential observability
+
+**Behavior**: Container always restarts, even if manually stopped
+
+### Decision Matrix
+
+| Service Type | Restart Policy | Reason |
+|---|---|---|
+| Watchtower, DIUN, Telegram notifiers | `always` | Must stay running to function |
+| Databases, DNS, Reverse proxies | `unless-stopped` | Allow graceful maintenance |
+| Media servers, dashboards | `unless-stopped` | User-facing; allow manual stops |
+| Monitoring displays | `unless-stopped` | Non-critical visualization |
+| Utility services | `unless-stopped` | Safe to stop manually |
 
 ## Folder Structure
 
