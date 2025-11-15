@@ -20,140 +20,53 @@ A comprehensive media management and automation stack for your homelab environme
 
 ## Configuration
 
-### Required Environment Variables
+### Environment Variables
 
-Create a `.env` file with the following variables:
+This stack requires a `.env` file for configuration. A complete and recommended set of variables can be found in the `.env.example` file.
 
-```env
-DOCKER_DATA_BASEFOLDER=/path/to/data
-DOCKER_MEDIA_BASEFOLDER=/path/to/media
-SONARR_API_KEY=your_sonarr_api_key
-```
+**To get started:**
 
-### Optional Environment Variables
+1. Copy the `.env.example` file to `.env`:
 
-```env
-LOG_LEVEL=info                    # FlareSolverr log level
-LOG_HTML=false                    # FlareSolverr HTML logging
-CAPTCHA_SOLVER=none              # FlareSolverr captcha solver
-PORT=8191                        # FlareSolverr port
-```
+   ```bash
+   cp .env.example .env
+   ```
 
-## Services
+2. Open the `.env` file and edit the variables to match your environment.
 
-### Sonarr
+**Key variables include:**
 
-- **Port**: 8989
-- **Features**:
-  - TV show management
-  - Automatic episode downloading
-  - Quality profile management
-  - Custom naming formats
-- **Health Check**: Enabled
+- `DOCKER_DATA_BASEFOLDER`: The absolute path for storing persistent data.
+- `DOCKER_MEDIA_BASEFOLDER`: The absolute path for your media files.
+- `SONARR_API_KEY`: Your API key for Sonarr.
 
-### Radarr
+## Services & Ports
 
-- **Port**: 7878
-- **Features**:
-  - Movie management
-  - Automatic movie downloading
-  - Quality profile management
-  - Custom naming formats
+| Service              | External Port  | Internal Port  | Description                                    |
+| -------------------- | -------------- | -------------- | ---------------------------------------------- |
+| **Sonarr**           | `8989`         | `8989`         | TV show management.                            |
+| **Radarr**           | `7878`         | `7878`         | Movie management.                              |
+| **Prowlarr**         | `9696`         | `9696`         | Indexer management.                            |
+| **qBittorrent**      | `8003`, `6881` | `8003`, `6881` | Torrent client and web UI.                     |
+| **Jellyfin**         | -              | `8096`         | Media streaming (exposed via reverse proxy).   |
+| **Jellyseerr**       | -              | `5055`         | Media requests (exposed via reverse proxy).    |
+| **FlareSolverr**     | -              | `8191`         | Cloudflare bypass (internal service).          |
+| **Anime Downloader** | -              | `5000`         | Anime downloading (exposed via reverse proxy). |
 
-### Prowlarr
+> **Note:** Most services are exposed internally and are intended to be accessed via a reverse proxy. Only essential ports are mapped externally.
 
-- **Port**: 9696
-- **Features**:
-  - Indexer management
-  - Integration with Sonarr and Radarr
-  - Automatic indexer synchronization
+## Container Images
 
-### Jellyfin
-
-- **Ports**:
-  - 8096 (Web UI)
-  - 8920 (HTTPS)
-  - 7359/UDP (Auto-discovery)
-- **Features**:
-  - Media streaming
-  - Hardware transcoding support
-  - User management
-  - Multiple client support
-
-### Jellyseerr
-
-- **Port**: 5055
-- **Features**:
-  - Media requests
-  - User management
-  - Integration with Jellyfin
-  - Request approval workflow
-
-### qBittorrent
-
-- **Ports**:
-  - 8003 (Web UI)
-  - 6881 (Torrent)
-- **Features**:
-  - Vuetorrent UI
-  - Category management
-  - Download scheduling
-  - Bandwidth control
-
-### FlareSolverr
-
-- **Port**: 8191
-- **Features**:
-  - Cloudflare bypass
-  - Captcha solving
-  - Proxy support
-  - Configurable logging
-
-### Anime Downloader
-
-- **Port**: 5000
-- **Features**:
-  - Automated anime downloading
-  - Integration with Sonarr
-  - Custom download paths
-  - Connection management
-
-## Ports
-
-- **Anime Downloader**
-  - 5000:5000 (mapped): Web UI/API (external)
-  - 5000 (exposed): Web UI/API (internal, for reverse proxy or internal access)
-- **FlareSolverr**
-  - 8191:8191 (mapped): API (external)
-  - 8191 (exposed): API (internal, for reverse proxy or internal access)
-- **Jellyfin**
-  - 8096:8096 (mapped): Web UI (external)
-  - 8920:8920 (mapped): HTTPS (external)
-  - 7359:7359/udp (mapped): Auto-discovery (external)
-  - 8096 (exposed): Web UI (internal, for reverse proxy or internal access)
-  - 8920 (exposed): HTTPS (internal, for reverse proxy or internal access)
-  - 7359/udp (exposed): Auto-discovery (internal, for internal container communication)
-- **Jellyseerr**
-  - 5055:5055 (mapped): Web UI (external)
-  - 5055 (exposed): Web UI (internal, for reverse proxy or internal access)
-- **Prowlarr**
-  - 9696:9696 (mapped): Web UI/API (external)
-  - 9696 (exposed): Web UI/API (internal, for reverse proxy or internal access)
-- **qBittorrent**
-  - 8003:8003 (mapped): Web UI (external)
-  - 6881:6881 (mapped): Torrent (TCP, external)
-  - 6881:6881/udp (mapped): Torrent (UDP, external)
-  - 8003 (exposed): Web UI (internal, for reverse proxy or internal access)
-  - 6881 (exposed): Torrent (TCP, internal, for internal container communication)
-  - 6881/udp (exposed): Torrent (UDP, internal, for internal container communication)
-- **Radarr**
-  - 7878:7878 (mapped): Web UI/API (external)
-  - 7878 (exposed): Web UI/API (internal, for reverse proxy or internal access)
-- **Sonarr**
-  - 8989:8989 (mapped): Web UI/API (external)
-  - 8989 (exposed): Web UI/API (internal, for reverse proxy or internal access)
-
-> **Note:** Both mapped and exposed ports are documented for clarity. The long-term plan is to reduce direct port exposure and use a reverse proxy for internal services.
+| Service          | Image                                        |
+| ---------------- | -------------------------------------------- |
+| Anime Downloader | `ghcr.io/mainkronos/anime_downloader:latest` |
+| FlareSolverr     | `ghcr.io/flaresolverr/flaresolverr:latest`   |
+| Jellyfin         | `linuxserver/jellyfin:latest`                |
+| Jellyseerr       | `fallenbagel/jellyseerr:latest`              |
+| Prowlarr         | `linuxserver/prowlarr:latest`                |
+| qBittorrent      | `linuxserver/qbittorrent:latest`             |
+| Radarr           | `linuxserver/radarr:latest`                  |
+| Sonarr           | `linuxserver/sonarr:latest`                  |
 
 ## Usage
 
@@ -171,15 +84,9 @@ PORT=8191                        # FlareSolverr port
    docker compose up -d
    ```
 
-3. **Configure Services**:
-   - Access Sonarr at `http://localhost:8989`
-   - Access Radarr at `http://localhost:7878`
-   - Access Prowlarr at `http://localhost:9696`
-   - Access Jellyfin at `http://localhost:8096`
-   - Access Jellyseerr at `http://localhost:5055`
-   - Access qBittorrent at `http://localhost:8003`
-   - Access FlareSolverr at `http://localhost:8191`
-   - Access Anime Downloader at `http://localhost:5000`
+3. **Access Services**:
+   - Access Sonarr, Radarr, Prowlarr, and qBittorrent on their externally mapped ports.
+   - Access Jellyfin, Jellyseerr, and Anime Downloader through your reverse proxy.
 
 ## Network Configuration
 

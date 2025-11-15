@@ -46,14 +46,14 @@ Dockerini provides a collection of Docker Compose stacks for various services an
 
 3. For each stack you want to deploy, configure its environment variables:
 
-    ```bash
-    cd <stack-name>
-    cp .env.example .env
-    # Edit .env with your stack-specific configuration
-    cd ..
-    ```
+   ```bash
+   cd <stack-name>
+   cp .env.example .env
+   # Edit .env with your stack-specific configuration
+   cd ..
+   ```
 
-    Each stack has its own `.env.example` file in its directory with the required and optional variables for that service.
+   Each stack has its own `.env.example` file in its directory with the required and optional variables for that service.
 
 ## Available Stacks
 
@@ -93,7 +93,7 @@ Each stack follows our standardization guidelines:
    - Automation services (Sonarr, Radarr)
 
 3. **Update Strategy**:
-    - Enable [Watchtower](automation/README.md) for automatic updates of latest-tagged services
+   - Enable [Watchtower](automation/README.md) for automatic updates of latest-tagged services
    - Pin versions for critical infrastructure and manually test updates
    - Use a reverse proxy and monitoring to catch issues quickly
 
@@ -124,13 +124,13 @@ Used for critical background services that must stay running:
 
 ### Decision Matrix
 
-| Service Type | Restart Policy | Reason |
-|---|---|---|
-| Watchtower, DIUN, Telegram notifiers | `always` | Must stay running to function |
-| Databases, DNS, Reverse proxies | `unless-stopped` | Allow graceful maintenance |
-| Media servers, dashboards | `unless-stopped` | User-facing; allow manual stops |
-| Monitoring displays | `unless-stopped` | Non-critical visualization |
-| Utility services | `unless-stopped` | Safe to stop manually |
+| Service Type                         | Restart Policy   | Reason                          |
+| ------------------------------------ | ---------------- | ------------------------------- |
+| Watchtower, DIUN, Telegram notifiers | `always`         | Must stay running to function   |
+| Databases, DNS, Reverse proxies      | `unless-stopped` | Allow graceful maintenance      |
+| Media servers, dashboards            | `unless-stopped` | User-facing; allow manual stops |
+| Monitoring displays                  | `unless-stopped` | Non-critical visualization      |
+| Utility services                     | `unless-stopped` | Safe to stop manually           |
 
 ## Folder Structure
 

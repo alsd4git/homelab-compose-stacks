@@ -1,97 +1,93 @@
 # Infrastructure Stack
 
-Core infrastructure services for your homelab including reverse proxy, DNS updates, and authentication. This stack provides the foundation for managing external access and identity across your services.
+Core infrastructure services for your homelab, including reverse proxy, dynamic DNS, authentication, and certificate management.
 
-## Features
+## Included Services
 
-- Web-based UI for managing Nginx reverse proxy
-- Automatic SSL certificate management with Let's Encrypt
-- Optional mTLS support with Step CA
-- Custom CA certificate support
-- IPv6 support (configurable)
+- **Nginx Proxy Manager**: A user-friendly interface for managing Nginx reverse proxy hosts and SSL certificates.
+- **DDNS Updater**: Automatically updates your dynamic DNS records with your public IP address.
+- **Pocket ID**: A passkey-based OIDC provider for passwordless authentication.
+- **TinyAuth**: A lightweight authentication middleware that integrates with Pocket ID to protect your services.
+- **Step CA**: A private certificate authority for managing internal TLS/mTLS certificates.
+- **VaultLS**: A service for securely storing and managing secrets.
 
 ## Configuration
 
 ### Environment Variables
 
-Create a `.env` file with the following variables:
+This stack requires a `.env` file for configuration. A complete and recommended set of variables can be found in the `.env.example` file.
 
-```env
-# Base directory for persistent data
-DOCKER_DATA_BASEFOLDER=/opt/docker/data
+**To get started:**
 
-# Step CA configuration (if using mTLS)
-STEP_CA_NAME=your_ca_name
-STEP_CA_DNS_NAMES=your_dns_names
-STEP_CA_PASSWORD=your_password
-```
+1. Copy the `.env.example` file to `.env`:
 
-### Ports
+   ```bash
+   cp .env.example .env
+   ```
 
-- **80:80** (mapped): Public HTTP traffic (external)
-- **443:443** (mapped): Public HTTPS traffic (external)
-- **83:81** (mapped): Admin Web UI (external)
-- **80** (exposed): Internal HTTP port for reverse proxy or internal access
-- **443** (exposed): Internal HTTPS port for reverse proxy or internal access
-- **81** (exposed): Internal Admin Web port for reverse proxy or internal access
-- **9001:9000** (mapped, step-ca): Step CA API (external)
-- **9000** (exposed, step-ca): Internal Step CA API port for reverse proxy or internal access
+2. Open the `.env` file and edit the variables to match your environment.
 
-> **Note:** Both mapped and exposed ports are documented for clarity. The long-term plan is to reduce direct port exposure and use a reverse proxy for internal services.
+**Key variables include:**
 
-### Volumes
+- `DOCKER_DATA_BASEFOLDER`: The absolute path for storing persistent data.
+- `YOUR_DOMAIN`: Your primary domain name.
+- **DDNS Updater**: Credentials for your DNS provider (e.g., Cloudflare, DuckDNS).
+- **Pocket ID & TinyAuth**: Client ID and secret for the OIDC integration.
+- **Step CA**: Configuration for your private certificate authority.
+- **VaultLS**: A secret key and URL for the VaultLS service.
 
-- `/data`: NPM data and configuration
-- `/etc/letsencrypt`: SSL certificates
-- `/etc/nginx/ssl/homelab`: Custom CA certificates (optional)
+## Services & Ports
+
+| Service                 | External Port     | Internal Port     | Description                                            |
+| ----------------------- | ----------------- | ----------------- | ------------------------------------------------------ |
+| **Nginx Proxy Manager** | `80`, `443`, `83` | `80`, `443`, `81` | HTTP/S traffic and admin UI.                           |
+| **DDNS Updater**        | `8001`            | `8000`            | Web UI for monitoring DDNS updates.                    |
+| **Step CA**             | `9001`            | `9000`            | Private certificate authority API.                     |
+| **Pocket ID**           | -                 | `1411`            | OIDC provider (exposed via reverse proxy).             |
+| **TinyAuth**            | -                 | `3000`            | Authentication middleware (exposed via reverse proxy). |
+| **VaultLS**             | -                 | `80`              | Secrets management (exposed via reverse proxy).        |
+
+> **Note:** It is recommended to use a reverse proxy for external access rather than exposing ports directly.
+
+## Container Images
+
+| Service             | Image                              |
+| ------------------- | ---------------------------------- |
+| DDNS Updater        | `qmcgaw/ddns-updater`              |
+| Nginx Proxy Manager | `jc21/nginx-proxy-manager:latest`  |
+| Step CA             | `smallstep/step-ca`                |
+| TinyAuth            | `ghcr.io/steveiliop56/tinyauth:v4` |
+| Pocket ID           | `ghcr.io/pocket-id/pocket-id:v1`   |
+| VaultLS             | `ghcr.io/7ritn/vaultls:latest`     |
 
 ## Usage
 
-1. Configure your environment variables
-2. Deploy the stack:
+1. **Setup Environment Variables**:
+   - Copy the `.env.example` to `.env`.
+   - Configure the variables for each service as needed.
+
+2. **Deploy the Stack**:
 
    ```bash
    docker compose up -d
    ```
 
-3. Access the admin UI at `http://your-server:83`
-   - Default login: `admin@example.com`
-   - Default password: `changeme`
+3. **Access Services**:
+   - **Nginx Proxy Manager**: `http://<your-server-ip>:83`
+   - **DDNS Updater**: `http://<your-server-ip>:8001`
+   - Other services should be accessed through the reverse proxy you configure in Nginx Proxy Manager.
 
-## mTLS Configuration
+## Security Considerations
 
-If you're using mTLS with Step CA:
+- **Nginx Proxy Manager**: Change the default admin credentials (`admin@example.com` / `changeme`) immediately after deployment.
+- **Secrets**: Securely store all secrets and API keys in your `.env` file and do not commit it to version control.
+- **Network Exposure**: Only expose Nginx Proxy Manager's HTTP/S ports (`80`/`443`) to the internet. The admin panel and other services should be restricted to your local network or accessed via a VPN.
 
-1. Ensure your custom CA certificate is mounted at `/etc/nginx/ssl/homelab/root_ca.crt`
-2. In the NPM UI, for each proxy host:
-   - Go to the SSL tab
-   - Add the following lines:
+## Additional Resources
 
-     ```bash
-     ssl_client_certificate /etc/nginx/ssl/homelab/root_ca.crt;
-     ssl_verify_client on;
-     ```
-
-For more information on mTLS setup, see [mtls-cli](https://github.com/alsd4git/mtls-cli).
-
-## Security Notes
-
-- Change the default admin credentials immediately
-- Keep your Step CA password secure
-- Regularly update SSL certificates
-- Consider using a firewall to restrict access to the admin UI
-- Keep your custom CA certificates secure
-
-## Troubleshooting
-
-1. Check logs:
-
-   ```bash
-   docker logs nginx-proxy-manager
-   docker logs step-ca  # if using mTLS
-   ```
-
-2. Common issues:
-   - SSL certificate errors: Check Let's Encrypt configuration
-   - mTLS failures: Verify client certificates
-   - Port conflicts: Ensure no other services use the same ports 
+- [Nginx Proxy Manager Documentation](https://nginxproxymanager.com/)
+- [DDNS Updater Documentation](https://github.com/qdm12/ddns-updater)
+- [Pocket ID Documentation](https://pocket-id.org/)
+- [TinyAuth Documentation](https://tinyauth.app/)
+- [Step CA Documentation](https://smallstep.com/docs/step-ca)
+- [VaultLS Documentation](https://github.com/7rit/vaultls)

@@ -15,15 +15,22 @@ This stack provides a network-wide ad blocking solution using [Pi-hole](https://
 
 ### Environment Variables
 
-Create a `.env` file with the following variables:
+This stack requires a `.env` file for configuration. A complete and recommended set of variables can be found in the `.env.example` file.
 
-```env
-# Base directory for persistent data
-DOCKER_DATA_BASEFOLDER=/opt/docker/data
+**To get started:**
 
-# Pi-hole web interface password
-PASSWORD=your_secure_password
-```
+1. Copy the `.env.example` file to `.env`:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Open the `.env` file and edit the variables to match your environment.
+
+**Key variables include:**
+
+- `DOCKER_DATA_BASEFOLDER`: The absolute path on your host machine where Pi-hole will store its configuration.
+- `PASSWORD`: The web interface password. This value is assigned to the `FTLCONF_webserver_api_password` variable in the `compose.yaml`.
 
 ### Ports
 
@@ -44,17 +51,25 @@ PASSWORD=your_secure_password
 - `/etc/pihole`: Pi-hole configuration
 - `/etc/dnsmasq.d`: DNS configuration
 
+## Container Images
+
+| Service | Image                  |
+| ------- | ---------------------- |
+| Pi-hole | `pihole/pihole:latest` |
+
 ## Usage
 
-1. Configure your environment variables
+1. **Setup Environment Variables**:
+   - Copy the `.env.example` to `.env`.
+   - Set the required environment variables as described above.
 2. Deploy the stack:
 
    ```bash
    docker compose up -d
    ```
 
-3. Access the web interface at `http://your-server:81`
-4. Set your devices' DNS server to your Pi-hole IP address
+3. Access the web interface at `http://your-server:81` (or via your reverse proxy).
+4. Set your devices' DNS server to your Pi-hole IP address.
 
 ## Custom DNS Configuration
 
@@ -74,10 +89,10 @@ To add custom domain records (e.g., `*.yourdomain.com`), create a file in the dn
    # Add custom domain records
    address=/yourdomain.com/192.168.1.100
    address=/*.yourdomain.com/192.168.1.100
-   
+
    # Add CNAME records
    cname=subdomain.yourdomain.com,host.yourdomain.com
-   
+
    # Add PTR records (reverse DNS)
    ptr-record=1.1.168.192.in-addr.arpa,host.yourdomain.com
    ```

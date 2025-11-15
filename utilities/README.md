@@ -5,180 +5,117 @@ File management, document processing, and utility services for your homelab. Thi
 ## Included Tools
 
 ### 1. ConvertX
-- **Purpose**: File conversion service
-- **Port**: 3003
-- **Features**:
-  - File format conversion
-  - Batch processing
-  - Authentication support
-  - Auto-cleanup
+
+- **Purpose**: A versatile file conversion tool.
+- **Features**: Supports batch processing, authentication, and auto-cleanup of converted files.
 
 ### 2. CUP (Container Update Puller)
-- **Purpose**: Docker container update management
-- **Port**: 8004
-- **Features**:
-  - Container update monitoring
-  - Automatic updates
-  - Update notifications
 
-### 3. FileBrowser
-- **Purpose**: Web-based file management
-- **Port**: 8085
-- **Features**:
-  - File browsing
-  - File sharing
-  - User management
-  - Multiple storage locations
+- **Purpose**: A tool for managing Docker container updates.
+- **Features**: Monitors for new container images and provides update notifications.
 
-### 4. Scrutiny
-- **Purpose**: Hard drive health monitoring
-- **Ports**: 8083 (Web UI), 8086 (InfluxDB)
-- **Features**:
-  - SMART monitoring
-  - Health reporting
-  - Historical data
-  - Alert system
+### 3. FileBrowser Quantum
 
-### 5. Speedtest Tracker
-- **Purpose**: Internet speed monitoring
-- **Port**: 8084
-- **Features**:
-  - Regular speed tests
-  - Historical data
-  - Custom schedules
-  - Multiple server support
+- **Purpose**: A web-based file manager.
+- **Features**: Allows you to browse, manage, and share files and folders.
 
-### 6. Stirling PDF
-- **Purpose**: PDF processing and manipulation
-- **Port**: 8082
-- **Features**:
-  - PDF conversion
-  - OCR capabilities
-  - PDF manipulation
-  - Custom workflows
+### 4. Stirling PDF
 
-### 7. Telegram Files
-- **Purpose**: Telegram file management
-- **Port**: 6543
-- **Features**:
-  - File organization
-  - Media management
-  - Telegram integration
-  - Health monitoring
+- **Purpose**: A powerful tool for PDF manipulation.
+- **Features**: Supports a wide range of operations, including merging, splitting, and converting PDFs.
 
-### 8. UpSnap
-- **Purpose**: Network device monitoring
-- **Port**: 5001
-- **Features**:
-  - Device discovery
-  - Status monitoring
-  - Wake-on-LAN
-  - Custom schedules
+### 5. Telegram Files
+
+- **Purpose**: A file management tool for Telegram.
+- **Features**: Helps organize and manage files stored in your Telegram account.
+
+### 6. UpSnap
+
+- **Purpose**: A network device monitoring tool.
+- **Features**: Discovers devices on your network, monitors their status, and supports Wake-on-LAN.
 
 ## Configuration
 
 ### Environment Variables
 
-Create a `.env` file with the following variables:
+This stack requires a `.env` file for configuration. A complete and recommended set of variables can be found in the `.env.example` file.
 
-```env
-# Base directories
-DOCKER_DATA_BASEFOLDER=/opt/docker/data
-DOCKER_MEDIA_BASEFOLDER=/opt/docker/media
+**To get started:**
 
-# Telegram configuration (for telegram-files)
-TELEGRAM_API_ID=your_api_id
-TELEGRAM_API_HASH=your_api_hash
-```
+1. Copy the `.env.example` file to `.env`:
 
-### Port Configuration
+   ```bash
+   cp .env.example .env
+   ```
 
-Each tool uses specific ports:
+2. Open the `.env` file and edit the variables to match your environment.
 
-- ConvertX: 3003
-- CUP: 8004
-- FileBrowser: 8085
-- Scrutiny: 8083, 8086
-- Speedtest Tracker: 8084
-- Stirling PDF: 8082
-- Telegram Files: 6543
-- UpSnap: 5001
+**Key variables include:**
 
-## Ports
+- `DOCKER_DATA_BASEFOLDER`: The absolute path for storing persistent data.
+- `DOCKER_MEDIA_BASEFOLDER`: The absolute path for media files.
+- `TELEGRAM_API_ID` & `TELEGRAM_API_HASH`: Optional credentials for Telegram Files.
+- `FILEBROWSER_ADMIN_PASSWORD`: An optional admin password for FileBrowser Quantum.
 
-- **ConvertX**
-  - 3003:3000 (mapped): Web UI (external)
-  - 3000 (exposed): Web UI (internal, for reverse proxy or internal access)
-- **CUP**
-  - 8004:8000 (mapped): Web UI (external)
-  - 8000 (exposed): Web UI (internal, for reverse proxy or internal access)
-- **FileBrowser**
-  - 8085:80 (mapped): Web UI (external)
-  - 80 (exposed): Web UI (internal, for reverse proxy or internal access)
-- **Scrutiny**
-  - 8083:8080 (mapped): Web UI (external)
-  - 8086:8086 (mapped): InfluxDB (external)
-  - 8080 (exposed): Web UI (internal, for reverse proxy or internal access)
-  - 8086 (exposed): InfluxDB (internal, for reverse proxy or internal access)
-- **Speedtest Tracker**
-  - 8084:80 (mapped): Web UI (external)
-  - 80 (exposed): Web UI (internal, for reverse proxy or internal access)
-- **Stirling PDF**
-  - 8082:8080 (mapped): Web UI (external)
-  - 8080 (exposed): Web UI (internal, for reverse proxy or internal access)
-- **Telegram Files**
-  - 6543:80 (mapped): Web UI (external)
-  - 80 (exposed): Web UI (internal, for reverse proxy or internal access)
-- **UpSnap**
-  - 5001 (host): Web UI (host networking, exposed directly on the host)
+## Services & Ports
 
-> **Note:** Both mapped and exposed ports are documented for clarity. The long-term plan is to reduce direct port exposure and use a reverse proxy for internal services.
+| Service                 | External Port | Internal Port | Description                               |
+| ----------------------- | ------------- | ------------- | ----------------------------------------- |
+| **ConvertX**            | `3003`        | `3000`        | File conversion service.                  |
+| **CUP**                 | `8004`        | `8000`        | Container update management.              |
+| **FileBrowser Quantum** | `8087`        | `80`          | Web-based file management.                |
+| **Stirling PDF**        | `8082`        | `8080`        | PDF processing and manipulation.          |
+| **Telegram Files**      | `6543`        | `80`          | Telegram file management.                 |
+| **UpSnap**              | `5001`        | `5001`        | Network device monitoring (host network). |
+
+> **Note:** It is recommended to use a reverse proxy for external access rather than exposing ports directly.
+
+## Container Images
+
+| Service             | Image                                    |
+| ------------------- | ---------------------------------------- |
+| ConvertX            | `ghcr.io/c4illin/convertx`               |
+| CUP                 | `ghcr.io/sergi0g/cup:latest`             |
+| FileBrowser Quantum | `gtstef/filebrowser`                     |
+| Stirling PDF        | `stirlingtools/stirling-pdf:latest`      |
+| Telegram Files      | `ghcr.io/jarvis2f/telegram-files:latest` |
+| UpSnap              | `ghcr.io/seriousm4x/upsnap:latest`       |
 
 ## Usage
 
-1. Configure your environment variables
-2. Deploy the stack:
+1. **Setup Environment Variables**:
+   - Copy the `.env.example` to `.env`.
+   - Set the required environment variables as described above.
+
+2. **Start the Stack**:
 
    ```bash
    docker compose up -d
    ```
 
-3. Access each tool through its respective port
+3. **Access Services**:
+   - Access ConvertX at `http://localhost:3003`
+   - Access CUP at `http://localhost:8004`
+   - Access FileBrowser Quantum at `http://localhost:8087`
+   - Access Stirling PDF at `http://localhost:8082`
+   - Access Telegram Files at `http://localhost:6543`
+   - Access UpSnap at `http://localhost:5001`
 
 ## Security Considerations
 
-**⚠️ Docker Socket Access**: The CUP service mounts `/var/run/docker.sock`, which grants full access to the Docker daemon. This is required for Docker integration but requires elevated privileges. Only deploy in trusted networks. For more information, see [Docker Security Documentation](https://docs.docker.com/engine/security/).
+**⚠️ Docker Socket Access**:
 
-**⚠️ Device Access**: Scrutiny has access to disk devices (e.g., `/dev/sda`, `/dev/sdb`) and uses `cap_add: SYS_RAWIO` for disk health monitoring.
+- The **CUP** service mounts `/var/run/docker.sock`, which grants full access to the Docker daemon. This is necessary for its function but is a significant security risk. Only run this stack in a trusted network environment.
 
-**Additional Security Notes:**
-- Most tools are exposed to the network
-- Consider using a reverse proxy
-- Set up authentication where available
-- Keep tools updated
-- Monitor access logs
+**⚠️ Host Network Mode**:
 
-## Troubleshooting
-
-1. Check logs for specific tools:
-
-   ```bash
-   docker logs <container_name>
-   ```
-
-2. Common issues:
-   - Port conflicts: Check for other services using the same ports
-   - Permission issues: Verify volume permissions
-   - Network issues: Check network configuration
-   - Storage issues: Verify volume mounts
+- **UpSnap** uses `network_mode: host`, which exposes it directly on the host's network interface.
 
 ## Additional Resources
 
 - [ConvertX Documentation](https://github.com/c4illin/convertx)
 - [CUP Documentation](https://github.com/sergi0g/cup)
 - [FileBrowser Documentation](https://filebrowser.org/)
-- [Scrutiny Documentation](https://github.com/AnalogJ/scrutiny)
-- [Speedtest Tracker Documentation](https://github.com/alexjustesen/speedtest-tracker)
 - [Stirling PDF Documentation](https://github.com/Stirling-Tools/Stirling-PDF)
 - [Telegram Files Documentation](https://github.com/jarvis2f/telegram-files)
 - [UpSnap Documentation](https://github.com/seriousm4x/upsnap)

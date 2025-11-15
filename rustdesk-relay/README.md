@@ -16,11 +16,17 @@ A self-hosted relay server for RustDesk, a free and open-source remote desktop s
 
 ### Environment Variables
 
-Create a `.env` file in the stack directory with the following variables:
+This stack requires a `.env` file for configuration. A complete and recommended set of variables can be found in the `.env.example` file.
 
-```env
-DOCKER_DATA_BASEFOLDER=/path/to/your/data
-```
+**To get started:**
+
+1. Copy the `.env.example` file to `.env`:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Open the `.env` file and edit the `DOCKER_DATA_BASEFOLDER` variable to match your environment.
 
 ### Port Requirements
 
@@ -36,27 +42,34 @@ The stack uses host network mode and requires the following ports:
   - TCP 21117: used for the Relay services.
   - TCP 21119: used to support web clients.
 
+## Container Images
+
+| Service | Image                             |
+| ------- | --------------------------------- |
+| hbbs    | `rustdesk/rustdesk-server:latest` |
+| hbbr    | `rustdesk/rustdesk-server:latest` |
+
 ## Usage
 
-1. **Setup**:
+1. **Setup Environment Variables**:
+   - Copy the `.env.example` to `.env`.
+   - Set the `DOCKER_DATA_BASEFOLDER` variable as described above.
+2. **Create Data Directory**:
 
    ```bash
-   # Create the data directory
    mkdir -p ${DOCKER_DATA_BASEFOLDER}/RustDesk
    ```
 
-2. **Deployment**:
+3. **Deployment**:
 
    ```bash
    docker compose up -d
    ```
 
-3. **Client Configuration**:
-   - Install RustDesk client
-   - Configure the client to use your relay server:
-     - ID Server: `your-server-ip:21116`
-     - Relay Server: `your-server-ip:21117`
-     - API Server: `your-server-ip:21114`
+4. **Client Configuration**:
+   - Install the RustDesk client.
+   - Configure the client to use your relay server by setting the **ID Server** to `your-server-ip`. The relay server will be automatically configured.
+   - You can also specify the relay server manually by setting **Relay Server** to `your-server-ip:21117`.
 
 ## Security Notes
 

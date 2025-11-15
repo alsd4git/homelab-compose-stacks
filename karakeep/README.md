@@ -16,49 +16,65 @@ A modern bookmarks/media organization and management platform that helps you kee
 
 ### Environment Variables
 
-This stack uses named Docker volumes for data persistence and requires a `stack.env` file for environment variables.
+This stack requires a `.env` file for configuration. A complete and recommended set of variables can be found in the `.env.example` file.
 
-Create a `stack.env` file in the stack directory with the following variables:
+**To get started:**
 
-```env
-# Required
-KARAKEEP_VERSION=release
-NEXTAUTH_SECRET=GENERATE_A_RANDOM_STRING # Use: openssl rand -base64 36
-MEILI_MASTER_KEY=GENERATE_A_RANDOM_STRING # Use: openssl rand -base64 36
-NEXTAUTH_URL=http://localhost:3000 # Set to your public URL if using a reverse proxy
+1. Copy the `.env.example` file to `.env`:
 
-# Optional: OpenAI integration (uncomment if needed)
-# OPENAI_API_KEY=your-openai-api-key
-```
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Open the `.env` file and edit the variables to match your environment.
+
+**Key variables include:**
+
+- `KARAKEEP_VERSION`: The version of KaraKeep to run (defaults to `release`).
+- `NEXTAUTH_SECRET`: A secret key for NextAuth. Generate one with `openssl rand -base64 36`.
+- `MEILI_MASTER_KEY`: The master key for MeiliSearch. Generate one with `openssl rand -base64 36`.
+- `NEXTAUTH_URL`: The public URL of your KaraKeep instance (e.g., `http://localhost:3000`).
 
 ### Volumes
 
 The stack uses the following named volumes for data persistence:
+
 - `data`: KaraKeep application data
 - `meilisearch`: MeiliSearch database and configuration
 
 ## Port Documentation
 
 ### External Ports (Mapped to Host)
+
 - `3005`: Web interface (external mapping)
 
 ### Internal Ports (Exposed for Reverse Proxy)
+
 - `3000`: Web interface (internal, for reverse proxy or internal access)
 - `9222`: Chrome remote debugging (internal, for reverse proxy or internal access)
 - `7700`: MeiliSearch API (internal, for reverse proxy or internal access)
 
+## Container Images
+
+| Service     | Image                                 |
+| ----------- | ------------------------------------- |
+| Web         | `ghcr.io/karakeep-app/karakeep`       |
+| Chrome      | `gcr.io/zenika-hub/alpine-chrome:123` |
+| MeiliSearch | `getmeili/meilisearch:v1.13.3`        |
+
 ## Usage
 
 1. **Setup Environment Variables**:
-   - Create a `stack.env` file in the stack directory
-   - Set the required environment variables as shown above
-   - Generate random strings for `NEXTAUTH_SECRET` and `MEILI_MASTER_KEY`
-   - Set `NEXTAUTH_URL` to your public URL if using a reverse proxy
+   - Copy the `.env.example` to `.env`.
+   - Set the required environment variables as described above.
+   - Generate random strings for `NEXTAUTH_SECRET` and `MEILI_MASTER_KEY`.
+   - Set `NEXTAUTH_URL` to your public URL if using a reverse proxy.
 
 2. **Start the Stack**:
-    ```bash
-    docker compose up -d
-    ```
+
+   ```bash
+   docker compose up -d
+   ```
 
 3. **Access Web Interface**:
    - Navigate to `http://your-server:3005`
@@ -132,18 +148,21 @@ The stack uses the following named volumes for data persistence:
 ### Verification Steps
 
 1. Check container status:
-    ```bash
-    docker compose ps
-    ```
+
+   ```bash
+   docker compose ps
+   ```
 
 2. View service logs:
-    ```bash
-    docker compose logs web
-    docker compose logs chrome
-    docker compose logs meilisearch
-    ```
+
+   ```bash
+   docker compose logs web
+   docker compose logs chrome
+   docker compose logs meilisearch
+   ```
 
 3. Test web interface accessibility:
+
    ```bash
    curl http://localhost:3005
    ```
