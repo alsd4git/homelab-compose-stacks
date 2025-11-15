@@ -22,7 +22,7 @@ services:
   convertx:
     image: ghcr.io/c4illin/convertx
     container_name: convertx
-    restart: always
+    restart: unless-stopped
     ports:
       - 3003:3000 # Web UI (external mapping)
     expose:
@@ -75,7 +75,7 @@ services:
   scrutiny:
     image: ghcr.io/analogj/scrutiny:master-omnibus
     container_name: scrutiny
-    restart: always
+    restart: unless-stopped
     ports:
       - 8083:8080 # Web UI (external mapping)
       - 8086:8086 # InfluxDB (external mapping)
@@ -99,7 +99,7 @@ services:
   speedtest-tracker:
     image: linuxserver/speedtest-tracker:latest
     container_name: speedtest-tracker
-    restart: always
+    restart: unless-stopped
     ports:
       - 8084:80 # Web UI (external mapping)
     expose:
@@ -108,7 +108,7 @@ services:
       - PUID=1000
       - PGID=1000
       - DB_CONNECTION=sqlite
-      - APP_KEY=base64:xz6aCq7elg5Di1WCbBfCGdnXjtf9wQV3Ly3tERwQaGI=
+      - APP_KEY=${SPEEDTEST_TRACKER_APP_KEY:-base64:xz6aCq7elg5Di1WCbBfCGdnXjtf9wQV3Ly3tERwQaGI=}
       - APP_TIMEZONE=Europe/Rome
       - DISPLAY_TIMEZONE=Europe/Rome
       - SPEEDTEST_SCHEDULE=*/30 * * * *
@@ -121,7 +121,7 @@ services:
   stirling-pdf:
     image: stirlingtools/stirling-pdf:latest
     container_name: stirling-pdf
-    restart: always
+    restart: unless-stopped
     ports:
       - 8082:8080 # Web UI (external mapping)
     expose:
@@ -142,7 +142,7 @@ services:
   telegram-files:
     image: ghcr.io/jarvis2f/telegram-files:latest
     container_name: telegram-files
-    restart: always
+    restart: unless-stopped
     ports:
       - 6543:80 # Web UI (external mapping)
     expose:
@@ -161,7 +161,7 @@ services:
   upsnap:
     image: ghcr.io/seriousm4x/upsnap:latest
     container_name: upsnap
-    restart: always
+    restart: unless-stopped
     network_mode: host
     expose:
       - 5001 # Web UI (exposed via host networking, for reverse proxy or internal access)

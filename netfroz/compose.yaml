@@ -19,7 +19,7 @@ services:
   animedownloader:
     image: ghcr.io/mainkronos/anime_downloader:latest
     container_name: animedownloader
-    restart: always
+    restart: unless-stopped
     # Disabled: Use reverse proxy instead (port is exposed below)
     # ports:
     #   - 5000:5000 # Web UI/API (external mapping)

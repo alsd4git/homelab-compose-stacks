@@ -71,7 +71,7 @@ services:
     networks:
       - npm_network
 
-  app:
+  nginx-proxy-manager:
     container_name: nginx-proxy-manager
     image: jc21/nginx-proxy-manager:latest
     restart: unless-stopped

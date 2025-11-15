@@ -17,18 +17,18 @@ services:
     hostname: pi.hole-docker
     image: pihole/pihole:latest
     ports:
-      - 53:53/tcp      # DNS (TCP, external mapping)
-      - 53:53/udp      # DNS (UDP, external mapping)
+      - 53:53/tcp # DNS (TCP, external mapping)
+      - 53:53/udp # DNS (UDP, external mapping)
       # Disabled: Use reverse proxy instead
       # - 81:80/tcp    # Web interface (external mapping)
       # - 443:443/tcp  # HTTPS (self-signed cert, external mapping)
       # Disabled: Uncomment if using Pi-hole as DHCP server
       # - 67:67/udp    # DHCP server (external mapping)
     expose:
-      - 80  # Web interface (internal, for reverse proxy or internal access)
-      - 443  # HTTPS (self-signed cert, internal, for reverse proxy or internal access)
-      - 53  # DNS (internal, for internal container communication)
-      - 67  # DHCP (internal, for internal container communication)
+      - 80 # Web interface (internal, for reverse proxy or internal access)
+      - 443 # HTTPS (self-signed cert, internal, for reverse proxy or internal access)
+      - 53 # DNS (internal, for internal container communication)
+      - 67 # DHCP (internal, for internal container communication)
     environment:
       TZ: Europe/Rome
       FTLCONF_webserver_api_password: ${PASSWORD}
@@ -37,9 +37,9 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/pihole/etc-pihole:/etc/pihole
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
     # cap_add:
-      # - NET_ADMIN    # Required for DHCP
-      # - SYS_TIME     # Required for NTP
-      # - SYS_NICE     # Optional, for better performance
+    # - NET_ADMIN    # Required for DHCP
+    # - SYS_TIME     # Required for NTP
+    # - SYS_NICE     # Optional, for better performance
     healthcheck:
       test: ["CMD", "dig", "@127.0.0.1", "pi.hole", "+short"]
       interval: 30s

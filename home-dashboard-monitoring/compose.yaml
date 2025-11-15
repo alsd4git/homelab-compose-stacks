@@ -76,7 +76,7 @@ services:
   dozzle:
     image: amir20/dozzle:latest
     container_name: dozzle
-    restart: always
+    restart: unless-stopped
     ports:
       - 8081:8080 # Web UI (external mapping)
     expose:
@@ -92,7 +92,7 @@ services:
   glances:
     image: nicolargo/glances:latest-full
     container_name: glances
-    restart: always
+    restart: unless-stopped
     ports:
       - 61208:61208 # Web UI/API (external mapping)
     expose:
