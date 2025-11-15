@@ -53,12 +53,10 @@ Dockerini provides a collection of Docker Compose stacks for various services an
 
 ## Available Stacks
 
-- [AdGuard Stack](adguard/README.md) - DNS ad blocker and ad filtering
 - [Docker Telegram Notifications Stack](docker-telegram-notifications/README.md) - Automated Docker event notifications
 - [Home Dashboard & Monitoring Stack](home-dashboard-monitoring/README.md) - System monitoring, dashboards, and server monitoring
 - [Immich Stack](immich/README.md) - Photo management and backup
 - [KaraKeep Stack](karakeep/README.md) - Media and bookmark organization
-- [Menu Gucci Stack](menu-gucci/README.md) - Service menu Telegram bot
 - [Netfroz Stack](netfroz/README.md) - Media management and automation
 - [NPM Infrastructure Stack](npm-reverse-proxy/README.md) - Reverse proxy, DDNS, authentication, and identity management
 - [Paperless-ngx Stack](paperless-ngx/README.md) - Document management and archival

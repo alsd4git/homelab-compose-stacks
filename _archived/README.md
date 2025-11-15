@@ -1,6 +1,17 @@
 # Archived Stacks
 
-This directory contains stacks that have been consolidated into larger infrastructure stacks.
+This directory contains stacks that have been consolidated into larger infrastructure stacks or are no longer actively maintained.
+
+## No Longer Used Stacks
+
+### AdGuard (archived Nov 2025)
+- **Reason**: No longer actively used in homelab
+- **Alternative**: Pi-hole Stack for DNS filtering
+- **Original service**: AdGuard Home DNS ad blocker
+
+### Menu Gucci (archived Nov 2025)
+- **Reason**: No longer actively used in homelab
+- **Original service**: Telegram bot service menu
 
 ## Stack Consolidation
 
