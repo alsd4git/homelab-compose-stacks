@@ -12,54 +12,70 @@
 #docs https://docs.karakeep.app/Installation/docker
 #migrated from hoarder
 services:
-   chrome:
-     image: gcr.io/zenika-hub/alpine-chrome:123
-     container_name: karakeep-chrome
-     restart: unless-stopped
-     command:
-       - --no-sandbox
-       - --disable-gpu
-       - --disable-dev-shm-usage
-       - --remote-debugging-address=0.0.0.0
-       - --remote-debugging-port=9222
-       - --hide-scrollbars
-     expose:
-       - 9222 # Chrome remote debugging (internal, for reverse proxy or internal access)
+  chrome:
+    image: gcr.io/zenika-hub/alpine-chrome:123
+    container_name: karakeep-chrome
+    restart: unless-stopped
+    command:
+      - --no-sandbox
+      - --disable-gpu
+      - --disable-dev-shm-usage
+      - --remote-debugging-address=0.0.0.0
+      - --remote-debugging-port=9222
+      - --hide-scrollbars
+    expose:
+      - 9222 # Chrome remote debugging (internal, for reverse proxy or internal access)
+    networks:
+      - karakeep_network
 
-   meilisearch:
-     image: getmeili/meilisearch:v1.13.3
-     container_name: karakeep-meilisearch
-     restart: unless-stopped
-     env_file:
-       - stack.env #for portainer
-     environment:
-       MEILI_NO_ANALYTICS: "true"
-     volumes:
-       - meilisearch:/meili_data
-     expose:
-       - 7700 # MeiliSearch API (internal, for reverse proxy or internal access)
+  meilisearch:
+    image: getmeili/meilisearch:v1.13.3
+    container_name: karakeep-meilisearch
+    restart: unless-stopped
+    env_file:
+      - stack.env #for portainer
+    environment:
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meilisearch:/meili_data
+    expose:
+      - 7700 # MeiliSearch API (internal, for reverse proxy or internal access)
+    networks:
+      - karakeep_network
 
-   web:
-     image: ghcr.io/karakeep-app/karakeep:${KARAKEEP_VERSION:-release}
-     container_name: karakeep
-     restart: unless-stopped
-     volumes:
-       - data:/data
-     ports:
-       - 3005:3000 # Web UI (external mapping)
-     expose:
-       - 3000 # Web UI (internal, for reverse proxy or internal access)
-     env_file:
-       - stack.env #for portainer
-     environment:
-       MEILI_ADDR: http://meilisearch:7700
-       BROWSER_WEB_URL: http://chrome:9222
-       # OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-       DATA_DIR: /data
-     depends_on:
-       - chrome
-       - meilisearch
+  web:
+    image: ghcr.io/karakeep-app/karakeep:${KARAKEEP_VERSION:-release}
+    container_name: karakeep
+    restart: unless-stopped
+    volumes:
+      - data:/data
+    ports:
+      - 3005:3000 # Web UI (external mapping)
+    expose:
+      - 3000 # Web UI (internal, for reverse proxy or internal access)
+    env_file:
+      - stack.env #for portainer
+    environment:
+      MEILI_ADDR: http://meilisearch:7700
+      BROWSER_WEB_URL: http://chrome:9222
+      # OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      DATA_DIR: /data
+    depends_on:
+      - chrome
+      - meilisearch
+    networks:
+      - karakeep_network
+      - npm_network
+
+networks:
+  karakeep_network:
+    name: karakeep_network
+    driver: bridge
+  npm_network:
+    name: npm_network
+    driver: bridge
+    external: true
 
 volumes:
-  meilisearch:
-  data:
+   meilisearch:
+   data:

@@ -1,4 +1,5 @@
 .env
+!.env.example
 .idea
 WIP
 repomix*

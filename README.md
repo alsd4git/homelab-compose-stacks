@@ -44,25 +44,29 @@ Dockerini provides a collection of Docker Compose stacks for various services an
    cd dockerini
    ```
 
-3. Configure your environment variables:
+3. For each stack you want to deploy, configure its environment variables:
 
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
+    ```bash
+    cd <stack-name>
+    cp .env.example .env
+    # Edit .env with your stack-specific configuration
+    cd ..
+    ```
+
+    Each stack has its own `.env.example` file in its directory with the required and optional variables for that service.
 
 ## Available Stacks
 
-- [Docker Telegram Notifications Stack](docker-telegram-notifications/README.md) - Automated Docker event notifications
-- [Home Dashboard & Monitoring Stack](home-dashboard-monitoring/README.md) - System monitoring, dashboards, and server monitoring
+- [Automation Stack](automation/README.md) - Docker event notifications, image monitoring, and container updates
 - [Immich Stack](immich/README.md) - Photo management and backup
-- [KaraKeep Stack](karakeep/README.md) - Media and bookmark organization
-- [Netfroz Stack](netfroz/README.md) - Media management and automation
-- [NPM Infrastructure Stack](npm-reverse-proxy/README.md) - Reverse proxy, DDNS, authentication, and identity management
+- [Infrastructure Stack](infrastructure/README.md) - Reverse proxy, DDNS, authentication, and identity management
+- [KaraKeep Stack](karakeep/README.md) - Bookmarks and media organization
+- [Media Stack](media/README.md) - Media servers, downloaders, and automation (Jellyfin, Sonarr, Radarr, etc.)
+- [Monitoring Stack](monitoring/README.md) - System monitoring, dashboards, and observability
 - [Paperless-ngx Stack](paperless-ngx/README.md) - Document management and archival
 - [Pi-hole Stack](pihole/README.md) - DNS sinkhole and network ad blocker
 - [RustDesk Relay Stack](rustdesk-relay/README.md) - Remote desktop relay server
-- [Tools Stack](tools/README.md) - Collection of utility services
+- [Utilities Stack](utilities/README.md) - File management, document processing, and utility services
 
 ## Standardization Status
 
@@ -73,8 +77,6 @@ Each stack follows our standardization guidelines:
 - ✅ Standardized network naming
 - ✅ Comprehensive documentation
 - ✅ Security best practices
-
-For detailed status of each stack, see [recap.md](recap.md).
 
 ## Image Versioning Strategy
 
@@ -162,6 +164,4 @@ Each stack folder contains:
 
 ## Documentation
 
-- [recap.md](recap.md) - Comprehensive service overview
-- [TODO.md](TODO.md) - Project roadmap and tasks
 - Individual stack READMEs for detailed documentation
