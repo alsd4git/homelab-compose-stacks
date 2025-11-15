@@ -1,5 +1,5 @@
 # Tools Stack
-# This stack provides a collection of useful tools and utilities for your homelab environment.
+# This stack provides file management, document processing, and utility services for your homelab.
 #
 # Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
 #
@@ -69,52 +69,6 @@ services:
     # Optionally run as non-root filebrowser user
     user: "1000:1000"
     restart: unless-stopped
-    networks:
-      - tools_network
-
-  scrutiny:
-    image: ghcr.io/analogj/scrutiny:master-omnibus
-    container_name: scrutiny
-    restart: unless-stopped
-    ports:
-      - 8083:8080 # Web UI (external mapping)
-      - 8086:8086 # InfluxDB (external mapping)
-    expose:
-      - 8080 # Web UI (internal, for reverse proxy or internal access)
-      - 8086 # InfluxDB (internal, for reverse proxy or internal access)
-    cap_add:
-      - SYS_RAWIO
-    devices:
-      - /dev/sda
-      - /dev/sdb
-    stdin_open: true
-    tty: true
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/scrutiny/config:/opt/scrutiny/config
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/scrutiny/influxdb2:/opt/scrutiny/influxdb
-      - /run/udev:/run/udev:ro
-    networks:
-      - tools_network
-
-  speedtest-tracker:
-    image: linuxserver/speedtest-tracker:latest
-    container_name: speedtest-tracker
-    restart: unless-stopped
-    ports:
-      - 8084:80 # Web UI (external mapping)
-    expose:
-      - 80 # Web UI (internal, for reverse proxy or internal access)
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - DB_CONNECTION=sqlite
-      - APP_KEY=${SPEEDTEST_TRACKER_APP_KEY:-base64:xz6aCq7elg5Di1WCbBfCGdnXjtf9wQV3Ly3tERwQaGI=}
-      - APP_TIMEZONE=Europe/Rome
-      - DISPLAY_TIMEZONE=Europe/Rome
-      - SPEEDTEST_SCHEDULE=*/30 * * * *
-      - PRUNE_RESULTS_OLDER_THAN=0
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/speedtest-tracker:/config
     networks:
       - tools_network
 

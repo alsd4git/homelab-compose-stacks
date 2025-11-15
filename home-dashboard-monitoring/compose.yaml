@@ -21,6 +21,7 @@
 #
 # Optional environment variables:
 # - HOMARR_SECRET_ENCRYPTION_KEY: Secret key for Homarr (generate with: openssl rand -hex 32)
+# - SPEEDTEST_TRACKER_APP_KEY: App key for Speedtest Tracker (generate with: openssl rand -base64 32)
 
 services:
   beszel:
@@ -54,7 +55,8 @@ services:
       KEY: ${BESZEL_SSH_KEY}
       TOKEN: ${BESZEL_TOKEN}
       LISTEN: /beszel_socket/beszel.sock
-  dash:
+
+  dashdot:
     image: mauricenino/dashdot:latest
     container_name: dashdot
     restart: unless-stopped
@@ -197,6 +199,52 @@ services:
       - 20211:20211 # Web UI (external mapping)
     expose:
       - 20211 # Web UI (internal, for reverse proxy or internal access)
+
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:master-omnibus
+    container_name: scrutiny
+    restart: unless-stopped
+    ports:
+      - 8083:8080 # Web UI (external mapping)
+      - 8086:8086 # InfluxDB (external mapping)
+    expose:
+      - 8080 # Web UI (internal, for reverse proxy or internal access)
+      - 8086 # InfluxDB (internal, for reverse proxy or internal access)
+    cap_add:
+      - SYS_RAWIO
+    devices:
+      - /dev/sda
+      - /dev/sdb
+    stdin_open: true
+    tty: true
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/scrutiny/config:/opt/scrutiny/config
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/scrutiny/influxdb2:/opt/scrutiny/influxdb
+      - /run/udev:/run/udev:ro
+    networks:
+      - monitoring_network
+
+  speedtest-tracker:
+    image: linuxserver/speedtest-tracker:latest
+    container_name: speedtest-tracker
+    restart: unless-stopped
+    ports:
+      - 8084:80 # Web UI (external mapping)
+    expose:
+      - 80 # Web UI (internal, for reverse proxy or internal access)
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - DB_CONNECTION=sqlite
+      - APP_KEY=${SPEEDTEST_TRACKER_APP_KEY:-base64:xz6aCq7elg5Di1WCbBfCGdnXjtf9wQV3Ly3tERwQaGI=}
+      - APP_TIMEZONE=Europe/Rome
+      - DISPLAY_TIMEZONE=Europe/Rome
+      - SPEEDTEST_SCHEDULE=*/30 * * * *
+      - PRUNE_RESULTS_OLDER_THAN=0
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/speedtest-tracker:/config
+    networks:
+      - monitoring_network
 
   wyl:
     image: aceberg/watchyourlan:v2
