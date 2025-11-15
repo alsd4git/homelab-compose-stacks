@@ -145,8 +145,13 @@ Each tool uses specific ports:
 
 3. Access each tool through its respective port
 
-## Security Notes
+## Security Considerations
 
+**⚠️ Docker Socket Access**: The CUP service mounts `/var/run/docker.sock`, which grants full access to the Docker daemon. This is required for Docker integration but requires elevated privileges. Only deploy in trusted networks. For more information, see [Docker Security Documentation](https://docs.docker.com/engine/security/).
+
+**⚠️ Device Access**: Scrutiny has access to disk devices (e.g., `/dev/sda`, `/dev/sdb`) and uses `cap_add: SYS_RAWIO` for disk health monitoring.
+
+**Additional Security Notes:**
 - Most tools are exposed to the network
 - Consider using a reverse proxy
 - Set up authentication where available

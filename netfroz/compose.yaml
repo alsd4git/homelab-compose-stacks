@@ -20,6 +20,7 @@ services:
     image: ghcr.io/mainkronos/anime_downloader:latest
     container_name: animedownloader
     restart: always
+    # Disabled: Use reverse proxy instead (port is exposed below)
     # ports:
     #   - 5000:5000 # Web UI/API (external mapping)
     expose:
@@ -47,6 +48,7 @@ services:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
     restart: unless-stopped
+    # Disabled: Use reverse proxy instead (port is exposed below)
     # ports:
     #   - 8191:8191 # API (external mapping)
     expose:
@@ -64,6 +66,7 @@ services:
     image: linuxserver/jellyfin:latest
     container_name: jellyfin
     restart: unless-stopped
+    # Disabled: Use reverse proxy instead (ports are exposed below)
     # ports:
     #   - 8096:8096 # Web UI (external mapping)
     #   - 8920:8920 # HTTPS (external mapping)
@@ -89,6 +92,7 @@ services:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
     restart: unless-stopped
+    # Disabled: Use reverse proxy instead (port is exposed below)
     # ports:
     #   - 5055:5055 # Web UI (external mapping)
     expose:

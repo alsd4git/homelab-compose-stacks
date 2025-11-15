@@ -19,8 +19,8 @@ services:
     image: rustdesk/rustdesk-server:latest
     command: hbbs
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/docker/data}/RustDesk:/root
-    network_mode: "host"
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/RustDesk:/root
+    network_mode: host
     expose:
       - 21115 # NAT type test (tcp)
       - 21116 # TCP hole punching and connection service (tcp & udp)
@@ -34,8 +34,8 @@ services:
     image: rustdesk/rustdesk-server:latest
     command: hbbr
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/docker/data}/RustDesk:/root
-    network_mode: "host"
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/RustDesk:/root
+    network_mode: host
     expose:
       - 21117 # Relay services (tcp)
       - 21119 # Web client support (tcp)

@@ -17,6 +17,6 @@ services:
       #      - WHITELISTED_USERS='["user1", "user2"]' #example of the old format
       - WHITELISTED_USERS=${TELEGRAM_WHITELIST_USERS}
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/python-menuGucci/log:/app/log
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/python-menuGucci/log:/app/log
     # No ports exposed: this is a Telegram bot and does not provide a web UI or API
     restart: always

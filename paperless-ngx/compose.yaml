@@ -33,53 +33,66 @@
 name: paperless-ngx
 
 services:
-  broker:
-    image: docker.io/library/redis:7
-    container_name: paperless-ngx-broker-redis
-    restart: unless-stopped
-    volumes:
-      - redisdata:/data
+   broker:
+     image: docker.io/library/redis:7
+     container_name: paperless-ngx-broker-redis
+     restart: unless-stopped
+     expose:
+       - 6379 # Internal Redis port for paperless
+     healthcheck:
+       test: ["CMD", "redis-cli", "ping"]
+       interval: 30s
+       timeout: 10s
+       retries: 3
+     volumes:
+       - redisdata:/data
 
-  webserver:
-    image: ghcr.io/paperless-ngx/paperless-ngx:latest
-    container_name: paperless-ngx
-    user: "1000:1000"
-    #https://github.com/paperless-ngx/paperless-ngx/blob/main/docker/compose/docker-compose.sqlite-tika.yml
-    #https://docs.paperless-ngx.com/setup/#installation
-    restart: unless-stopped
-    depends_on:
-      - broker
-      - gotenberg
-      - tika
-    ports:
-      - "8002:8000"
-    volumes:
-      - data:/usr/src/paperless/data
-      - media:/usr/src/paperless/media
-      - ${DOCKER_DATA_BASEFOLDER}/paperless-ngx/export:/usr/src/paperless/export
-      - ${DOCKER_DATA_BASEFOLDER}/paperless-ngx/consume:/usr/src/paperless/consume
-    environment:
-      PAPERLESS_REDIS: redis://broker:6379
-      PAPERLESS_TIKA_ENABLED: 1
-      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
-      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+   gotenberg:
+     image: docker.io/gotenberg/gotenberg:8.7
+     container_name: paperless-ngx-gotenberg
+     restart: unless-stopped
+     expose:
+       - 3000 # Internal Gotenberg port for paperless
 
-  gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.7
-    container_name: paperless-ngx-gotenberg
-    restart: unless-stopped
+     # The gotenberg chromium route is used to convert .eml files. We do not
+     # want to allow external content like tracking pixels or even javascript.
+     command:
+       - "gotenberg"
+       - "--chromium-disable-javascript=true"
+       - "--chromium-allow-list=file:///tmp/.*"
 
-    # The gotenberg chromium route is used to convert .eml files. We do not
-    # want to allow external content like tracking pixels or even javascript.
-    command:
-      - "gotenberg"
-      - "--chromium-disable-javascript=true"
-      - "--chromium-allow-list=file:///tmp/.*"
+   tika:
+     image: docker.io/apache/tika:latest
+     container_name: paperless-ngx-tika
+     restart: unless-stopped
+     expose:
+       - 9998 # Internal Tika port for paperless
 
-  tika:
-    image: docker.io/apache/tika:latest
-    container_name: paperless-ngx-tika
-    restart: unless-stopped
+   webserver:
+     image: ghcr.io/paperless-ngx/paperless-ngx:latest
+     container_name: paperless-ngx
+     user: "1000:1000"
+     #https://github.com/paperless-ngx/paperless-ngx/blob/main/docker/compose/docker-compose.sqlite-tika.yml
+     #https://docs.paperless-ngx.com/setup/#installation
+     restart: unless-stopped
+     depends_on:
+       - broker
+       - gotenberg
+       - tika
+     ports:
+       - "8002:8000"
+     expose:
+       - 8000 # Internal webserver port for reverse proxy or internal access
+     volumes:
+       - data:/usr/src/paperless/data
+       - media:/usr/src/paperless/media
+       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/paperless-ngx/export:/usr/src/paperless/export
+       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/paperless-ngx/consume:/usr/src/paperless/consume
+     environment:
+       PAPERLESS_REDIS: redis://broker:6379
+       PAPERLESS_TIKA_ENABLED: 1
+       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+       PAPERLESS_TIKA_ENDPOINT: http://tika:9998
 
 volumes:
   data:

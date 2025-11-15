@@ -14,7 +14,7 @@ services:
     expose:
       - 1411 # web interface
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER}/pocket-id:/app/data
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/pocket-id:/app/data
     # Optional healthcheck
     healthcheck:
       test: "curl -f http://localhost:1411/healthz"

@@ -79,7 +79,7 @@ services:
     container_name: homeassistant
     restart: unless-stopped
     network_mode: host
-    privileged: true  # Required for Bluetooth
+    privileged: true # Required for Bluetooth
     environment:
       - PUID=1000
       - PGID=1000

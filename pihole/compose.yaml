@@ -19,9 +19,11 @@ services:
     ports:
       - 53:53/tcp      # DNS (TCP, external mapping)
       - 53:53/udp      # DNS (UDP, external mapping)
-      # - 81:80/tcp    # Web interface (external mapping, recommended to use reverse proxy instead)
-      # - 443:443/tcp  # HTTPS (self-signed cert, external mapping, recommended to use reverse proxy instead)
-      # - 67:67/udp    # DHCP server (external mapping, optional)
+      # Disabled: Use reverse proxy instead
+      # - 81:80/tcp    # Web interface (external mapping)
+      # - 443:443/tcp  # HTTPS (self-signed cert, external mapping)
+      # Disabled: Uncomment if using Pi-hole as DHCP server
+      # - 67:67/udp    # DHCP server (external mapping)
     expose:
       - 80  # Web interface (internal, for reverse proxy or internal access)
       - 443  # HTTPS (self-signed cert, internal, for reverse proxy or internal access)
@@ -38,6 +40,12 @@ services:
       # - NET_ADMIN    # Required for DHCP
       # - SYS_TIME     # Required for NTP
       # - SYS_NICE     # Optional, for better performance
+    healthcheck:
+      test: ["CMD", "dig", "@127.0.0.1", "pi.hole", "+short"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     restart: unless-stopped
     networks:
       - pihole_network

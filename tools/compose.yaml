@@ -3,6 +3,12 @@
 #
 # Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
 #
+# Security Warning: Docker Socket Access
+# The cup service mounts /var/run/docker.sock, which grants full access to the Docker daemon.
+# This is required for Docker integration but poses a security risk in untrusted networks.
+# - Only enable this in trusted internal networks
+# - See: https://docs.docker.com/engine/security/
+#
 # Required environment variables:
 # - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
 # - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
@@ -10,6 +16,7 @@
 # Optional environment variables:
 # - TELEGRAM_API_ID: Telegram API ID for telegram-files
 # - TELEGRAM_API_HASH: Telegram API hash for telegram-files
+# - FILEBROWSER_ADMIN_PASSWORD: Admin password for FileBrowser (default: admin)
 
 services:
   convertx:
@@ -48,7 +55,7 @@ services:
     container_name: filebrowser-quantum
     environment:
       FILEBROWSER_CONFIG: "data/config.yaml"
-      FILEBROWSER_ADMIN_PASSWORD: admin
+      FILEBROWSER_ADMIN_PASSWORD: ${FILEBROWSER_ADMIN_PASSWORD}
       TZ: "Europe/Rome"
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/test:/srv
