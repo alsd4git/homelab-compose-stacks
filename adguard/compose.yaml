@@ -42,5 +42,5 @@ services:
       - 5443/tcp  # DNSCrypt (TCP, internal, for reverse proxy or internal access)
       - 5443/udp  # DNSCrypt (UDP, internal, for reverse proxy or internal access)
     volumes:  # Mount host directories as volumes inside the container
-      - ${DOCKER_DATA_BASEFOLDER}/adguard-home/work:/opt/adguardhome/work  # Mount '/my/own/workdir' to '/opt/adguardhome/work'
-      - ${DOCKER_DATA_BASEFOLDER}/adguard-home/confdir:/opt/adguardhome/conf  # Mount '/my/own/confdir' to '/opt/adguardhome/conf'
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/adguard-home/work:/opt/adguardhome/work  # Mount '/my/own/workdir' to '/opt/adguardhome/work'
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/adguard-home/confdir:/opt/adguardhome/conf  # Mount '/my/own/confdir' to '/opt/adguardhome/conf'
