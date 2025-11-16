@@ -1,7 +1,7 @@
 # Automation Stack
 # This stack provides Docker event automation, image monitoring, and container updates.
 # Services:
-# 1. docker-telegram-notifier: Sends Docker events to Telegram
+# 1. notifier: Sends Docker events to Telegram
 # 2. diun: Monitors Docker images for updates
 # 3. watchtower: Automatically updates containers
 #

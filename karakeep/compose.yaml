@@ -4,11 +4,10 @@
 # Note: Both mapped and exposed ports are documented. The long-term plan is to reduce direct port exposure in favor of reverse proxying for internal services.
 #
 # Required environment variables:
-# - DOCKER_DATA_BASEFOLDER: Base folder for persistent data
+# - KARAKEEP_VERSION: Version of KaraKeep to use (default: release)
 #
 # Optional environment variables:
-# - KARAKEEP_VERSION: Version of KaraKeep to use (default: release)
-# - OPENAI_API_KEY: API key for OpenAI features
+# - OPENAI_API_KEY: API key for OpenAI features (currently commented out in web service)
 
 # docs https://docs.karakeep.app/Installation/docker
 # migrated from hoarder

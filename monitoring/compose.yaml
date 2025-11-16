@@ -7,7 +7,7 @@
 # Several services in this stack require elevated privileges:
 # - dashdot: runs as privileged=true (full host access) for system metrics
 # - homeassistant: runs as privileged=true and network_mode=host (required for Bluetooth)
-# - dozzle, glances, homarr-new, homepage: mount /var/run/docker.sock (Docker daemon access)
+# - dozzle, glances, homarr: mount /var/run/docker.sock (Docker daemon access)
 # - beszel-agent: mounts /var/run/docker.sock for container monitoring
 # These are necessary for monitoring functionality but should only be used in trusted networks.
 # See: https://docs.docker.com/engine/security/

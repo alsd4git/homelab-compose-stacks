@@ -18,7 +18,6 @@
 # - POCKET_ID_CLIENT_ID: Client ID for Pocket ID OAuth application
 # - POCKET_ID_CLIENT_SECRET: Client Secret for Pocket ID OAuth application
 #   Note: Register OAuth app in Pocket ID with callback URL: https://tinyauth.{YOUR_DOMAIN}/api/oauth/callback/pocketid
-# - TINYAUTH_SECRET: Deprecated in v4 (kept for reference, no longer needed)
 #
 # Optional environment variables (VaultLS):
 # - VAULTLS_API_SECRET: Secret key for VaultLS

@@ -9,7 +9,6 @@
 #
 # Minimal changes made to this file:
 # - Modified Watchtower labels (com.centurylinklabs.watchtower.enable=false)
-# - Added stack.env for Portainer support
 #
 # When updating from upstream:
 # 1. Download the latest docker-compose.yml from releases
@@ -18,7 +17,7 @@
 #
 # Official Immich documentation: https://immich.app/docs/install/docker-compose
 #
-# this file contains a few env variables that you have to manually set in portainer or replace before deploy with the actual text
+# Required environment variables:
 # - ${UPLOAD_LOCATION}
 # - ${DB_DATA_LOCATION}
 # - ${IMMICH_VERSION}
