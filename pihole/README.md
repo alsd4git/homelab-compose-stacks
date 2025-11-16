@@ -90,8 +90,10 @@ To add custom domain records (e.g., `*.yourdomain.com`), create a file in the dn
    address=/yourdomain.com/192.168.1.100
    address=/*.yourdomain.com/192.168.1.100
 
+
    # Add CNAME records
    cname=subdomain.yourdomain.com,host.yourdomain.com
+
 
    # Add PTR records (reverse DNS)
    ptr-record=1.1.168.192.in-addr.arpa,host.yourdomain.com

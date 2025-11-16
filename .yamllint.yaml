@@ -1,0 +1,18 @@
+extends: default
+
+rules:
+  line-length:
+    max: 300
+    allow-non-breakable-words: true
+    level: warning
+  document-start:
+    present: false
+  truthy:
+    level: warning
+  comments:
+    min-spaces-from-content: 1
+    level: warning
+  comments-indentation:
+    level: warning
+  empty-lines:
+    level: warning

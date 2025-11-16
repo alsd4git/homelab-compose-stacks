@@ -42,15 +42,15 @@ services:
       # > (Folded Style): preserve line breaks but removes whitespace
       DIUN_NOTIF_TELEGRAM_TEMPLATEBODY: >
         DIUN 🐳:
-        Docker tag 
+        Docker tag
         {{ if .Entry.Image.HubLink }}
         [{{ .Entry.Image }}]({{ .Entry.Image.HubLink }})
         {{ else }}
         {{ .Entry.Image }}
-        {{ end }} 
+        {{ end }}
         which you subscribed to through {{ .Entry.Provider }} provider
-        has been 
-        {{ if (eq .Entry.Status "new") }}newly added{{ else }}updated{{ end }} 
+        has been
+        {{ if (eq .Entry.Status "new") }}newly added{{ else }}updated{{ end }}
         on {{ escapeMarkdown .Meta.Hostname }}.
     restart: always
 

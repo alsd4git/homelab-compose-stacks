@@ -155,6 +155,17 @@ Each stack folder contains:
    docker compose up -d
    ```
 
+## Development
+
+### Pre-commit Hooks
+
+1. Install [uv](https://github.com/astral-sh/uv) if you don't already have it.
+2. Install the hook runner: `uv tool install pre-commit`
+3. Install the repo hooks: `uv run pre-commit install`
+4. (Optional) Check the entire tree: `uv run pre-commit run --all-files`
+
+The configuration keeps YAML consistent with `yamllint`, enforces common whitespace hygiene, and validates `.env` and `.env.example` files with `dotenv-linter`. `uv run` ensures `pre-commit` executes with the Python version and environment managed by uv.
+
 ## Documentation
 
 - Individual stack READMEs for detailed documentation

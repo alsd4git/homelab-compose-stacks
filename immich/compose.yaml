@@ -120,5 +120,5 @@ networks:
     external: true
 
 volumes:
-   model-cache:
-   redis_data:
+  model-cache:
+  redis_data:
