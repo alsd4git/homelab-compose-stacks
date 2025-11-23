@@ -7,6 +7,7 @@
 # - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
 # - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
 # - SONARR_API_KEY: API key for Sonarr
+# - AW_APP_KEY: Application key for aw-downloader
 #
 # Optional environment variables:
 # - LOG_LEVEL: FlareSolverr log level (default: info)
@@ -40,6 +41,20 @@ services:
     depends_on:
       sonarr:
         condition: service_healthy
+    networks:
+      - media_network
+      - npm_network
+
+  aw-downloader:
+    image: ghcr.io/savvymeat/aw-downloader:latest
+    container_name: aw-downloader
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/aw-downloader:/app/storage
+      ## TV Shows folders
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/anime:/media/anime
+    environment:
+      - APP_KEY=${AW_APP_KEY}
+    restart: unless-stopped
     networks:
       - media_network
       - npm_network
@@ -111,6 +126,7 @@ services:
     image: linuxserver/prowlarr:latest
     container_name: prowlarr
     restart: unless-stopped
+    dns: 1.1.1.1
     ports:
       - 9696:9696 # Web UI/API (external mapping)
     expose:
@@ -128,7 +144,7 @@ services:
   qbittorrent:
     image: linuxserver/qbittorrent:latest
     container_name: qbittorrent
-    restart: unless-stopped
+    restart: always
     ports:
       - 8003:8003 # Web UI (external mapping)
       - 6881:6881 # Torrent (TCP, external mapping)
