@@ -199,9 +199,6 @@ services:
       - CHOWN
       - SETUID
       - SETGID
-    sysctls:
-      net.ipv4.conf.all.arp_ignore: 1
-      net.ipv4.conf.all.arp_announce: 2
     environment:
       - LISTEN_ADDR=${LISTEN_ADDR:-0.0.0.0}
       - PORT=20211
@@ -221,10 +218,6 @@ services:
     mem_reservation: 1024m
     cpu_shares: 512
     pids_limit: 512
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   scrutiny:
     image: ghcr.io/analogj/scrutiny:master-omnibus
