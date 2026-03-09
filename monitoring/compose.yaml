@@ -7,7 +7,7 @@
 # Several services in this stack require elevated privileges:
 # - dashdot: runs as privileged=true (full host access) for system metrics
 # - homeassistant: runs as privileged=true and network_mode=host (required for Bluetooth)
-# - dozzle, glances, homarr: mount /var/run/docker.sock (Docker daemon access)
+# - dozzle, glances, homarr, homepage: mount /var/run/docker.sock (Docker daemon access)
 # - beszel-agent: mounts /var/run/docker.sock for container monitoring
 # These are necessary for monitoring functionality but should only be used in trusted networks.
 # See: https://docs.docker.com/engine/security/
@@ -135,10 +135,24 @@ services:
     expose:
       - 8123 # Web UI (internal, for reverse proxy or internal access)
 
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - 3001:3000 # Web UI (external mapping)
+    expose:
+      - 3000 # Web UI (internal, for reverse proxy or internal access)
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - monitoring_network
+
   homebox:
     image: ghcr.io/sysadminsmedia/homebox:latest-rootless
     container_name: homebox
-    restart: unless-stopped
+    restart: always
     ports:
       - 3100:7745 # Web UI (external mapping)
     expose:
@@ -171,22 +185,46 @@ services:
       - monitoring_network
 
   netalertx:
-    image: jokobsk/netalertx:latest
+    image: ghcr.io/netalertx/netalertx:latest
     container_name: netalertx
     restart: unless-stopped
     network_mode: host
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - NET_BIND_SERVICE
+      - CHOWN
+      - SETUID
+      - SETGID
+    sysctls:
+      net.ipv4.conf.all.arp_ignore: 1
+      net.ipv4.conf.all.arp_announce: 2
     environment:
-      - TZ=Europe/Rome
+      - LISTEN_ADDR=${LISTEN_ADDR:-0.0.0.0}
       - PORT=20211
-      - PUID=1000
-      - PGID=1000
+      - GRAPHQL_PORT=${GRAPHQL_PORT:-20212}
     volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/netalertx/config:/app/config
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/netalertx/db:/app/db
-    ports:
-      - 20211:20211 # Web UI (external mapping)
-    expose:
-      - 20211 # Web UI (internal, for reverse proxy or internal access)
+      - type: bind
+        source: ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/netalertx/data
+        target: /data
+        read_only: false
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+    tmpfs:
+      - "/tmp:uid=${NETALERTX_UID:-20211},gid=${NETALERTX_GID:-20211},mode=1700,rw,noexec,nosuid,nodev,async,noatime,nodiratime"
+    mem_limit: 2048m
+    mem_reservation: 1024m
+    cpu_shares: 512
+    pids_limit: 512
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   scrutiny:
     image: ghcr.io/analogj/scrutiny:master-omnibus

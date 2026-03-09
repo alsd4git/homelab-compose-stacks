@@ -116,7 +116,7 @@ services:
       DOCKER_STEPCA_INIT_DNS_NAMES: ${STEP_CA_DNS_NAMES}
       DOCKER_STEPCA_INIT_PASSWORD: ${STEP_CA_PASSWORD}
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://127.0.0.1:9000/health"]
+      test: ["CMD", "curl", "-k", "-f", "https://127.0.0.1:9000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -150,7 +150,7 @@ services:
       - npm_network
 
   pocket-id:
-    image: ghcr.io/pocket-id/pocket-id:v1
+    image: ghcr.io/pocket-id/pocket-id:v2
     container_name: pocket-id
     restart: unless-stopped
     # this part is important to read variables from inside the container

@@ -17,34 +17,6 @@
 name: media
 
 services:
-  animedownloader:
-    image: ghcr.io/mainkronos/anime_downloader:latest
-    container_name: animedownloader
-    restart: unless-stopped
-    # Disabled: Use reverse proxy instead (port is exposed below)
-    # ports:
-    #   - 5000:5000 # Web UI/API (external mapping)
-    expose:
-      - 5000 # Web UI/API (internal, for reverse proxy or internal access)
-    environment:
-      - SONARR_URL=http://sonarr:8989
-      - API_KEY=${SONARR_API_KEY}
-      - TZ=Europe/Rome
-      - PUID=1000
-      - PGID=1000
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/animedownloader/connections:/src/script
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/animedownloader/data:/src/database
-      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/anime:/media/anime
-      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads:/downloads
-      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/tvseries:/media/tvseries
-    depends_on:
-      sonarr:
-        condition: service_healthy
-    networks:
-      - media_network
-      - npm_network
-
   aw-downloader:
     image: ghcr.io/savvymeat/aw-downloader:latest
     container_name: aw-downloader
@@ -103,9 +75,9 @@ services:
       - media_network
       - npm_network
 
-  jellyseerr:
-    image: fallenbagel/jellyseerr:latest
-    container_name: jellyseerr
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    container_name: seerr
     restart: unless-stopped
     # Disabled: Use reverse proxy instead (port is exposed below)
     # ports:

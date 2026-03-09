@@ -22,13 +22,6 @@ services:
     image: docker.io/library/redis:7
     container_name: paperless-ngx-broker-redis
     restart: unless-stopped
-    expose:
-      - 6379 # Internal Redis port for paperless
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
     volumes:
       - redisdata:/data
     networks:
@@ -38,8 +31,6 @@ services:
     image: docker.io/gotenberg/gotenberg:8.7
     container_name: paperless-ngx-gotenberg
     restart: unless-stopped
-    expose:
-      - 3000 # Internal Gotenberg port for paperless
     # The gotenberg chromium route is used to convert .eml files. We do not
     # want to allow external content like tracking pixels or even javascript.
     command:
@@ -53,8 +44,6 @@ services:
     image: docker.io/apache/tika:latest
     container_name: paperless-ngx-tika
     restart: unless-stopped
-    expose:
-      - 9998 # Internal Tika port for paperless
     networks:
       - paperless_network
 
@@ -71,8 +60,6 @@ services:
       - tika
     ports:
       - 8002:8000 # Web UI (external mapping)
-    expose:
-      - 8000 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - data:/usr/src/paperless/data
       - media:/usr/src/paperless/media
