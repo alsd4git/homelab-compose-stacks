@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pre-commit
+        run: python -m pip install --upgrade pip pre-commit
+
+      - name: Run linters
+        run: pre-commit run --all-files
+
+  compose-validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stack:
+          - automation
+          - immich
+          - infrastructure
+          - karakeep
+          - media
+          - monitoring
+          - paperless-ngx
+          - pihole
+          - rustdesk-relay
+          - utilities
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate compose config
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${{ matrix.stack }}"
+          cp .env.example .env
+          if grep -q "stack.env" compose.yaml; then
+            cp .env.example stack.env
+          fi
+          docker compose -f compose.yaml --env-file .env.example config >/dev/null

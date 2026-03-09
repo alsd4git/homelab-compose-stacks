@@ -57,7 +57,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Nginx Proxy Manager | `jc21/nginx-proxy-manager:latest`  |
 | Step CA             | `smallstep/step-ca`                |
 | TinyAuth            | `ghcr.io/steveiliop56/tinyauth:v4` |
-| Pocket ID           | `ghcr.io/pocket-id/pocket-id:v1`   |
+| Pocket ID           | `ghcr.io/pocket-id/pocket-id:v2`   |
 | VaultLS             | `ghcr.io/7ritn/vaultls:latest`     |
 
 ## Usage

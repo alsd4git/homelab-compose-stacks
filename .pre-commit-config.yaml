@@ -27,3 +27,8 @@ repos:
       - id: yamllint
         files: "\\.ya?ml$"
         args: ["-c", ".yamllint.yaml"]
+  - repo: https://github.com/wemake-services/dotenv-linter
+    rev: 0.7.0
+    hooks:
+      - id: dotenv-linter
+        files: "(^|/)\\.env(\\.example)?$"
