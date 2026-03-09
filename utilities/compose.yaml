@@ -38,6 +38,7 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/convertx:/app/data
     networks:
       - tools_network
+
   cup:
     image: ghcr.io/sergi0g/cup:latest
     container_name: cup
@@ -56,9 +57,9 @@ services:
     image: gtstef/filebrowser
     container_name: filebrowser-quantum
     environment:
-      FILEBROWSER_CONFIG: "data/config.yaml"
+      FILEBROWSER_CONFIG: data/config.yaml
       FILEBROWSER_ADMIN_PASSWORD: ${FILEBROWSER_ADMIN_PASSWORD}
-      TZ: "Europe/Rome"
+      TZ: Europe/Rome
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/test:/srv
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/filebrowser-quantum/data:/home/filebrowser/data # mount the data folder you created with the config file.

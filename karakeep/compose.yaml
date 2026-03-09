@@ -36,7 +36,7 @@ services:
     container_name: karakeep-meilisearch
     restart: unless-stopped
     env_file:
-      - stack.env # for portainer
+      - stack.env # for Portainer
     environment:
       MEILI_NO_ANALYTICS: "true"
     volumes:
@@ -57,7 +57,7 @@ services:
     expose:
       - 3000 # Web UI (internal, for reverse proxy or internal access)
     env_file:
-      - stack.env # for portainer
+      - stack.env # for Portainer
     environment:
       MEILI_ADDR: http://meilisearch:7700
       BROWSER_WEB_URL: http://chrome:9222
