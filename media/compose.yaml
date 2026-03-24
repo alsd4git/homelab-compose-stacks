@@ -32,19 +32,31 @@ services:
       - npm_network
 
   flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
+    image: ghcr.io/alsd4git/flaresolverr:latest
     container_name: flaresolverr
     restart: unless-stopped
-    # Disabled: Use reverse proxy instead (port is exposed below)
+    # Disabled: use reverse proxy instead (port is exposed below)
     # ports:
     #   - 8191:8191 # API (external mapping)
     expose:
       - 8191 # API (internal, for reverse proxy or internal access)
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_FILE=${LOG_FILE:-none}
       - LOG_HTML=${LOG_HTML:-false}
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
-      - TZ=Europe/London
+      - TZ=${TZ:-Europe/Rome}
+      - LANG=${LANG:-en_US.UTF-8}
+      - USER_AGENT=${USER_AGENT:-Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36}
+      - BROWSER_LANGUAGES=${BROWSER_LANGUAGES:-en-US,en,it}
+      - BROWSER_LOCALE=${BROWSER_LOCALE:-it}
+      - BROWSER_PLATFORM=${BROWSER_PLATFORM:-MacIntel}
+      - WINDOW_SIZE=${WINDOW_SIZE:-1470x715}
+      - SCREEN_SIZE=${SCREEN_SIZE:-1470x956}
+      - DEVICE_SCALE_FACTOR=${DEVICE_SCALE_FACTOR:-2}
+      - COOKIE_JAR_FILE=${COOKIE_JAR_FILE:-/config/cookie-jar.json}
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/flaresolverr:/config
     networks:
       - media_network
       - npm_network

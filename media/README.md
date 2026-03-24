@@ -9,14 +9,14 @@ A comprehensive media management and automation stack for your homelab environme
 - **Sonarr**: TV show management and automation
 - **Radarr**: Movie management and automation
 - **Prowlarr**: Indexer management for Sonarr and Radarr
-- **Jellyseerr**: Media request management
+- **Seerr**: Media request management
 - **Jellyfin**: Media streaming server
 
 ### Download Management
 
 - **qBittorrent**: Torrent client with Vuetorrent UI
 - **FlareSolverr**: Cloudflare bypass solution
-- **Anime Downloader**: Automated anime downloading and management
+- **AW Downloader**: Automated anime downloading and management
 
 ## Configuration
 
@@ -49,9 +49,9 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | **Prowlarr**         | `9696`         | `9696`         | Indexer management.                            |
 | **qBittorrent**      | `8003`, `6881` | `8003`, `6881` | Torrent client and web UI.                     |
 | **Jellyfin**         | -              | `8096`         | Media streaming (exposed via reverse proxy).   |
-| **Jellyseerr**       | -              | `5055`         | Media requests (exposed via reverse proxy).    |
+| **Seerr**            | -              | `5055`         | Media requests (exposed via reverse proxy).    |
 | **FlareSolverr**     | -              | `8191`         | Cloudflare bypass (internal service).          |
-| **Anime Downloader** | -              | `5000`         | Anime downloading (exposed via reverse proxy). |
+| **AW Downloader**    | -              | `5000`         | Anime downloading (exposed via reverse proxy). |
 
 > **Note:** Most services are exposed internally and are intended to be accessed via a reverse proxy. Only essential ports are mapped externally.
 
@@ -59,10 +59,10 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 | Service          | Image                                        |
 | ---------------- | -------------------------------------------- |
-| Anime Downloader | `ghcr.io/mainkronos/anime_downloader:latest` |
-| FlareSolverr     | `ghcr.io/flaresolverr/flaresolverr:latest`   |
+| AW Downloader    | `ghcr.io/savvymeat/aw-downloader:latest`     |
+| FlareSolverr     | `ghcr.io/alsd4git/flaresolverr:latest`       |
 | Jellyfin         | `linuxserver/jellyfin:latest`                |
-| Jellyseerr       | `fallenbagel/jellyseerr:latest`              |
+| Seerr            | `ghcr.io/seerr-team/seerr:latest`             |
 | Prowlarr         | `linuxserver/prowlarr:latest`                |
 | qBittorrent      | `linuxserver/qbittorrent:latest`             |
 | Radarr           | `linuxserver/radarr:latest`                  |
@@ -74,7 +74,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
    ```bash
    # Create required directories
-   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{sonarr,radarr,prowlarr,jellyfin,jellyseerr,qbittorrent,animedownloader}
+   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{sonarr,radarr,prowlarr,jellyfin,jellyseerr,qbittorrent,aw-downloader}
    mkdir -p ${DOCKER_MEDIA_BASEFOLDER}/{tvseries,anime,downloads}
    ```
 
@@ -86,7 +86,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 3. **Access Services**:
    - Access Sonarr, Radarr, Prowlarr, and qBittorrent on their externally mapped ports.
-   - Access Jellyfin, Jellyseerr, and Anime Downloader through your reverse proxy.
+   - Access Jellyfin, Seerr, and AW Downloader through your reverse proxy.
 
 ## Network Configuration
 
@@ -124,4 +124,5 @@ All services are connected through a bridge network for internal communication. 
 - [Jellyfin Documentation](https://jellyfin.org/docs)
 - [qBittorrent Documentation](https://github.com/qbittorrent/qBittorrent/wiki)
 - [FlareSolverr Documentation](https://github.com/FlareSolverr/FlareSolverr)
-- [Anime Downloader Documentation](https://github.com/mainkronos/anime_downloader)
+- [Seerr Documentation](https://github.com/seerr-team/seerr)
+- [AW Downloader Documentation](https://github.com/savvymeat/aw-downloader)
