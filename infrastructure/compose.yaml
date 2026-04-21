@@ -36,8 +36,6 @@ services:
     image: qmcgaw/ddns-updater
     dns:
       - 1.1.1.1
-    ports:
-      - 8001:8000/tcp # Web UI for monitoring and management (external mapping)
     expose:
       - 8000 # Internal Web UI port for reverse proxy or internal access
     volumes:
@@ -155,7 +153,7 @@ services:
     restart: unless-stopped
     # this part is important to read variables from inside the container
     env_file:
-      - stack.env # for portainer
+      - stack.env # for Portainer
     expose:
       - 1411 # web interface
     volumes:

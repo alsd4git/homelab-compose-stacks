@@ -12,7 +12,7 @@
 #
 # When updating from upstream:
 # 1. Download the latest docker-compose.yml from releases
-# 2. Reapply ONLY the Watchtower labels and stack.env changes above
+# 2. Reapply ONLY the Watchtower labels and env changes above
 # 3. DO NOT commit large structural changes unless absolutely necessary
 #
 # Official Immich documentation: https://immich.app/docs/install/docker-compose
@@ -40,8 +40,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
     env_file:
       - stack.env
-    ports:
-      - 2283:2283 # Web UI/API (external mapping)
+    environment:
+      IMMICH_HOST: ${IMMICH_HOST:-0.0.0.0}
     expose:
       - 2283 # Web UI/API (internal, for reverse proxy or internal access)
     depends_on:
@@ -69,6 +69,8 @@ services:
       - model-cache:/cache
     env_file:
       - stack.env
+    environment:
+      IMMICH_HOST: ${IMMICH_HOST:-0.0.0.0}
     restart: always
     healthcheck:
       disable: false

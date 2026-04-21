@@ -36,10 +36,9 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 ## Ports
 
-- 2283:2283 (mapped): Web UI/API (external)
-- 2283 (exposed): Web UI/API (internal, for reverse proxy or internal access)
+- `2283` (exposed): Web UI/API (internal, for reverse proxy or internal access)
 
-> **Note:** Both mapped and exposed ports are documented for clarity. The long-term plan is to reduce direct port exposure and use a reverse proxy for internal services.
+> **Note:** The stack is intended to be reached through the reverse proxy on `npm_network`.
 
 ## Container Images
 
@@ -59,7 +58,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
    docker compose up -d
    ```
 
-3. Access the web interface at `http://your-server:2283`
+3. Access the web interface through Nginx Proxy Manager at `http://immich_server:2283`
 
 ## Security Notes
 

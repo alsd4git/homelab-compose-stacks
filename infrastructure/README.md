@@ -41,7 +41,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Service                 | External Port     | Internal Port     | Description                                            |
 | ----------------------- | ----------------- | ----------------- | ------------------------------------------------------ |
 | **Nginx Proxy Manager** | `80`, `443`, `83` | `80`, `443`, `81` | HTTP/S traffic and admin UI.                           |
-| **DDNS Updater**        | `8001`            | `8000`            | Web UI for monitoring DDNS updates.                    |
+| **DDNS Updater**        | -                 | `8000`            | Web UI for monitoring DDNS updates.                    |
 | **Step CA**             | `9001`            | `9000`            | Private certificate authority API.                     |
 | **Pocket ID**           | -                 | `1411`            | OIDC provider (exposed via reverse proxy).             |
 | **TinyAuth**            | -                 | `3000`            | Authentication middleware (exposed via reverse proxy). |
@@ -74,7 +74,6 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 3. **Access Services**:
    - **Nginx Proxy Manager**: `http://<your-server-ip>:83`
-   - **DDNS Updater**: `http://<your-server-ip>:8001`
    - Other services should be accessed through the reverse proxy you configure in Nginx Proxy Manager.
 
 ## Security Considerations
