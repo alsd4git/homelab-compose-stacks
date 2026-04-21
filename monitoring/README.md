@@ -52,21 +52,21 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 ## Services & Ports
 
-| Service               | External Port | Internal Port | Description                          |
-| --------------------- | ------------- | ------------- | ------------------------------------ |
-| **Beszel**            | `8090`        | `8090`        | Web interface for server monitoring. |
-| **Dashdot**           | `3002`        | `3001`        | Modern server dashboard.             |
-| **Dozzle**            | `8081`        | `8080`        | Real-time Docker log viewer.         |
-| **Glances**           | `61208`       | `61208`       | System monitoring web UI/API.        |
-| **Home Assistant**    | `8123`        | `8123`        | Home automation platform.            |
-| **Homebox**           | `3100`        | `7745`        | File management and sharing.         |
-| **Homarr**            | `7575`        | `7575`        | Customizable service dashboard.      |
-| **NetAlertX**         | `20211`       | `20211`       | Network device monitoring.           |
-| **Scrutiny**          | `8083`        | `8080`        | Hard drive health monitoring UI.     |
-| **Speedtest Tracker** | `8084`        | `80`          | Internet speed test tracker.         |
-| **WatchYourLAN**      | `8840`        | `8840`        | Network device discovery.            |
+| Service               | Internal Port | Access Pattern                    | Description                          |
+| --------------------- | ------------- | --------------------------------- | ------------------------------------ |
+| **Beszel**            | `8090`        | `http://beszel:8090`              | Web interface for server monitoring. |
+| **Dashdot**           | `3001`        | `http://dashdot:3001`             | Modern server dashboard.             |
+| **Dozzle**            | `8080`        | `http://dozzle:8080`              | Real-time Docker log viewer.         |
+| **Glances**           | `61208`       | `http://glances:61208`            | System monitoring web UI/API.        |
+| **Home Assistant**    | `8123`        | `http://<host-ip>:8123`           | Home automation platform.            |
+| **Homebox**           | `7745`        | `http://homebox:7745`             | Asset and inventory management.      |
+| **Homarr**            | `7575`        | `http://homarr:7575`              | Customizable service dashboard.      |
+| **NetAlertX**         | `20211`       | `http://<host-ip>:20211`          | Network device monitoring.           |
+| **Scrutiny**          | `8080`        | `http://scrutiny:8080`            | Hard drive health monitoring UI.     |
+| **Speedtest Tracker** | `80`          | `http://speedtest-tracker:80`     | Internet speed test tracker.         |
+| **WatchYourLAN**      | `8840`        | `http://<host-ip>:8840`           | Network device discovery.            |
 
-> **Note:** Both mapped (external) and exposed (internal) ports are documented. It is recommended to use a reverse proxy for external access rather than exposing ports directly.
+> **Note:** The services that sit on `npm_network` are meant to be reverse-proxied via Nginx Proxy Manager. Host-network services keep their direct host endpoints.
 
 ## Container Images
 

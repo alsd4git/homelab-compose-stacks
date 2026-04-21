@@ -30,15 +30,12 @@ services:
     image: henrygd/beszel:latest
     container_name: beszel
     restart: unless-stopped
-    ports:
-      - 8090:8090 # Web interface (external mapping)
     expose:
       - 8090 # Web interface (internal, for reverse proxy or internal access)
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_data:/beszel_data
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_socket:/beszel_socket
     networks:
-      - monitoring_network
       - npm_network
 
   beszel-agent:
@@ -63,8 +60,6 @@ services:
     container_name: dashdot
     restart: unless-stopped
     privileged: true
-    ports:
-      - 3002:3001 # Web UI (external mapping)
     expose:
       - 3001 # Web UI (internal, for reverse proxy or internal access)
     environment:
@@ -75,14 +70,12 @@ services:
     volumes:
       - /:/mnt/host:ro
     networks:
-      - monitoring_network
+      - npm_network
 
   dozzle:
     image: amir20/dozzle:latest
     container_name: dozzle
     restart: unless-stopped
-    ports:
-      - 8081:8080 # Web UI (external mapping)
     expose:
       - 8080 # Web UI (internal, for reverse proxy or internal access)
     volumes:
@@ -91,14 +84,13 @@ services:
       - DOZZLE_ENABLE_ACTIONS=true
       - DOZZLE_ENABLE_SHELL=true
     networks:
-      - monitoring_network
+      - npm_network
 
   glances:
     image: nicolargo/glances:latest-full
     container_name: glances
+    hostname: glances
     restart: unless-stopped
-    ports:
-      - 61208:61208 # Web UI/API (external mapping)
     expose:
       - 61208 # Web UI/API (internal, for reverse proxy or internal access)
     pid: host
@@ -111,7 +103,7 @@ services:
     environment:
       - GLANCES_OPT=-w
     networks:
-      - monitoring_network
+      - npm_network
 
   homeassistant:
     image: linuxserver/homeassistant:latest
@@ -139,22 +131,18 @@ services:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     restart: unless-stopped
-    ports:
-      - 3001:3000 # Web UI (external mapping)
     expose:
       - 3000 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homepage/config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - monitoring_network
+      - npm_network
 
   homebox:
     image: ghcr.io/sysadminsmedia/homebox:latest-rootless
     container_name: homebox
     restart: always
-    ports:
-      - 3100:7745 # Web UI (external mapping)
     expose:
       - 7745 # Web UI (internal, for reverse proxy or internal access)
     environment:
@@ -166,7 +154,7 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homebox:/data
     user: "1000:1000"
     networks:
-      - monitoring_network
+      - npm_network
 
   homarr:
     container_name: homarr
@@ -177,12 +165,10 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/appdata:/appdata
     environment:
       - SECRET_ENCRYPTION_KEY=${HOMARR_SECRET_ENCRYPTION_KEY}
-    ports:
-      - 7575:7575 # Web UI (external mapping)
     expose:
       - 7575 # Web UI (internal, for reverse proxy or internal access)
     networks:
-      - monitoring_network
+      - npm_network
 
   netalertx:
     image: ghcr.io/netalertx/netalertx:latest
@@ -223,9 +209,6 @@ services:
     image: ghcr.io/analogj/scrutiny:master-omnibus
     container_name: scrutiny
     restart: unless-stopped
-    ports:
-      - 8083:8080 # Web UI (external mapping)
-      - 8086:8086 # InfluxDB (external mapping)
     expose:
       - 8080 # Web UI (internal, for reverse proxy or internal access)
       - 8086 # InfluxDB (internal, for reverse proxy or internal access)
@@ -240,14 +223,12 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/scrutiny/influxdb2:/opt/scrutiny/influxdb
       - /run/udev:/run/udev:ro
     networks:
-      - monitoring_network
+      - npm_network
 
   speedtest-tracker:
     image: linuxserver/speedtest-tracker:latest
     container_name: speedtest-tracker
     restart: unless-stopped
-    ports:
-      - 8084:80 # Web UI (external mapping)
     expose:
       - 80 # Web UI (internal, for reverse proxy or internal access)
     environment:
@@ -262,7 +243,7 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/speedtest-tracker:/config
     networks:
-      - monitoring_network
+      - npm_network
 
   wyl:
     image: aceberg/watchyourlan:v2
@@ -286,9 +267,6 @@ services:
       - 8840 # Web UI (internal, for reverse proxy or internal access)
 
 networks:
-  monitoring_network:
-    name: monitoring_network
-    driver: bridge
   npm_network: # to expose container to NPM for reverse proxy
     name: npm_network
     driver: bridge
