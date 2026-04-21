@@ -35,8 +35,6 @@ services:
     image: getmeili/meilisearch:v1.13.3
     container_name: karakeep-meilisearch
     restart: unless-stopped
-    env_file:
-      - stack.env # for Portainer
     environment:
       MEILI_NO_ANALYTICS: "true"
     volumes:
@@ -52,13 +50,13 @@ services:
     restart: unless-stopped
     volumes:
       - data:/data
-    ports:
-      - 3005:3000 # Web UI (external mapping)
     expose:
       - 3000 # Web UI (internal, for reverse proxy or internal access)
-    env_file:
-      - stack.env # for Portainer
     environment:
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      DISABLE_SIGNUPS: ${DISABLE_SIGNUPS:-false}
       MEILI_ADDR: http://meilisearch:7700
       BROWSER_WEB_URL: http://chrome:9222
       # OPENAI_API_KEY: ${OPENAI_API_KEY:-}

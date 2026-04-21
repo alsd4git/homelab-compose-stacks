@@ -44,10 +44,6 @@ The stack uses the following named volumes for data persistence:
 
 ## Port Documentation
 
-### External Ports (Mapped to Host)
-
-- `3005`: Web interface (external mapping)
-
 ### Internal Ports (Exposed for Reverse Proxy)
 
 - `3000`: Web interface (internal, for reverse proxy or internal access)
@@ -77,7 +73,7 @@ The stack uses the following named volumes for data persistence:
    ```
 
 3. **Access Web Interface**:
-   - Navigate to `http://your-server:3005`
+   - Navigate to `http://karakeep:3000` through Nginx Proxy Manager
    - Complete the initial setup process
 
 ## Components
@@ -126,7 +122,7 @@ The stack uses the following named volumes for data persistence:
 ### Common Issues
 
 1. **Authentication Problems**:
-   - Verify `NEXTAUTH_SECRET` is properly set in `stack.env`
+   - Verify `NEXTAUTH_SECRET` is properly set in `.env`
    - Check `NEXTAUTH_URL` matches your setup
    - Ensure `MEILI_MASTER_KEY` is correctly configured
 
@@ -164,7 +160,7 @@ The stack uses the following named volumes for data persistence:
 3. Test web interface accessibility:
 
    ```bash
-   curl http://localhost:3005
+   curl http://karakeep:3000
    ```
 
 ## Additional Resources
