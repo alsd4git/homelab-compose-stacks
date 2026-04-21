@@ -58,8 +58,6 @@ services:
       - broker
       - gotenberg
       - tika
-    ports:
-      - 8002:8000 # Web UI (external mapping)
     volumes:
       - data:/usr/src/paperless/data
       - media:/usr/src/paperless/media
