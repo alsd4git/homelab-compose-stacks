@@ -50,7 +50,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | **Sonarr**        | `8989`        | `http://sonarr:8989`        | TV show management.                           |
 | **Radarr**        | `7878`        | `http://radarr:7878`        | Movie management.                             |
 | **Prowlarr**      | `9696`        | `http://prowlarr:9696`      | Indexer management.                           |
-| **qBittorrent**   | `8003`        | `http://qbittorrent:8003`   | Torrent client and web UI.                    |
+| **qBittorrent**   | `6881`, `6881/udp` | `http://qbittorrent:8003` | Torrent client and web UI; torrent ports are mapped on host. |
 | **Jellyfin**      | `8096`        | `http://jellyfin:8096`      | Media streaming.                              |
 | **Seerr**         | `5055`        | `http://seerr:5055`         | Media requests.                               |
 | **Cinerr**        | `8080`        | `http://cinerr:8080`        | Media library browser.                        |
@@ -59,7 +59,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | **Byparr**        | `8191`        | `http://byparr:8191`        | Cloudflare bypass.                            |
 | **AW Downloader** | `6547`        | `http://aw-downloader:6547` | Anime downloading and management backend.     |
 
-> **Note:** All services are meant to be reached through `npm_network`; there are no host mappings in this stack.
+> **Note:** Most services are meant to be reached through `npm_network`; qBittorrent also publishes its torrent ports on the host for peer connectivity.
 
 ## Container Images
 

@@ -167,6 +167,9 @@ services:
     image: linuxserver/qbittorrent:latest
     container_name: qbittorrent
     restart: always
+    ports:
+      - 6881:6881 # Torrent (TCP, external mapping)
+      - 6881:6881/udp # Torrent (UDP, external mapping)
     expose:
       - 8003 # Web UI (internal, for reverse proxy or internal access)
       - 6881 # Torrent (TCP, internal, for internal container communication)
