@@ -11,11 +11,14 @@ A comprehensive media management and automation stack for your homelab environme
 - **Prowlarr**: Indexer management for Sonarr and Radarr
 - **Seerr**: Media request management
 - **Jellyfin**: Media streaming server
+- **Cinerr**: Media browser for library discovery
+- **Medialyze**: Media browser for library discovery
 
 ### Download Management
 
 - **qBittorrent**: Torrent client with Vuetorrent UI
 - **FlareSolverr**: Cloudflare bypass solution
+- **Byparr**: Cloudflare bypass solution
 - **AW Downloader**: Automated anime downloading and management
 
 ## Configuration
@@ -42,24 +45,30 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 ## Services & Ports
 
-| Service              | External Port  | Internal Port  | Description                                    |
-| -------------------- | -------------- | -------------- | ---------------------------------------------- |
-| **Sonarr**           | `8989`         | `8989`         | TV show management.                            |
-| **Radarr**           | `7878`         | `7878`         | Movie management.                              |
-| **Prowlarr**         | `9696`         | `9696`         | Indexer management.                            |
-| **qBittorrent**      | `8003`, `6881` | `8003`, `6881` | Torrent client and web UI.                     |
-| **Jellyfin**         | -              | `8096`         | Media streaming (exposed via reverse proxy).   |
-| **Seerr**            | -              | `5055`         | Media requests (exposed via reverse proxy).    |
-| **FlareSolverr**     | -              | `8191`         | Cloudflare bypass (internal service).          |
-| **AW Downloader**    | -              | `5000`         | Anime downloading (exposed via reverse proxy). |
+| Service           | Internal Port | Access Pattern              | Description                                   |
+| ----------------- | ------------- | --------------------------- | --------------------------------------------- |
+| **Sonarr**        | `8989`        | `http://sonarr:8989`        | TV show management.                           |
+| **Radarr**        | `7878`        | `http://radarr:7878`        | Movie management.                             |
+| **Prowlarr**      | `9696`        | `http://prowlarr:9696`      | Indexer management.                           |
+| **qBittorrent**   | `8003`        | `http://qbittorrent:8003`   | Torrent client and web UI.                    |
+| **Jellyfin**      | `8096`        | `http://jellyfin:8096`      | Media streaming.                              |
+| **Seerr**         | `5055`        | `http://seerr:5055`         | Media requests.                               |
+| **Cinerr**        | `8080`        | `http://cinerr:8080`        | Media library browser.                        |
+| **Medialyze**     | `8080`        | `http://medialyze:8080`     | Media library browser.                        |
+| **FlareSolverr**  | `8191`        | `http://flaresolverr:8191`  | Cloudflare bypass.                            |
+| **Byparr**        | `8191`        | `http://byparr:8191`        | Cloudflare bypass.                            |
+| **AW Downloader** | `6547`        | `http://aw-downloader:6547` | Anime downloading and management backend.     |
 
-> **Note:** Most services are exposed internally and are intended to be accessed via a reverse proxy. Only essential ports are mapped externally.
+> **Note:** All services are meant to be reached through `npm_network`; there are no host mappings in this stack.
 
 ## Container Images
 
 | Service          | Image                                        |
 | ---------------- | -------------------------------------------- |
 | AW Downloader    | `ghcr.io/savvymeat/aw-downloader:latest`     |
+| Cinerr           | `alexkouzel/cinerr:latest`                   |
+| Medialyze        | `ghcr.io/frederikemmer/medialyze:latest`     |
+| Byparr           | `ghcr.io/thephaseless/byparr:latest`         |
 | FlareSolverr     | `ghcr.io/alsd4git/flaresolverr:latest`       |
 | Jellyfin         | `linuxserver/jellyfin:latest`                |
 | Seerr            | `ghcr.io/seerr-team/seerr:latest`             |
@@ -74,7 +83,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
    ```bash
    # Create required directories
-   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{sonarr,radarr,prowlarr,jellyfin,jellyseerr,qbittorrent,aw-downloader}
+   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{sonarr,radarr,prowlarr,jellyfin,jellyseerr,qbittorrent,aw-downloader,cinerr,medialyze}
    mkdir -p ${DOCKER_MEDIA_BASEFOLDER}/{tvseries,anime,downloads}
    ```
 
@@ -85,12 +94,11 @@ This stack requires a `.env` file for configuration. A complete and recommended 
    ```
 
 3. **Access Services**:
-   - Access Sonarr, Radarr, Prowlarr, and qBittorrent on their externally mapped ports.
-   - Access Jellyfin, Seerr, and AW Downloader through your reverse proxy.
+   - Access services through Nginx Proxy Manager or directly via their container DNS names on `npm_network`.
 
 ## Network Configuration
 
-All services are connected through a bridge network for internal communication. External access is provided through mapped ports.
+All services are connected through `npm_network` for internal access and reverse proxying.
 
 ## Security Notes
 
