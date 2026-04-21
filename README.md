@@ -66,6 +66,7 @@ Dockerini provides a collection of Docker Compose stacks for various services an
 - [Paperless-ngx Stack](paperless-ngx/README.md) - Document management and archival
 - [Pi-hole Stack](pihole/README.md) - DNS sinkhole and network ad blocker
 - [RustDesk Relay Stack](rustdesk-relay/README.md) - Remote desktop relay server
+- [Tracearr Stack](tracearr/README.md) - Traceability and media import stack
 - [Utilities Stack](utilities/README.md) - File management, document processing, and utility services
 
 ## Standardization Status

@@ -1,0 +1,96 @@
+name: tracearr
+
+services:
+  tracearr:
+    image: ghcr.io/connorgallopo/tracearr:latest
+    container_name: tracearr
+    restart: unless-stopped
+    expose:
+      - 3000 # Web UI (internal, for reverse proxy or internal access)
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      TZ: ${TZ:-Europe/Rome}
+      DATABASE_URL: postgres://tracearr:${DB_PASSWORD}@tracearr-db:5432/tracearr
+      REDIS_URL: redis://tracearr-redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - tracearr_backups:/data/backup
+    depends_on:
+      tracearr-db:
+        condition: service_healthy
+      tracearr-redis:
+        condition: service_healthy
+    networks:
+      - tracearr_network
+      - npm_network
+
+  tracearr-db:
+    image: timescale/timescaledb-ha:pg18.1-ts2.25.0
+    container_name: tracearr-db
+    restart: unless-stopped
+    expose:
+      - 5432 # PostgreSQL (internal, for application access only)
+    shm_size: 512mb
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    command:
+      - postgres
+      - -c
+      - timescaledb.license=timescale
+      - -c
+      - timescaledb.max_tuples_decompressed_per_dml_transaction=0
+      - -c
+      - max_locks_per_transaction=4096
+      - -c
+      - timescaledb.telemetry_level=off
+    environment:
+      POSTGRES_USER: tracearr
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: tracearr
+    volumes:
+      - tracearr_timescale_data:/home/postgres/pgdata/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tracearr"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tracearr_network
+
+  tracearr-redis:
+    image: redis:8-alpine
+    container_name: tracearr-redis
+    restart: unless-stopped
+    expose:
+      - 6379 # Redis (internal, for application access only)
+    command: redis-server --appendonly yes
+    volumes:
+      - tracearr_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tracearr_network
+
+networks:
+  tracearr_network:
+    name: tracearr_network
+    driver: bridge
+  npm_network:
+    name: npm_network
+    driver: bridge
+    external: true
+
+volumes:
+  tracearr_backups:
+  tracearr_timescale_data:
+  tracearr_redis_data:
