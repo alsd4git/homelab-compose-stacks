@@ -25,8 +25,6 @@ services:
     image: ghcr.io/c4illin/convertx
     container_name: convertx
     restart: unless-stopped
-    ports:
-      - 3003:3000 # Web UI (external mapping)
     expose:
       - 3000 # Web UI (internal, for reverse proxy or internal access)
     environment:
@@ -37,21 +35,19 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/convertx:/app/data
     networks:
-      - tools_network
+      - npm_network
 
   cup:
     image: ghcr.io/sergi0g/cup:latest
     container_name: cup
     restart: unless-stopped
     command: serve
-    ports:
-      - 8004:8000 # Web UI (external mapping)
     expose:
       - 8000 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - tools_network
+      - npm_network
 
   filebrowser-quantum:
     image: gtstef/filebrowser
@@ -65,22 +61,18 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/filebrowser-quantum/data:/home/filebrowser/data # mount the data folder you created with the config file.
       # Advanced: If you plan to run with a different user besides root or filebrowser, you will need to mount a tmp directory.
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/filebrowser-quantum/tmp/:/home/filebrowser/tmp/
-    ports:
-      - "8087:80"
     expose:
       - 80 # Web UI (internal, for reverse proxy or internal access)
     # Optionally run as non-root filebrowser user
     user: "1000:1000"
     restart: unless-stopped
     networks:
-      - tools_network
+      - npm_network
 
   stirling-pdf:
     image: stirlingtools/stirling-pdf:latest
     container_name: stirling-pdf
     restart: unless-stopped
-    ports:
-      - 8082:8080 # Web UI (external mapping)
     expose:
       - 8080 # Web UI (internal, for reverse proxy or internal access)
     environment:
@@ -94,14 +86,12 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/logs:/logs
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/pipeline:/pipeline
     networks:
-      - tools_network
+      - npm_network
 
   telegram-files:
     image: ghcr.io/jarvis2f/telegram-files:latest
     container_name: telegram-files
     restart: unless-stopped
-    ports:
-      - 6543:80 # Web UI (external mapping)
     expose:
       - 80 # Web UI (internal, for reverse proxy or internal access)
     environment:
@@ -113,7 +103,7 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/tg-files:/app/data
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/telegram:/media
     networks:
-      - tools_network
+      - npm_network
 
   upsnap:
     image: ghcr.io/seriousm4x/upsnap:latest
@@ -130,6 +120,7 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/upsnap/data:/app/pb_data
 
 networks:
-  tools_network:
-    name: tools_network
+  npm_network:
+    name: npm_network
     driver: bridge
+    external: true

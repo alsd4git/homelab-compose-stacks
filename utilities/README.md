@@ -59,16 +59,16 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 ## Services & Ports
 
-| Service                 | External Port | Internal Port | Description                               |
-| ----------------------- | ------------- | ------------- | ----------------------------------------- |
-| **ConvertX**            | `3003`        | `3000`        | File conversion service.                  |
-| **CUP**                 | `8004`        | `8000`        | Container update management.              |
-| **FileBrowser Quantum** | `8087`        | `80`          | Web-based file management.                |
-| **Stirling PDF**        | `8082`        | `8080`        | PDF processing and manipulation.          |
-| **Telegram Files**      | `6543`        | `80`          | Telegram file management.                 |
-| **UpSnap**              | `5001`        | `5001`        | Network device monitoring (host network). |
+| Service                 | Internal Port | Access Pattern              | Description                               |
+| ----------------------- | ------------- | --------------------------- | ----------------------------------------- |
+| **ConvertX**            | `3000`        | `http://convertx:3000`      | File conversion service.                  |
+| **CUP**                 | `8000`        | `http://cup:8000`           | Container update management.              |
+| **FileBrowser Quantum** | `80`          | `http://filebrowser-quantum:80` | Web-based file management.             |
+| **Stirling PDF**        | `8080`        | `http://stirling-pdf:8080`  | PDF processing and manipulation.          |
+| **Telegram Files**      | `80`          | `http://telegram-files:80`  | Telegram file management.                 |
+| **UpSnap**              | `5001`        | `http://<host-ip>:5001`     | Network device monitoring (host network). |
 
-> **Note:** It is recommended to use a reverse proxy for external access rather than exposing ports directly.
+> **Note:** The services on `npm_network` are intended to be reached through Nginx Proxy Manager. Only the host-network service keeps a direct host endpoint.
 
 ## Container Images
 
