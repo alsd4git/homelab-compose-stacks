@@ -15,9 +15,20 @@
 # Required environment variables:
 # - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
 # - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
+# - PUBLIC_DOMAIN: Public base domain used for published dashboard URLs
 # - BESZEL_SSH_KEY: SSH public key for Beszel agent authentication
 # - BESZEL_TOKEN: Authentication token for Beszel agent
 # - BESZEL_HUB_URL: Beszel hub URL
+# - PORTAINER_API_KEY: API key for the Homepage Portainer widget
+# - JELLYFIN_API_KEY: API key for the Homepage Jellyfin widget
+# - SEERR_API_KEY: API key for the Homepage Seerr widget
+# - PROWLARR_API_KEY: API key for the Homepage Prowlarr widget
+# - RADARR_API_KEY: API key for the Homepage Radarr widget
+# - SONARR_API_KEY: API key for the Homepage Sonarr widget
+# - QBITTORRENT_USERNAME: Username for the Homepage qBittorrent widget
+# - QBITTORRENT_PASSWORD: Password for the Homepage qBittorrent widget
+# - IMMICH_API_KEY: API key for the Homepage Immich widget
+# - SPEEDTEST_TRACKER_API_TOKEN: Bearer token for the Homepage Speedtest Tracker widget
 #
 # Optional environment variables:
 # - HOMARR_SECRET_ENCRYPTION_KEY: Secret key for Homarr (generate with: openssl rand -hex 32)
@@ -131,11 +142,39 @@ services:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     restart: unless-stopped
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=homepage.${PUBLIC_DOMAIN:-example.com},homepage:3000,localhost:3000,127.0.0.1:3000
+      - HOMEPAGE_VAR_PUBLIC_DOMAIN=${PUBLIC_DOMAIN:-example.com}
+      - HOMEPAGE_VAR_PIHOLE_PASSWORD=${PIHOLE_PASSWORD}
+      - HOMEPAGE_VAR_PORTAINER_API_KEY=${PORTAINER_API_KEY}
+      - HOMEPAGE_VAR_JELLYFIN_API_KEY=${JELLYFIN_API_KEY}
+      - HOMEPAGE_VAR_SEERR_API_KEY=${SEERR_API_KEY}
+      - HOMEPAGE_VAR_PROWLARR_API_KEY=${PROWLARR_API_KEY}
+      - HOMEPAGE_VAR_RADARR_API_KEY=${RADARR_API_KEY}
+      - HOMEPAGE_VAR_SONARR_API_KEY=${SONARR_API_KEY}
+      - HOMEPAGE_VAR_QBITTORRENT_USERNAME=${QBITTORRENT_USERNAME}
+      - HOMEPAGE_VAR_QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD}
+      - HOMEPAGE_VAR_IMMICH_API_KEY=${IMMICH_API_KEY}
+      - HOMEPAGE_VAR_SPEEDTEST_TRACKER_API_TOKEN=${SPEEDTEST_TRACKER_API_TOKEN}
     expose:
       - 3000 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homepage/config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - npm_network
+
+  homarr:
+    container_name: homarr
+    image: ghcr.io/homarr-labs/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/appdata:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=${HOMARR_SECRET_ENCRYPTION_KEY}
+    expose:
+      - 7575 # Web UI (internal, for reverse proxy or internal access)
     networks:
       - npm_network
 
@@ -153,20 +192,6 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homebox:/data
     user: "1000:1000"
-    networks:
-      - npm_network
-
-  homarr:
-    container_name: homarr
-    image: ghcr.io/homarr-labs/homarr:latest
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/appdata:/appdata
-    environment:
-      - SECRET_ENCRYPTION_KEY=${HOMARR_SECRET_ENCRYPTION_KEY}
-    expose:
-      - 7575 # Web UI (internal, for reverse proxy or internal access)
     networks:
       - npm_network
 

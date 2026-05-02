@@ -1,28 +1,29 @@
 # Monitoring Stack
 
-System monitoring, observability, and dashboarding for your homelab. This stack provides real-time metrics, log viewing, network monitoring, and customizable dashboards for service discovery and management.
+System monitoring, dashboarding, and homelab visibility for the services in this repository. This stack mixes host-level observability, Docker log access, network discovery, and two dashboard options so you can choose the experience that fits your setup.
 
 ## Features
 
 ### System Monitoring
 
-- **Beszel**: A lightweight, agent-based server monitoring tool.
-- **Dashdot**: A modern server dashboard for monitoring system metrics.
-- **Dozzle**: A real-time log viewer for Docker containers.
-- **Glances**: A cross-platform monitoring tool that provides a comprehensive overview of your system.
-- **Scrutiny**: A hard drive health monitoring tool that combines smartd monitoring with a web UI.
-- **Speedtest Tracker**: A self-hosted internet speed test tracker.
+- **Beszel**: lightweight host and container monitoring with a separate agent.
+- **Dashdot**: visual system dashboard for CPU, memory, disk, and host-level stats.
+- **Dozzle**: real-time Docker log viewer.
+- **Glances**: system and container overview with a web UI.
+- **Scrutiny**: disk health and S.M.A.R.T. monitoring.
+- **Speedtest Tracker**: historical internet speed test tracking.
 
 ### Home Automation & Network
 
-- **Home Assistant**: An open-source home automation platform.
-- **NetAlertX**: A network device monitoring tool with alerts.
-- **WatchYourLAN**: A network device discovery and monitoring tool.
+- **Home Assistant**: home automation and device orchestration.
+- **NetAlertX**: network discovery and alerting.
+- **WatchYourLAN**: LAN device discovery and visibility.
 
 ### Dashboard & Management
 
-- **Homarr**: A modern, customizable dashboard for your services.
-- **Homebox**: A simple and efficient file management and sharing tool.
+- **Homarr**: primary dashboard in the compose stack.
+- **Homebox**: asset and inventory management.
+- **Homepage**: optional local dashboard template, mounted from your private config directory.
 
 ## Configuration
 
@@ -30,105 +31,136 @@ System monitoring, observability, and dashboarding for your homelab. This stack 
 
 This stack requires a `.env` file for configuration. A complete and recommended set of variables can be found in the `.env.example` file.
 
-**To get started:**
-
-1. Copy the `.env.example` file to `.env`:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Open the `.env` file and edit the variables to match your environment.
+```bash
+cp .env.example .env
+```
 
 **Key variables include:**
 
-- `DOCKER_DATA_BASEFOLDER`: The absolute path for storing persistent data.
-- `DOCKER_MEDIA_BASEFOLDER`: The absolute path for media files.
-- `BESZEL_SSH_KEY`: Your SSH public key for Beszel agent authentication.
-- `BESZEL_TOKEN`: A secret token for the Beszel agent.
-- `BESZEL_HUB_URL`: The public URL of your Beszel hub.
-- `HOMARR_SECRET_ENCRYPTION_KEY`: An optional secret key for Homarr.
-- `SPEEDTEST_TRACKER_APP_KEY`: An optional app key for Speedtest Tracker.
+- `DOCKER_DATA_BASEFOLDER`: persistent data root
+- `DOCKER_MEDIA_BASEFOLDER`: media storage root
+- `PUBLIC_DOMAIN`: base domain used by Homepage and public URLs
+- `BESZEL_SSH_KEY`: SSH public key for Beszel agent authentication
+- `BESZEL_TOKEN`: Beszel agent token
+- `BESZEL_HUB_URL`: public Beszel hub URL
+
+Optional variables:
+
+- `HOMARR_SECRET_ENCRYPTION_KEY`: Homarr encryption secret
+- `IMMICH_API_KEY`: Immich API key for the Homepage widget
+- `SPEEDTEST_TRACKER_APP_KEY`: Speedtest Tracker app key
+- `SPEEDTEST_TRACKER_API_TOKEN`: Speedtest Tracker API token used by the Homepage widget
+
+Homepage can be mounted from `${DOCKER_DATA_BASEFOLDER}/homepage/config`, but the actual widget and bookmark layout is intentionally kept local so the public repository only carries the stack-level contract.
+
+The services on `npm_network` are intended to be reverse-proxied through Nginx Proxy Manager. Host-network services keep their direct host endpoints because they need local network visibility.
 
 ## Services & Ports
 
-| Service               | Internal Port | Access Pattern                    | Description                          |
-| --------------------- | ------------- | --------------------------------- | ------------------------------------ |
-| **Beszel**            | `8090`        | `http://beszel:8090`              | Web interface for server monitoring. |
-| **Dashdot**           | `3001`        | `http://dashdot:3001`             | Modern server dashboard.             |
-| **Dozzle**            | `8080`        | `http://dozzle:8080`              | Real-time Docker log viewer.         |
-| **Glances**           | `61208`       | `http://glances:61208`            | System monitoring web UI/API.        |
-| **Home Assistant**    | `8123`        | `http://<host-ip>:8123`           | Home automation platform.            |
-| **Homebox**           | `7745`        | `http://homebox:7745`             | Asset and inventory management.      |
-| **Homarr**            | `7575`        | `http://homarr:7575`              | Customizable service dashboard.      |
-| **NetAlertX**         | `20211`       | `http://<host-ip>:20211`          | Network device monitoring.           |
-| **Scrutiny**          | `8080`        | `http://scrutiny:8080`            | Hard drive health monitoring UI.     |
-| **Speedtest Tracker** | `80`          | `http://speedtest-tracker:80`     | Internet speed test tracker.         |
-| **WatchYourLAN**      | `8840`        | `http://<host-ip>:8840`           | Network device discovery.            |
-
-> **Note:** The services that sit on `npm_network` are meant to be reverse-proxied via Nginx Proxy Manager. Host-network services keep their direct host endpoints.
+| Service | Internal Port | Public Access Pattern | Notes |
+| --- | --- | --- | --- |
+| Beszel | `8090` | `https://beszel.${PUBLIC_DOMAIN}` | Host and container monitoring UI. |
+| Beszel Agent | - | internal only | Connects the monitored host to the Beszel hub. |
+| Dashdot | `3001` | `https://dashdot.${PUBLIC_DOMAIN}` | Host metrics dashboard. |
+| Dozzle | `8080` | `https://dozzle.${PUBLIC_DOMAIN}` | Docker log viewer. |
+| Glances | `61208` | `https://glances.${PUBLIC_DOMAIN}` | Live system metrics. |
+| Home Assistant | `8123` | `http://<host-ip>:8123` | Direct host access by design. |
+| Homebox | `7745` | `https://homebox.${PUBLIC_DOMAIN}` | Asset and inventory manager. |
+| Homarr | `7575` | `https://homarr.${PUBLIC_DOMAIN}` | Primary dashboard in the compose stack. |
+| Homepage | `3000` | `https://homepage.${PUBLIC_DOMAIN}` | Optional dashboard alternative. |
+| NetAlertX | `20211` | `http://<host-ip>:20211` | Direct host access for network scanning. |
+| Scrutiny | `8080` | `https://scrutiny.${PUBLIC_DOMAIN}` | Disk health monitoring UI. |
+| Speedtest Tracker | `80` | `https://speedtest-tracker.${PUBLIC_DOMAIN}` | Internet speed history. |
+| WatchYourLAN | `8840` | `http://<host-ip>:8840` | Direct host access for LAN discovery. |
 
 ## Container Images
 
-| Service           | Image                                            |
-| ----------------- | ------------------------------------------------ |
-| Beszel            | `henrygd/beszel:latest`                          |
-| Beszel Agent      | `henrygd/beszel-agent:latest`                    |
-| Dashdot           | `mauricenino/dashdot:latest`                     |
-| Dozzle            | `amir20/dozzle:latest`                           |
-| Glances           | `nicolargo/glances:latest-full`                  |
-| Home Assistant    | `linuxserver/homeassistant:latest`               |
-| Homebox           | `ghcr.io/sysadminsmedia/homebox:latest-rootless` |
-| Homarr            | `ghcr.io/homarr-labs/homarr:latest`              |
-| NetAlertX         | `jokobsk/netalertx:latest`                       |
-| Scrutiny          | `ghcr.io/analogj/scrutiny:master-omnibus`        |
-| Speedtest Tracker | `linuxserver/speedtest-tracker:latest`           |
-| WatchYourLAN      | `aceberg/watchyourlan:v2`                        |
+| Service | Image |
+| --- | --- |
+| Beszel | `henrygd/beszel:latest` |
+| Beszel Agent | `henrygd/beszel-agent:latest` |
+| Dashdot | `mauricenino/dashdot:latest` |
+| Dozzle | `amir20/dozzle:latest` |
+| Glances | `nicolargo/glances:latest-full` |
+| Home Assistant | `linuxserver/homeassistant:latest` |
+| Homebox | `ghcr.io/sysadminsmedia/homebox:latest-rootless` |
+| Homarr | `ghcr.io/homarr-labs/homarr:latest` |
+| Homepage | `ghcr.io/gethomepage/homepage:latest` |
+| NetAlertX | `ghcr.io/netalertx/netalertx:latest` |
+| Scrutiny | `ghcr.io/analogj/scrutiny:master-omnibus` |
+| Speedtest Tracker | `linuxserver/speedtest-tracker:latest` |
+| WatchYourLAN | `aceberg/watchyourlan:v2` |
 
 ## Usage
 
-1. **Initial Setup**:
+### Initial Setup
+
+1. Create the data directories:
 
    ```bash
-   # Create required directories
-   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{beszel,homeassistant,homebox,homarr,netalertx,scrutiny,speedtest-tracker,wyl2,glances}
+   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{beszel,homeassistant,homebox,homarr,homepage,netalertx,scrutiny,speedtest-tracker,wyl2,glances}
    ```
 
-2. **Start the Stack**:
+2. Seed the Homepage config if you plan to use it:
+
+   ```bash
+   mkdir -p ${DOCKER_DATA_BASEFOLDER}/homepage/config
+   cp -R monitoring/homepage/config/. ${DOCKER_DATA_BASEFOLDER}/homepage/config/
+   ```
+
+3. If needed, create the Homarr appdata directory:
+
+   ```bash
+   mkdir -p ${DOCKER_DATA_BASEFOLDER}/homarr/appdata
+   ```
+
+4. Start the stack:
 
    ```bash
    docker compose up -d
    ```
 
-3. **Access Services**:
-   - Access Beszel at `http://localhost:8090`
-   - Access Dashdot at `http://localhost:3002`
-   - Access Dozzle at `http://localhost:8081`
-   - Access Glances at `http://localhost:61208`
-   - Access Home Assistant at `http://localhost:8123`
-   - Access Homebox at `http://localhost:3100`
-   - Access Homarr at `http://localhost:7575`
-   - Access NetAlertX at `http://localhost:20211`
-   - Access Scrutiny at `http://localhost:8083`
-   - Access Speedtest Tracker at `http://localhost:8084`
-   - Access WatchYourLAN at `http://localhost:8840`
+### Access
 
-## Security Considerations
+- Beszel: `https://beszel.${PUBLIC_DOMAIN}`
+- Dashdot: `https://dashdot.${PUBLIC_DOMAIN}`
+- Dozzle: `https://dozzle.${PUBLIC_DOMAIN}`
+- Glances: `https://glances.${PUBLIC_DOMAIN}`
+- Home Assistant: `http://<host-ip>:8123`
+- Homebox: `https://homebox.${PUBLIC_DOMAIN}`
+- Homarr: `https://homarr.${PUBLIC_DOMAIN}`
+- Homepage: `https://homepage.${PUBLIC_DOMAIN}`
+- NetAlertX: `http://<host-ip>:20211`
+- Scrutiny: `https://scrutiny.${PUBLIC_DOMAIN}`
+- Speedtest Tracker: `https://speedtest-tracker.${PUBLIC_DOMAIN}`
+- WatchYourLAN: `http://<host-ip>:8840`
 
-**⚠️ Privileged Access & Host Mode**:
+If you expose these services through Nginx Proxy Manager, keep the public hostnames in sync with `PUBLIC_DOMAIN` in `.env`.
 
-- **Beszel Agent**: Runs in `network_mode: host` to monitor the host system.
-- **Dashdot**: Runs with `privileged: true` for full host access for system metrics.
-- **Home Assistant**: Runs with `privileged: true` and `network_mode: host` for Bluetooth and device discovery.
-- **NetAlertX** & **WatchYourLAN**: Use `network_mode: host` for network scanning.
-- **Scrutiny**: Requires `SYS_RAWIO` capability and device access (e.g., `/dev/sda`) to read S.M.A.R.T. data.
+## Security Notes
 
-**⚠️ Docker Socket Access**:
-The following services mount `/var/run/docker.sock`, granting access to the Docker daemon:
+**Docker Socket Access**
 
-- **Beszel Agent**, **Dozzle**, **Glances**, **Homarr**.
+These services can talk to the Docker daemon and should only be run in trusted networks:
 
-These configurations are powerful but require that the stack be deployed only in trusted networks.
+- `beszel-agent`
+- `dozzle`
+- `glances`
+- `homepage`
+- `homarr`
+
+**Host Mode and Privileged Services**
+
+- `beszel-agent` uses `network_mode: host` for host visibility.
+- `homeassistant` uses `network_mode: host` and `privileged: true` for Bluetooth and device discovery.
+- `netalertx` and `watchyourlan` use `network_mode: host` for LAN scanning.
+- `dashdot` uses `privileged: true` for host metrics.
+- `scrutiny` needs `SYS_RAWIO` and device access to read disk health.
+
+**Public Exposure**
+
+- Homepage does not provide built-in authentication. Keep it behind a reverse proxy with auth, TLS, or a VPN.
+- Avoid committing `.env` or any live hostnames. The repo only uses placeholder values and environment substitution.
 
 ## Additional Resources
 
@@ -138,6 +170,7 @@ These configurations are powerful but require that the stack be deployed only in
 - [Glances Documentation](https://glances.readthedocs.io/)
 - [Home Assistant Documentation](https://www.home-assistant.io/docs/)
 - [Homebox Documentation](https://github.com/sysadminsmedia/homebox)
+- [Homepage Documentation](https://gethomepage.dev/)
 - [Homarr Documentation](https://homarr.dev/)
 - [NetAlertX Documentation](https://github.com/jokobsk/NetAlertX)
 - [Scrutiny Documentation](https://github.com/AnalogJ/scrutiny)
