@@ -23,6 +23,14 @@ jobs:
       - name: Run linters
         run: pre-commit run --all-files
 
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint GitHub Actions workflows
+        uses: raven-actions/actionlint@v2
+
   compose-validate:
     runs-on: ubuntu-latest
     strategy:
