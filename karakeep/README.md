@@ -1,167 +1,80 @@
 # KaraKeep Stack
 
-A modern bookmarks/media organization and management platform that helps you keep track of your digital content. This stack provides a web interface, Chrome-based browser automation, and a powerful search engine for efficient media management.
+Bookmarks and media organization stack with a web UI, headless browser automation, and a MeiliSearch backend.
 
 ## Features
 
-- **Web Interface**: Modern UI for managing and organizing media
-- **Chrome Automation**: Headless Chrome for web scraping and automation
-- **MeiliSearch Integration**: Fast and powerful search capabilities
-- **Data Persistence**: Automatic data backup and recovery
-- **Containerized Services**: Easy deployment and management
-- **OpenAI Integration**: Optional AI-powered features (requires API key)
-- **Authentication**: NextAuth integration for secure access
+- **Web UI**: central interface for organizing bookmarks and saved content.
+- **Chrome automation**: headless Chrome for scraping and browser-driven workflows.
+- **MeiliSearch**: fast and typo-tolerant search backend.
+- **Persistent storage**: application data and search data live in Docker volumes.
+- **Reverse-proxy friendly**: the web service joins `npm_network`.
 
 ## Configuration
 
 ### Environment Variables
 
-This stack requires a `.env` file for configuration. A complete and recommended set of variables can be found in the `.env.example` file.
+Copy the example file to `.env`, then set the auth and search secrets:
 
-**To get started:**
+```bash
+cp .env.example .env
+```
 
-1. Copy the `.env.example` file to `.env`:
+Key variables:
 
-   ```bash
-   cp .env.example .env
-   ```
+- `KARAKEEP_VERSION`
+- `NEXTAUTH_SECRET`
+- `MEILI_MASTER_KEY`
+- `NEXTAUTH_URL`
+- `DISABLE_SIGNUPS`
+- `OPENAI_API_KEY` if you enable the optional AI features
 
-2. Open the `.env` file and edit the variables to match your environment.
+### Storage
 
-**Key variables include:**
+| Path or Volume | Purpose |
+| --- | --- |
+| `data` | KaraKeep application data |
+| `meilisearch` | MeiliSearch data |
 
-- `KARAKEEP_VERSION`: The version of KaraKeep to run (defaults to `release`).
-- `NEXTAUTH_SECRET`: A secret key for NextAuth. Generate one with `openssl rand -base64 36`.
-- `MEILI_MASTER_KEY`: The master key for MeiliSearch. Generate one with `openssl rand -base64 36`.
-- `NEXTAUTH_URL`: The public URL of your KaraKeep instance (e.g., `http://localhost:3000`).
+## Services & Ports
 
-### Volumes
-
-The stack uses the following named volumes for data persistence:
-
-- `data`: KaraKeep application data
-- `meilisearch`: MeiliSearch database and configuration
-
-## Port Documentation
-
-### Internal Ports (Exposed for Reverse Proxy)
-
-- `3000`: Web interface (internal, for reverse proxy or internal access)
-- `9222`: Chrome remote debugging (internal, for reverse proxy or internal access)
-- `7700`: MeiliSearch API (internal, for reverse proxy or internal access)
+| Service | Internal Port | Access Pattern | Notes |
+| --- | --- | --- | --- |
+| KaraKeep web | `3000` | `http://karakeep:3000` | Published through Nginx Proxy Manager. |
+| Chrome | `9222` | internal only | Headless browser debugging endpoint. |
+| MeiliSearch | `7700` | internal only | Search backend on the private app network. |
 
 ## Container Images
 
-| Service     | Image                                 |
-| ----------- | ------------------------------------- |
-| Web         | `ghcr.io/karakeep-app/karakeep`       |
-| Chrome      | `gcr.io/zenika-hub/alpine-chrome:123` |
-| MeiliSearch | `getmeili/meilisearch:v1.13.3`        |
+| Service | Image |
+| --- | --- |
+| KaraKeep web | `ghcr.io/karakeep-app/karakeep:${KARAKEEP_VERSION:-release}` |
+| Chrome | `gcr.io/zenika-hub/alpine-chrome:124` |
+| MeiliSearch | `getmeili/meilisearch:v1.41.0` |
 
 ## Usage
 
-1. **Setup Environment Variables**:
-   - Copy the `.env.example` to `.env`.
-   - Set the required environment variables as described above.
-   - Generate random strings for `NEXTAUTH_SECRET` and `MEILI_MASTER_KEY`.
-   - Set `NEXTAUTH_URL` to your public URL if using a reverse proxy.
-
-2. **Start the Stack**:
+1. Copy `.env.example` to `.env`.
+2. Set `NEXTAUTH_SECRET`, `MEILI_MASTER_KEY`, and `NEXTAUTH_URL`.
+3. Start the stack:
 
    ```bash
    docker compose up -d
    ```
 
-3. **Access Web Interface**:
-   - Navigate to `http://karakeep:3000` through Nginx Proxy Manager
-   - Complete the initial setup process
+4. Publish the web service through Nginx Proxy Manager.
 
-## Components
+## Security Notes
 
-### Web Service (KaraKeep)
-
-- **Image**: `ghcr.io/karakeep-app/karakeep:${KARAKEEP_VERSION:-release}`
-- **Purpose**: Main web interface for media management
-- **Features**:
-  - User interface and authentication
-  - Media organization and bookmarks
-  - Search integration with MeiliSearch
-  - Chrome automation integration
-  - API endpoints
-
-### Chrome Service
-
-- **Image**: `gcr.io/zenika-hub/alpine-chrome:123`
-- **Purpose**: Headless Chrome for web automation
-- **Features**:
-  - Web scraping and automation
-  - Screenshot capture
-  - PDF generation
-  - Remote debugging capabilities
-
-### MeiliSearch Service
-
-- **Image**: `getmeili/meilisearch:v1.13.3`
-- **Purpose**: Search engine for media content
-- **Features**:
-  - Fast and typo-tolerant search
-  - Relevance scoring
-  - Analytics disabled for privacy
-  - Persistent data storage
-
-## Security Considerations
-
-- **Authentication**: Uses NextAuth for secure user authentication
-- **Data Protection**: All data is stored in Docker named volumes
-- **Network Security**: Internal services are not directly exposed
-- **API Security**: Use environment variables for sensitive data
-- **Regular Backups**: Recommended for data persistence
+- Keep auth and search secrets in `.env`.
+- Do not expose the Chrome debugging port publicly.
+- Keep MeiliSearch on the internal network only.
 
 ## Troubleshooting
 
-### Common Issues
-
-1. **Authentication Problems**:
-   - Verify `NEXTAUTH_SECRET` is properly set in `.env`
-   - Check `NEXTAUTH_URL` matches your setup
-   - Ensure `MEILI_MASTER_KEY` is correctly configured
-
-2. **Web Interface Issues**:
-   - Check if all services are running: `docker-compose ps`
-   - View web service logs: `docker-compose logs web`
-   - Verify port availability and firewall settings
-
-3. **Chrome Service Issues**:
-   - Check Chrome logs: `docker-compose logs chrome`
-   - Verify memory allocation for Chrome
-   - Check for GPU-related issues (Chrome runs in headless mode)
-
-4. **Search Issues**:
-   - Check MeiliSearch logs: `docker-compose logs meilisearch`
-   - Verify data persistence in volumes
-   - Check search index status and configuration
-
-### Verification Steps
-
-1. Check container status:
-
-   ```bash
-   docker compose ps
-   ```
-
-2. View service logs:
-
-   ```bash
-   docker compose logs web
-   docker compose logs chrome
-   docker compose logs meilisearch
-   ```
-
-3. Test web interface accessibility:
-
-   ```bash
-   curl http://karakeep:3000
-   ```
+- Check logs with `docker compose logs web`, `docker compose logs chrome`, and `docker compose logs meilisearch`.
+- Verify that `NEXTAUTH_URL` matches the public URL you publish.
+- Confirm that `MEILI_MASTER_KEY` is identical in the web and MeiliSearch services.
 
 ## Additional Resources
 
@@ -169,10 +82,3 @@ The stack uses the following named volumes for data persistence:
 - [MeiliSearch Documentation](https://docs.meilisearch.com/)
 - [Alpine Chrome Documentation](https://github.com/Zenika/alpine-chrome)
 - [NextAuth Documentation](https://next-auth.js.org/)
-
-## Maintenance
-
-- **Updates**: Pull the latest images regularly for security updates
-- **Backups**: Backup the Docker volumes for data persistence
-- **Monitoring**: Monitor container logs for any issues or errors
-- **Version Management**: Update `KARAKEEP_VERSION` as needed
