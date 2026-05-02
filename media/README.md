@@ -61,6 +61,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 > **Note:** Most services are meant to be reached through `npm_network`; qBittorrent also publishes its torrent ports on the host for peer connectivity.
 
+> **Jellyfin note:** the media mount is writable so Jellyfin can store metadata sidecars and library state when needed.
+
 ## Container Images
 
 | Service          | Image                                        |
@@ -95,10 +97,6 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 3. **Access Services**:
    - Access services through Nginx Proxy Manager or directly via their container DNS names on `npm_network`.
-
-## Network Configuration
-
-All services are connected through `npm_network` for internal access and reverse proxying.
 
 ## Security Notes
 

@@ -105,15 +105,8 @@ services:
     image: linuxserver/jellyfin:latest
     container_name: jellyfin
     restart: unless-stopped
-    # Disabled: Use reverse proxy instead (ports are exposed below)
-    # ports:
-    #   - 8096:8096 # Web UI (external mapping)
-    #   - 8920:8920 # HTTPS (external mapping)
-    #   - 7359:7359/udp # Auto-discovery (external mapping)
     expose:
-      - 8096 # Web UI (internal, for reverse proxy or internal access)
-      - 8920 # HTTPS (internal, for reverse proxy or internal access)
-      - 7359/udp # Auto-discovery (internal, for internal container communication)
+      - 8096 # rimossi 8920 (HTTPS off) e 7359/udp (broadcast non passa il bridge)
     environment:
       - PUID=1000
       - PGID=1000
@@ -121,8 +114,20 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/jellyfin/library:/config
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/media
+    tmpfs:
+      - /config/data/transcodes:rw,size=2g,mode=1777 # transcodes in RAM, salva l'NVMe
     devices:
       - /dev/dri:/dev/dri
+    group_add:
+      - "105" # render gid del host (esplicito invece di sperare nel mapping dinamico)
+    mem_limit: 4g
+    cpus: 3.5
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8096/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     networks:
       - media_network
       - npm_network
