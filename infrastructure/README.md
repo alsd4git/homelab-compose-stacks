@@ -2,7 +2,7 @@
 
 Core infrastructure services for your homelab, including reverse proxy, dynamic DNS, authentication, and certificate management.
 
-## Included Services
+## Features
 
 - **Nginx Proxy Manager**: A user-friendly interface for managing Nginx reverse proxy hosts and SSL certificates.
 - **DDNS Updater**: Automatically updates your dynamic DNS records with your public IP address.
@@ -76,7 +76,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
    - **Nginx Proxy Manager**: `http://<your-server-ip>:83`
    - Other services should be accessed through the reverse proxy you configure in Nginx Proxy Manager.
 
-## Security Considerations
+## Security Notes
 
 - **Nginx Proxy Manager**: Change the default admin credentials (`admin@example.com` / `changeme`) immediately after deployment.
 - **Secrets**: Securely store all secrets and API keys in your `.env` file and do not commit it to version control.

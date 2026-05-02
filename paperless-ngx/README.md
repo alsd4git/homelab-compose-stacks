@@ -4,11 +4,11 @@ A document management system with a web interface for organizing, searching, and
 
 ## Features
 
-- Web-based UI for document management
-- OCR and full-text search
-- Import/export folders
-- Persistent configuration and media storage
-- Optional Tika and Gotenberg integration for document conversion
+- **Web UI**: document management in the browser.
+- **OCR and search**: full-text indexing and OCR.
+- **Import/export folders**: simple document ingestion and export.
+- **Document conversion**: optional Tika and Gotenberg support.
+- **Persistent storage**: data, media, consume, and export directories.
 
 ## Configuration
 
@@ -26,9 +26,14 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 2. Open the `.env` file and edit the `DOCKER_DATA_BASEFOLDER` variable to match your environment.
 
-## Ports
+## Services & Ports
 
-- `8000` (exposed): Web UI/API (internal, for reverse proxy or internal access)
+| Service | Internal Port | Access Pattern | Notes |
+| --- | --- | --- | --- |
+| Paperless-ngx | `8000` | `http://paperless-ngx:8000` | Web UI/API on `npm_network`. |
+| Redis broker | internal only | internal only | Queue and caching backend. |
+| Gotenberg | internal only | internal only | Conversion backend. |
+| Tika | internal only | internal only | OCR and text extraction backend. |
 
 > **Note:** The stack is intended to be reached through the reverse proxy on `npm_network`.
 
@@ -52,16 +57,16 @@ This stack requires a `.env` file for configuration. A complete and recommended 
    docker compose up -d
    ```
 
-3. Access the web interface through Nginx Proxy Manager at `http://paperless-ngx:8000`
+3. Publish the web interface through Nginx Proxy Manager using the host you assign for Paperless-ngx.
 4. Import documents by placing them in the `${DOCKER_DATA_BASEFOLDER}/paperless-ngx/consume` folder.
 5. Exported documents will appear in the `${DOCKER_DATA_BASEFOLDER}/paperless-ngx/export` folder.
 
 ## Security Notes
 
-- Change the default admin credentials
-- Only expose necessary ports to the internet
-- Keep Paperless-ngx updated
-- Monitor logs for unusual activity
+- Change the default admin credentials.
+- Keep the web UI behind a reverse proxy or VPN.
+- Keep Paperless-ngx updated.
+- Monitor logs for unusual activity.
 
 ## Troubleshooting
 

@@ -1,76 +1,64 @@
 # Automation Stack
 
-A comprehensive automation and monitoring solution for Docker. This stack provides Docker event notifications, image monitoring, and automatic container updates through Telegram.
+Docker event automation, image monitoring, and automatic container updates through Telegram.
 
-## Components
+## Features
 
-### 1. Docker Telegram Notifier
+- **Docker Telegram Notifier**: sends container lifecycle events to Telegram.
+- **Diun**: watches container images for updates and reports them to Telegram.
+- **Watchtower**: updates running containers on a schedule and reports results to Telegram.
 
-- **Image**: [lorcas/docker-telegram-notifier](https://github.com/luc-ass/docker-telegram-notifier)
+## Configuration
 
-- **Purpose**: Sends notifications about Docker container events (start, stop, die, etc.) to Telegram
+### Environment Variables
 
-- **Documentation**: [GitHub Repository](https://github.com/luc-ass/docker-telegram-notifier)
+This stack requires a `.env` file for configuration. Copy the example file, then set the Telegram credentials and data root:
 
-### 2. Diun
+```bash
+cp .env.example .env
+```
 
-- **Image**: [crazymax/diun](https://github.com/crazy-max/diun)
+Key variables:
 
-- **Purpose**: Docker image update notifier that monitors Docker images for updates
+- `DOCKER_DATA_BASEFOLDER`: persistent data root
+- `TELEGRAM_BOT_TOKEN`: Telegram bot token
+- `TELEGRAM_CHAT_ID`: Telegram chat ID
 
-- **Documentation**: [Official Documentation](https://crazymax.dev/diun/)
+## Services & Ports
 
-### 3. Watchtower
-
-- **Image**: [containrrr/watchtower](https://github.com/containrrr/watchtower)
-
-- **Purpose**: Automatically updates running Docker containers to their latest version
-
-- **Documentation**: [Official Documentation](https://containrrr.dev/watchtower/)
+| Service | Access Pattern | Notes |
+| --- | --- | --- |
+| Diun | internal only | No published web UI; consumes the Docker socket. |
+| Docker Telegram Notifier | internal only | No published web UI; consumes the Docker socket. |
+| Watchtower | internal only | No published web UI; consumes the Docker socket. |
 
 ## Container Images
 
 | Service | Image |
-
-|---|---|
-
+| --- | --- |
 | Diun | `crazymax/diun:latest` |
-
-| Notifier | `lorcas/docker-telegram-notifier:latest` |
-
-| Watchtower | `containrrr/watchtower:latest` |
-
-## Security Considerations
-
-**⚠️ Docker Socket Access**: This stack mounts `/var/run/docker.sock` to monitor Docker container events. This grants the containers access to the Docker daemon, which requires elevated privileges. Only deploy in trusted networks. For more information, see [Docker Security Documentation](https://docs.docker.com/engine/security/).
-
-## Configuration
-
-1. Create a `.env` file based on `.env.example`
-2. Set up a Telegram bot using [@BotFather](https://t.me/botfather)
-3. Get your chat ID (you can use [@userinfobot](https://t.me/userinfobot))
-4. Configure the schedule for updates in the compose file
-
-## Environment Variables
-
-- `TELEGRAM_BOT_TOKEN`: Your Telegram bot token from @BotFather
-- `TELEGRAM_CHAT_ID`: Your Telegram chat ID
-- `DOCKER_DATA_BASEFOLDER`: Base directory for persistent data (default: /opt/docker/data)
+| Docker Telegram Notifier | `lorcas/docker-telegram-notifier:latest` |
+| Watchtower | `nickfedor/watchtower:latest` |
 
 ## Usage
 
-1. Configure your environment variables
-2. Deploy the stack:
+1. Copy `.env.example` to `.env`.
+2. Fill in `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`.
+3. Deploy the stack:
 
    ```bash
    docker compose up -d
    ```
 
-## Maintenance
+## Security Notes
 
-The stack is configured to:
+- All services mount `/var/run/docker.sock`, so deploy only in trusted networks.
+- The Telegram token and chat ID must live in `.env`, not in the compose file.
+- Watchtower runs on a schedule and can update containers automatically, so keep the container allowlist intentional.
 
-- Run Watchtower updates every Monday, Wednesday, and Friday at 1 PM
-- Check for image updates every 6 hours with Diun
-- Send notifications for all Docker events
-- Automatically restart services if they fail
+## Additional Resources
+
+- [Docker Security Documentation](https://docs.docker.com/engine/security/)
+- [Diun Documentation](https://crazymax.dev/diun/)
+- [Docker Telegram Notifier](https://github.com/luc-ass/docker-telegram-notifier)
+- [Watchtower Documentation](https://containrrr.dev/watchtower/)

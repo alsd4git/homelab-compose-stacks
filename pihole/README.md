@@ -4,12 +4,12 @@ This stack provides a network-wide ad blocking solution using [Pi-hole](https://
 
 ## Features
 
-- Network-wide ad blocking
-- DNS server with customizable blocklists
-- Web interface for management
-- Optional DHCP server
-- Custom DNS records support
-- Query logging and statistics
+- **Network-wide ad blocking**: DNS sinkhole protection for your devices.
+- **DNS server**: customizable blocklists and local resolution.
+- **Web interface**: management UI for queries and settings.
+- **Optional DHCP**: can run as a DHCP server if you enable it.
+- **Custom DNS records**: supports local overrides and DNSmasq options.
+- **Query logging**: built-in logs and statistics.
 
 ## Configuration
 
@@ -32,7 +32,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - `DOCKER_DATA_BASEFOLDER`: The absolute path on your host machine where Pi-hole will store its configuration.
 - `PASSWORD`: The web interface password. This value is assigned to the `FTLCONF_webserver_api_password` variable in the `compose.yaml`.
 
-### Ports
+### Services & Ports
 
 - **53:53/tcp** (mapped): DNS (TCP, external)
 - **53:53/udp** (mapped): DNS (UDP, external)
@@ -132,11 +132,11 @@ dhcp-range=192.168.1.100,192.168.1.200,12h
 
 ## Security Notes
 
-- Change the default web interface password
-- Consider using a reverse proxy for the web interface
-- Keep Pi-hole updated
-- Regularly review and update blocklists
-- Monitor query logs for unusual activity
+- Change the default web interface password.
+- Prefer a reverse proxy for the web interface.
+- Keep Pi-hole updated.
+- Regularly review and update blocklists.
+- Monitor query logs for unusual activity.
 
 ## Troubleshooting
 

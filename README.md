@@ -1,156 +1,104 @@
-# Dockerini - Docker Compose Stacks Collection
+# Dockerini
 
-A comprehensive collection of Docker Compose stacks for various services and applications, designed for easy deployment and management using Portainer. **All stacks in this repository are fully standardized and documented.**
+Curated public Docker Compose stacks for a homelab, designed to stay consistent, documented, and easy to deploy through Portainer or Docker Compose.
 
-## Table of Contents
+## Features
 
-- [Introduction](#introduction)
-- [Getting Started](#getting-started)
-- [Available Stacks](#available-stacks)
-- [Standardization Status](#standardization-status)
-- [Folder Structure](#folder-structure)
-- [Usage](#usage)
-- [Documentation](#documentation)
+- **Standardized stacks**: consistent naming, structure, and environment handling across the repo.
+- **Reverse-proxy friendly**: services are organized to work cleanly with Nginx Proxy Manager.
+- **Public-repo safe**: live hostnames and secrets stay out of the repository.
+- **Maintainable defaults**: each stack ships with an `.env.example` file and clear usage notes.
 
-## Introduction
-
-Dockerini provides a collection of Docker Compose stacks for various services and applications, making it easy to deploy and manage containers using Portainer. Each stack is carefully standardized with:
-
-- Consistent formatting and structure
-- Fallback values for environment variables
-- Standardized network naming
-- Comprehensive documentation
-- Security best practices
-
-## Getting Started
+## Configuration
 
 ### Prerequisites
 
-- Docker installed on your system
-- Portainer installed and configured
-- Basic understanding of Docker and Docker Compose
+- Docker installed and working
+- Portainer if you want to deploy through a UI
+- Basic familiarity with Docker Compose
 
-### Installation
+### Setup
 
-1. Clone this repository:
+1. Clone the repository:
 
    ```bash
    git clone https://github.com/alsd4git/dockerini.git
-   ```
-
-2. Navigate to the repository:
-
-   ```bash
    cd dockerini
    ```
 
-3. For each stack you want to deploy, configure its environment variables:
+2. For each stack you want to use, create a local `.env` file from the example:
 
    ```bash
    cd <stack-name>
    cp .env.example .env
-   # Edit .env with your stack-specific configuration
    cd ..
    ```
 
-   Each stack has its own `.env.example` file in its directory with the required and optional variables for that service.
+3. Edit the stack-specific variables in `.env` before deployment.
 
-## Available Stacks
+## Public Stacks
 
-- [Automation Stack](automation/README.md) - Docker event notifications, image monitoring, and container updates
-- [Immich Stack](immich/README.md) - Photo management and backup
-- [Infrastructure Stack](infrastructure/README.md) - Reverse proxy, DDNS, authentication, and identity management
-- [KaraKeep Stack](karakeep/README.md) - Bookmarks and media organization
-- [Media Stack](media/README.md) - Media servers, downloaders, and automation (Jellyfin, Sonarr, Radarr, etc.)
-- [Monitoring Stack](monitoring/README.md) - System monitoring, dashboards, and observability
-- [Paperless-ngx Stack](paperless-ngx/README.md) - Document management and archival
-- [Pi-hole Stack](pihole/README.md) - DNS sinkhole and network ad blocker
-- [RustDesk Relay Stack](rustdesk-relay/README.md) - Remote desktop relay server
-- [Tracearr Stack](tracearr/README.md) - Traceability and media import stack
-- [Utilities Stack](utilities/README.md) - File management, document processing, and utility services
+| Stack | Purpose |
+| --- | --- |
+| Automation | Docker event notifications, image monitoring, and container updates |
+| Immich | Photo and video management |
+| Infrastructure | Reverse proxy, DDNS, authentication, and identity services |
+| KaraKeep | Bookmarks and media organization |
+| Media | Media servers, downloaders, and automation |
+| Monitoring | System monitoring, dashboards, and observability |
+| Paperless-ngx | Document management and archival |
+| Pi-hole | DNS sinkhole and network ad blocking |
+| RustDesk Relay | Remote desktop relay infrastructure |
+| Tracearr | Traceability and media import stack |
+| Utilities | File management, document processing, and utility services |
 
-## Standardization Status
+## Standardization
 
-Each stack follows our standardization guidelines:
+Each public stack follows the same core conventions:
 
-- ✅ Consistent formatting
-- ✅ Environment variable fallbacks
-- ✅ Standardized network naming
-- ✅ Comprehensive documentation
-- ✅ Security best practices
+- Consistent formatting and compose structure
+- Environment variable fallbacks
+- Standardized network naming
+- Clear documentation for setup and usage
+- Security-focused defaults for public or internal deployment
 
 ### Recommended Practices
 
-1. **Critical Services** (pin specific versions):
-   - Databases (PostgreSQL, Redis, InfluxDB)
-   - DNS services (Pi-hole, AdGuard)
-   - Reverse proxies (Nginx Proxy Manager, Step CA)
-   - Authentication services (Pocket ID)
+1. Pin critical infrastructure where stability matters most:
+   - Databases
+   - DNS services
+   - Reverse proxies
+   - Identity and auth services
 
-2. **Non-Critical Services** (use latest tag):
-   - Media applications (Jellyfin, Immich)
-   - Monitoring tools (Glances, Dozzle)
-   - Utility services (File browsers, converters)
-   - Automation services (Sonarr, Radarr)
+2. Allow faster-moving apps to track `latest` when appropriate:
+   - Media applications
+   - Monitoring tools
+   - Utility services
+   - Automation helpers
 
-3. **Update Strategy**:
-   - Enable [Watchtower](automation/README.md) for automatic updates of latest-tagged services
-   - Pin versions for critical infrastructure and manually test updates
-   - Use a reverse proxy and monitoring to catch issues quickly
-
-## Container Restart Policies
-
-This repository uses two restart policies strategically:
-
-### `restart: unless-stopped` (Default - 62% of services)
-
-Used for services that can tolerate manual stops:
-
-- **User-facing services**: Dashboards, media servers, web interfaces
-- **Non-critical services**: Monitoring displays, file browsers, converters
-- **Deployment tools**: Allows graceful shutdown without auto-restart
-
-**Behavior**: Container restarts automatically unless manually stopped
-
-### `restart: always` (Special Cases - 38% of services)
-
-Used for critical background services that must stay running:
-
-- **Automation services**: [Watchtower](automation/README.md) (automatic updates), DIUN (image monitoring)
-- **Notification services**: Telegram notifiers and alert delivery
-- **Core infrastructure**: Services critical for other containers to function
-- **Monitoring agents**: Services providing essential observability
-
-**Behavior**: Container always restarts, even if manually stopped
-
-### Decision Matrix
-
-| Service Type                         | Restart Policy   | Reason                          |
-| ------------------------------------ | ---------------- | ------------------------------- |
-| Watchtower, DIUN, Telegram notifiers | `always`         | Must stay running to function   |
-| Databases, DNS, Reverse proxies      | `unless-stopped` | Allow graceful maintenance      |
-| Media servers, dashboards            | `unless-stopped` | User-facing; allow manual stops |
-| Monitoring displays                  | `unless-stopped` | Non-critical visualization      |
-| Utility services                     | `unless-stopped` | Safe to stop manually           |
+3. Keep the update strategy deliberate:
+   - Use [automation](automation/README.md) for container event notifications and image tracking
+   - Pin or test critical infrastructure updates before rollout
+   - Keep a reverse proxy and monitoring in place for public services
 
 ## Folder Structure
 
-Each stack folder contains:
+Each stack folder follows the same basic shape:
 
 ```bash
 /stack-name
-├── compose.yaml      # Docker Compose configuration
-├── README.md         # Stack documentation
-├── .env.example      # Example environment variables
-└── /resources        # Additional resources
+├── compose.yaml
+├── README.md
+├── .env.example
+└── /resources
 ```
 
 ## Usage
 
-1. Choose a stack from the [Available Stacks](#available-stacks) section
-2. Review the stack's README.md for specific requirements
-3. Configure the environment variables
-4. Deploy using Docker Compose:
+1. Choose a stack from the table above.
+2. Read the stack README for its specific requirements.
+3. Copy `.env.example` to `.env` and fill in the local values.
+4. Deploy the stack:
 
    ```bash
    docker compose up -d
@@ -160,13 +108,15 @@ Each stack folder contains:
 
 ### Pre-commit Hooks
 
-1. Install [uv](https://github.com/astral-sh/uv) if you don't already have it.
-2. Install the hook runner: `uv tool install pre-commit`
-3. Install the repo hooks: `uv run pre-commit install`
-4. (Optional) Check the entire tree: `uv run pre-commit run --all-files`
+1. Install [uv](https://github.com/astral-sh/uv) if needed.
+2. Install pre-commit with `uv tool install pre-commit`.
+3. Install the repo hooks with `uv run pre-commit install`.
+4. Optionally run the full check with `uv run pre-commit run --all-files`.
 
-The configuration keeps YAML consistent with `yamllint`, enforces common whitespace hygiene, and validates `.env` and `.env.example` files with `dotenv-linter`. `uv run` ensures `pre-commit` executes with the Python version and environment managed by uv.
+The pre-commit setup keeps YAML consistent with `yamllint`, enforces whitespace hygiene, and validates `.env` files with `dotenv-linter`.
 
-## Documentation
+## Additional Resources
 
-- Individual stack READMEs for detailed documentation
+- [Docker Compose Documentation](https://docs.docker.com/compose/)
+- [Portainer Documentation](https://docs.portainer.io/)
+- Individual stack READMEs in each folder

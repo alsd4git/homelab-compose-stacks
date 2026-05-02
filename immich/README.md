@@ -4,10 +4,10 @@ A self-hosted photo and video backup solution with a modern web interface and ma
 
 ## Features
 
-- Web-based UI for photo and video management
-- Machine learning for photo recognition
-- Redis and Postgres integration
-- Persistent configuration and media storage
+- **Web UI**: photo and video management interface.
+- **Machine learning**: recognition and indexing support.
+- **Database backend**: Redis and PostgreSQL backing services.
+- **Persistent storage**: separate upload and database paths.
 
 ## Configuration
 
@@ -34,9 +34,14 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - `DB_USERNAME`: The database user (defaults to `postgres`).
 - `DB_DATABASE_NAME`: The name of the database (defaults to `immich`).
 
-## Ports
+## Services & Ports
 
-- `2283` (exposed): Web UI/API (internal, for reverse proxy or internal access)
+| Service | Internal Port | Access Pattern | Notes |
+| --- | --- | --- | --- |
+| Immich Server | `2283` | `http://immich_server:2283` | Web UI/API on `npm_network`. |
+| Immich Machine Learning | internal only | internal only | ML service for recognition and embedding generation. |
+| Redis | internal only | internal only | Cache and queue backend. |
+| PostgreSQL | internal only | internal only | Primary database. |
 
 > **Note:** The stack is intended to be reached through the reverse proxy on `npm_network`.
 
@@ -58,7 +63,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
    docker compose up -d
    ```
 
-3. Access the web interface through Nginx Proxy Manager at `http://immich_server:2283`
+3. Publish the web interface through Nginx Proxy Manager using the host you assign for Immich.
 
 ## Security Notes
 

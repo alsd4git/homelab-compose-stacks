@@ -1,43 +1,66 @@
 # Tracearr Stack
 
-Tracearr is a self-hosted traceability and media import stack with PostgreSQL 18 and Redis. This version is structured for a reverse-proxied homelab setup and keeps the web UI on `npm_network`.
+Traceability and media import stack built around PostgreSQL 18 and Redis, with the web UI attached to the shared reverse-proxy network.
 
-## Notes
+## Features
 
-- This compose uses PostgreSQL 18 and is intended for new installations only.
-- The web UI is exposed internally on port `3000`.
-- PostgreSQL and Redis stay on the private `tracearr_network`.
-- Persistent data uses Docker-managed named volumes, not host bind mounts.
-- Runtime secrets live in `.env`, not in the compose file.
+- **Web UI**: internal application interface exposed through `npm_network`.
+- **PostgreSQL 18**: primary relational store on a private backend network.
+- **Redis cache**: internal cache and queue backend.
+- **Named volumes**: persistent storage uses Docker-managed volumes instead of host bind mounts.
 
 ## Configuration
 
-1. Copy `.env.example` to `.env`.
-2. Generate strong secrets for `DB_PASSWORD`, `JWT_SECRET`, and `COOKIE_SECRET`.
-3. Keep the generated secrets in `.env`.
+### Environment Variables
 
-Suggested secret generation:
+Copy the example file to `.env`, then generate strong secrets for the database and application cookies:
 
 ```bash
+cp .env.example .env
 openssl rand -hex 32
 ```
 
-## Services
+Key variables:
+
+- `DB_PASSWORD`
+- `JWT_SECRET`
+- `COOKIE_SECRET`
+- `CORS_ORIGIN`
+- `LOG_LEVEL`
+- `TZ`
+
+## Services & Ports
 
 | Service | Internal Port | Access Pattern | Role |
-| --- | ---: | --- | --- |
+| --- | --- | --- | --- |
 | `tracearr` | `3000` | `http://tracearr:3000` | Web UI |
 | `tracearr-db` | `5432` | internal only | PostgreSQL 18 |
 | `tracearr-redis` | `6379` | internal only | Redis cache |
 
-## Storage Layout
+## Container Images
 
-- `tracearr_backups`
-- `tracearr_timescale_data`
-- `tracearr_redis_data`
+| Service | Image |
+| --- | --- |
+| Tracearr | `ghcr.io/connorgallopo/tracearr:latest` |
+| PostgreSQL | `timescale/timescaledb-ha:pg18.1-ts2.25.0` |
+| Redis | `redis:8-alpine` |
 
 ## Usage
 
-```bash
-docker compose up -d
-```
+1. Copy `.env.example` to `.env`.
+2. Generate and store the secrets in `.env`.
+3. Start the stack:
+
+   ```bash
+   docker compose up -d
+   ```
+
+## Security Notes
+
+- Keep the database and cookie secrets in `.env`.
+- PostgreSQL and Redis remain on the private `tracearr_network`.
+- The web UI is intended to be published only through the reverse proxy.
+
+## Additional Resources
+
+- [Tracearr GitHub](https://github.com/connorgallopo/tracearr)
