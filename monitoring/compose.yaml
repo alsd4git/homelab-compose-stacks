@@ -28,6 +28,7 @@
 # - QBITTORRENT_USERNAME: Username for the Homepage qBittorrent widget
 # - QBITTORRENT_PASSWORD: Password for the Homepage qBittorrent widget
 # - IMMICH_API_KEY: API key for the Homepage Immich widget
+# - TRACEARR_API_KEY: API key for the Homepage Tracearr widget
 # - SPEEDTEST_TRACKER_API_TOKEN: Bearer token for the Homepage Speedtest Tracker widget
 #
 # Optional environment variables:
@@ -155,6 +156,7 @@ services:
       - HOMEPAGE_VAR_QBITTORRENT_USERNAME=${QBITTORRENT_USERNAME}
       - HOMEPAGE_VAR_QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD}
       - HOMEPAGE_VAR_IMMICH_API_KEY=${IMMICH_API_KEY}
+      - HOMEPAGE_VAR_TRACEARR_API_KEY=${TRACEARR_API_KEY}
       - HOMEPAGE_VAR_SPEEDTEST_TRACKER_API_TOKEN=${SPEEDTEST_TRACKER_API_TOKEN}
     expose:
       - 3000 # Web UI (internal, for reverse proxy or internal access)

@@ -48,6 +48,7 @@ Optional variables:
 
 - `HOMARR_SECRET_ENCRYPTION_KEY`: Homarr encryption secret
 - `IMMICH_API_KEY`: Immich API key for the Homepage widget
+- `TRACEARR_API_KEY`: Tracearr API key for the Homepage widget
 - `SPEEDTEST_TRACKER_APP_KEY`: Speedtest Tracker app key
 - `SPEEDTEST_TRACKER_API_TOKEN`: Speedtest Tracker API token used by the Homepage widget
 
