@@ -18,7 +18,6 @@ A comprehensive media management and automation stack for your homelab environme
 
 - **qBittorrent**: Torrent client with Vuetorrent UI
 - **qbit_manage**: qBittorrent maintenance and tagging automation
-- **FlareSolverr**: Cloudflare bypass solution
 - **Byparr**: Cloudflare bypass solution
 - **AW Downloader**: Automated anime downloading and management
 
@@ -59,7 +58,6 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | **Seerr**         | `5055`        | `http://seerr:5055`         | Media requests.                               |
 | **Cinerr**        | `8080`        | `http://cinerr:8080`        | Media library browser.                        |
 | **Medialyze**     | `8080`        | `http://medialyze:8080`     | Media library browser.                        |
-| **FlareSolverr**  | `8191`        | `http://flaresolverr:8191`  | Cloudflare bypass.                            |
 | **Byparr**        | `8191`        | `http://byparr:8191`        | Cloudflare bypass.                            |
 | **AW Downloader** | `6547`        | `http://aw-downloader:6547` | Anime downloading and management backend.     |
 
@@ -81,7 +79,6 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Cinerr           | `alexkouzel/cinerr:latest`                   |
 | Medialyze        | `ghcr.io/frederikemmer/medialyze:latest`     |
 | Byparr           | `ghcr.io/thephaseless/byparr:latest`         |
-| FlareSolverr     | `ghcr.io/alsd4git/flaresolverr:latest`       |
 | Jellyfin         | `linuxserver/jellyfin:latest`                |
 | Seerr            | `ghcr.io/seerr-team/seerr:latest`             |
 | Prowlarr         | `linuxserver/prowlarr:latest`                |
@@ -125,7 +122,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 2. **Download Issues**:
    - Verify qBittorrent configuration
-   - Check FlareSolverr status
+   - Check Byparr status
    - Verify indexer status in Prowlarr
 
 3. **Media Not Showing**:
@@ -141,6 +138,6 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - [Jellyfin Documentation](https://jellyfin.org/docs)
 - [qBittorrent Documentation](https://github.com/qbittorrent/qBittorrent/wiki)
 - [qbit_manage Wiki](https://github.com/StuffAnThings/qbit_manage/wiki)
-- [FlareSolverr Documentation](https://github.com/FlareSolverr/FlareSolverr)
+- [Byparr Documentation](https://github.com/ThePhaseless/Byparr)
 - [Seerr Documentation](https://github.com/seerr-team/seerr)
 - [AW Downloader Documentation](https://github.com/savvymeat/aw-downloader)
