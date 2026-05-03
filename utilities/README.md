@@ -69,6 +69,11 @@ Key variables:
 - `upsnap` uses `network_mode: host`, which exposes it directly on the host interface.
 - Keep the Telegram credentials and admin password in `.env`.
 
+## Nginx Proxy Manager Notes
+
+- Use the shared upload-heavy advanced block from [`docs/nginx-proxy-manager.md`](../docs/nginx-proxy-manager.md) for `FileBrowser Quantum`, `ConvertX`, and `Stirling PDF`.
+- `Telegram Files` does not need that block because it writes to disk directly and is not upload-heavy through the web UI.
+
 ## Additional Resources
 
 - [ConvertX Documentation](https://github.com/c4illin/convertx)

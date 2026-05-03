@@ -8,6 +8,8 @@ Ensures `/admin` and `/api` endpoints work correctly when reverse proxying Pi-ho
 
 Add this configuration as an advanced/custom location block in Nginx Proxy Manager for your Pi-hole proxy host.
 
+The LAN/Tailscale allow-list matches the shared policy in [`docs/nginx-proxy-manager.md`](../docs/nginx-proxy-manager.md).
+
 ## Endpoints
 
 - `/` : Redirects to `/admin` (Pi-hole web UI)
