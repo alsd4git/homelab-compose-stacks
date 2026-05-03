@@ -14,9 +14,9 @@
 # - DYN6_DOMAIN, DYN6_TOKEN: Dynv6 DNS provider configuration
 # - DUCK_HOST, DUCK_TOKEN: DuckDNS DNS provider configuration
 #
-# Optional environment variables (TinyAuth v4 + Pocket ID):
-# - POCKET_ID_CLIENT_ID: Client ID for Pocket ID OAuth application
-# - POCKET_ID_CLIENT_SECRET: Client Secret for Pocket ID OAuth application
+# Optional environment variables (TinyAuth v5 + Pocket ID):
+# - TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: Client ID for the Pocket ID OAuth application
+# - TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET: Client Secret for the Pocket ID OAuth application
 #   Note: Register OAuth app in Pocket ID with callback URL: https://tinyauth.{YOUR_DOMAIN}/api/oauth/callback/pocketid
 #
 # Optional environment variables (VaultLS):
@@ -123,25 +123,21 @@ services:
 
   tinyauth:
     container_name: tinyauth
-    image: ghcr.io/steveiliop56/tinyauth:v4
+    image: ghcr.io/steveiliop56/tinyauth:v5
     restart: unless-stopped
     expose:
       - 3000 # Internal TinyAuth port for reverse proxy or internal access
     environment:
-      # https://tinyauth.app/docs/breaking-updates/3-to-4/
-      - APP_URL=https://tinyauth.${YOUR_DOMAIN:-example.com}
-      # Pocket ID OAuth provider configuration
-      # Provider ID: pocketid
-      # For Pocket ID, you need to register a new OAuth application in Pocket ID
-      # and configure it with the callback URL: https://tinyauth.{YOUR_DOMAIN}/api/oauth/callback/pocketid
-      - PROVIDERS_POCKETID_CLIENT_ID=${POCKET_ID_CLIENT_ID}
-      - PROVIDERS_POCKETID_CLIENT_SECRET=${POCKET_ID_CLIENT_SECRET}
-      - PROVIDERS_POCKETID_AUTH_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/authorize
-      - PROVIDERS_POCKETID_TOKEN_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/api/oidc/token
-      - PROVIDERS_POCKETID_USER_INFO_URL=https://pocket-id.${YOUR_DOMAIN:-example.com}/api/oidc/userinfo
-      - PROVIDERS_POCKETID_SCOPES=openid email profile groups
-      - PROVIDERS_POCKETID_NAME=Pocket ID
-      - PROVIDERS_POCKETID_REDIRECT_URL=https://tinyauth.${YOUR_DOMAIN:-example.com}/api/oauth/callback/pocketid
+      - TINYAUTH_APPURL=https://tinyauth.${YOUR_DOMAIN:-example.com}
+      - TINYAUTH_OAUTH_AUTOREDIRECT=pocketid
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID=${TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID}
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET=${TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET}
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL=https://pocket-id.${YOUR_DOMAIN:-example.com}/authorize
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL=https://pocket-id.${YOUR_DOMAIN:-example.com}/api/oidc/token
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL=https://pocket-id.${YOUR_DOMAIN:-example.com}/api/oidc/userinfo
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES=openid email profile groups
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_NAME=Pocket ID
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL=https://tinyauth.${YOUR_DOMAIN:-example.com}/api/oauth/callback/pocketid
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/tinyauth/data:/data
     networks:

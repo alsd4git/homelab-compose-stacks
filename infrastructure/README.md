@@ -32,7 +32,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - `DOCKER_DATA_BASEFOLDER`: The absolute path for storing persistent data.
 - `YOUR_DOMAIN`: Your primary domain name.
 - **DDNS Updater**: Credentials for your DNS provider (e.g., Cloudflare, DuckDNS).
-- **Pocket ID & TinyAuth**: Client ID and secret for the OIDC integration.
+- **Pocket ID & TinyAuth**: Pocket ID OAuth client ID and secret for the Tinyauth v5 integration.
 - **Step CA**: Configuration for your private certificate authority.
 - **VaultLS**: A secret key and URL for the VaultLS service.
 
@@ -56,7 +56,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | DDNS Updater        | `qmcgaw/ddns-updater`              |
 | Nginx Proxy Manager | `jc21/nginx-proxy-manager:latest`  |
 | Step CA             | `smallstep/step-ca`                |
-| TinyAuth            | `ghcr.io/steveiliop56/tinyauth:v4` |
+| TinyAuth            | `ghcr.io/steveiliop56/tinyauth:v5` |
 | Pocket ID           | `ghcr.io/pocket-id/pocket-id:v2`   |
 | VaultLS             | `ghcr.io/7ritn/vaultls:latest`     |
 
