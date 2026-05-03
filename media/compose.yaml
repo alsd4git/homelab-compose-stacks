@@ -6,6 +6,8 @@
 # Required environment variables:
 # - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
 # - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
+# - QBITTORRENT_USERNAME: qBittorrent Web UI username used by qbit_manage
+# - QBITTORRENT_PASSWORD: qBittorrent Web UI password used by qbit_manage
 # - SONARR_API_KEY: API key for Sonarr
 # - AW_APP_KEY: Application key for aw-downloader
 #
@@ -189,6 +191,46 @@ services:
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/qbittorrent/config:/config
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads:/downloads
+    networks:
+      - media_network
+      - npm_network
+
+  qbit-manage:
+    image: ghcr.io/stuffanthings/qbit_manage:latest
+    container_name: qbit-manage
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+    # Maintenance worker with an internal Web UI/API on 8181; expose through NPM and Homepage, not the host.
+    expose:
+      - 8181 # Web UI/API (internal, for reverse proxy or internal access)
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - QBITTORRENT_USERNAME=${QBITTORRENT_USERNAME}
+      - QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD}
+      - QBT_WEB_SERVER=true
+      - QBT_PORT=8181
+      - QBT_CONFIG_DIR=/config
+      - QBT_RUN=false
+      - QBT_SCHEDULE=1440
+      - QBT_STARTUP_DELAY=120
+      - QBT_RECHECK=true
+      - QBT_CAT_UPDATE=false
+      - QBT_TAG_UPDATE=true
+      - QBT_REM_UNREGISTERED=false
+      - QBT_REM_ORPHANED=false
+      - QBT_TAG_TRACKER_ERROR=true
+      - QBT_TAG_NOHARDLINKS=true
+      - QBT_SHARE_LIMITS=false
+      - QBT_SKIP_CLEANUP=true
+      - QBT_DRY_RUN=false
+      - QBT_LOG_LEVEL=INFO
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/qbit-manage:/config
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads:/downloads
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/qbittorrent/config:/qbittorrent:ro
     networks:
       - media_network
       - npm_network

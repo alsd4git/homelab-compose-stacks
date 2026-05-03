@@ -1,0 +1,42 @@
+# qbit_manage configuration for the media stack.
+# Conservative defaults: tagging and recheck only, no destructive cleanup.
+
+qbt:
+  host: "qbittorrent:8003"
+  user: !ENV QBITTORRENT_USERNAME
+  pass: !ENV QBITTORRENT_PASSWORD
+  settings:
+    force_auto_tmm: false
+    tracker_error_tag: issue
+    nohardlinks_tag: noHL
+    stalled_tag: stalledDL
+    private_tag: private
+    tag_stalled_torrents: true
+    cat_filter_completed: true
+    tag_nohardlinks_filter_completed: true
+    rem_unregistered_filter_completed: false
+    disable_qbt_default_share_limits: true
+
+directory:
+  root_dir: "/downloads"
+  torrents_dir: "/qbittorrent/BT_backup"
+
+# qBittorrent appends category folders under /downloads/<Category>/ when automatic
+# category-based save paths are enabled. Keep this map aligned with the live layout.
+cat:
+  Radarr: "/downloads/Radarr/*"
+  Sonarr: "/downloads/Sonarr/*"
+  Prowlarr: "/downloads/Prowlarr/*"
+  Uncategorized: "/downloads/*"
+
+tracker:
+  other:
+    tag: other
+
+nohardlinks:
+  Radarr:
+    exclude_tags: []
+    ignore_root_dir: true
+  Sonarr:
+    exclude_tags: []
+    ignore_root_dir: true

@@ -17,6 +17,7 @@ A comprehensive media management and automation stack for your homelab environme
 ### Download Management
 
 - **qBittorrent**: Torrent client with Vuetorrent UI
+- **qbit_manage**: qBittorrent maintenance and tagging automation
 - **FlareSolverr**: Cloudflare bypass solution
 - **Byparr**: Cloudflare bypass solution
 - **AW Downloader**: Automated anime downloading and management
@@ -41,6 +42,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 - `DOCKER_DATA_BASEFOLDER`: The absolute path for storing persistent data.
 - `DOCKER_MEDIA_BASEFOLDER`: The absolute path for your media files.
+- `QBITTORRENT_USERNAME`: qBittorrent Web UI username used by `qbit_manage`
+- `QBITTORRENT_PASSWORD`: qBittorrent Web UI password used by `qbit_manage`
 - `SONARR_API_KEY`: Your API key for Sonarr.
 
 ## Services & Ports
@@ -51,6 +54,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | **Radarr**        | `7878`        | `http://radarr:7878`        | Movie management.                             |
 | **Prowlarr**      | `9696`        | `http://prowlarr:9696`      | Indexer management.                           |
 | **qBittorrent**   | `6881`, `6881/udp` | `http://qbittorrent:8003` | Torrent client and web UI; torrent ports are mapped on host. |
+| **qbit_manage**   | `8181`             | `http://qbit-manage:8181` | qBittorrent housekeeping, tagging, recheck automation, and internal Web UI/API. |
 | **Jellyfin**      | `8096`        | `http://jellyfin:8096`      | Media streaming.                              |
 | **Seerr**         | `5055`        | `http://seerr:5055`         | Media requests.                               |
 | **Cinerr**        | `8080`        | `http://cinerr:8080`        | Media library browser.                        |
@@ -62,6 +66,12 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 > **Note:** Most services are meant to be reached through `npm_network`; qBittorrent also publishes its torrent ports on the host for peer connectivity.
 
 > **Jellyfin note:** the media mount is writable so Jellyfin can store metadata sidecars and library state when needed.
+
+> **qbit_manage note:** create `${DOCKER_DATA_BASEFOLDER}/qbit-manage/config.yml` from `qbit-manage/config.yml.example`, keep the qBittorrent credentials in the stack env, and leave cleanup/cat-moves disabled unless you are ready to automate deletions. In the current setup it stays in tagging/recheck mode only, and the category map should mirror the real qBittorrent folder layout, e.g. `/downloads/Radarr/` and `/downloads/Sonarr/`.
+
+> **Web UI note:** every service with an internal web UI should be exposed on `npm_network` for Nginx Proxy Manager and added to Homepage for quick access; keep direct host exposure reserved for protocols that actually need it.
+
+> **NPM extra-config note:** when a service needs LAN/Tailscale access or TinyAuth gating, keep the snippet in `media/NPM-extraconf.conf` and follow the shared policy in [`docs/nginx-proxy-manager.md`](../docs/nginx-proxy-manager.md).
 
 ## Container Images
 
@@ -76,6 +86,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Seerr            | `ghcr.io/seerr-team/seerr:latest`             |
 | Prowlarr         | `linuxserver/prowlarr:latest`                |
 | qBittorrent      | `linuxserver/qbittorrent:latest`             |
+| qbit_manage      | `ghcr.io/stuffanthings/qbit_manage:latest`   |
 | Radarr           | `linuxserver/radarr:latest`                  |
 | Sonarr           | `linuxserver/sonarr:latest`                  |
 
@@ -85,7 +96,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
    ```bash
    # Create required directories
-   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{sonarr,radarr,prowlarr,jellyfin,jellyseerr,qbittorrent,aw-downloader,cinerr,medialyze}
+   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{sonarr,radarr,prowlarr,jellyfin,jellyseerr,qbittorrent,qbit-manage,aw-downloader,cinerr,medialyze}
    mkdir -p ${DOCKER_MEDIA_BASEFOLDER}/{tvseries,anime,downloads}
    ```
 
@@ -129,6 +140,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - [Prowlarr Documentation](https://wiki.servarr.com/prowlarr)
 - [Jellyfin Documentation](https://jellyfin.org/docs)
 - [qBittorrent Documentation](https://github.com/qbittorrent/qBittorrent/wiki)
+- [qbit_manage Wiki](https://github.com/StuffAnThings/qbit_manage/wiki)
 - [FlareSolverr Documentation](https://github.com/FlareSolverr/FlareSolverr)
 - [Seerr Documentation](https://github.com/seerr-team/seerr)
 - [AW Downloader Documentation](https://github.com/savvymeat/aw-downloader)
