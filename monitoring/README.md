@@ -43,6 +43,8 @@ cp .env.example .env
 - `BESZEL_SSH_KEY`: SSH public key for Beszel agent authentication
 - `BESZEL_TOKEN`: Beszel agent token
 - `BESZEL_HUB_URL`: public Beszel hub URL
+- `NPM_EMAIL` and `NPM_PASSWORD`: Nginx Proxy Manager credentials reused by the Homepage widget
+- `BESZEL_USERNAME` and `BESZEL_PASSWORD`: Beszel dashboard credentials reused by the Homepage widget
 
 Optional variables:
 
@@ -52,7 +54,7 @@ Optional variables:
 - `SPEEDTEST_TRACKER_APP_KEY`: Speedtest Tracker app key
 - `SPEEDTEST_TRACKER_API_TOKEN`: Speedtest Tracker API token used by the Homepage widget
 
-Homepage can be mounted from `${DOCKER_DATA_BASEFOLDER}/homepage/config`, but the actual widget and bookmark layout is intentionally kept local so the public repository only carries the stack-level contract.
+Homepage can be mounted from `${DOCKER_DATA_BASEFOLDER}/homepage/config`, and it also receives read-only mounts for `${DOCKER_DATA_BASEFOLDER}`, `${DOCKER_MEDIA_BASEFOLDER}`, and `/sys` so the `resources` widget can report disk usage and temperature data for the host mounts.
 
 The services on `npm_network` are intended to be reverse-proxied through Nginx Proxy Manager. Host-network services keep their direct host endpoints because they need local network visibility.
 

@@ -20,6 +20,10 @@
 # - BESZEL_TOKEN: Authentication token for Beszel agent
 # - BESZEL_HUB_URL: Beszel hub URL
 # - PORTAINER_API_KEY: API key for the Homepage Portainer widget
+# - NPM_EMAIL: Nginx Proxy Manager admin email for the Homepage NPM widget
+# - NPM_PASSWORD: Nginx Proxy Manager admin password for the Homepage NPM widget
+# - BESZEL_USERNAME: Beszel dashboard username for the Homepage Beszel widget
+# - BESZEL_PASSWORD: Beszel dashboard password for the Homepage Beszel widget
 # - JELLYFIN_API_KEY: API key for the Homepage Jellyfin widget
 # - SEERR_API_KEY: API key for the Homepage Seerr widget
 # - PROWLARR_API_KEY: API key for the Homepage Prowlarr widget
@@ -108,9 +112,10 @@ services:
     pid: host
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/glances/glances.conf:/etc/glances.conf
-      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/fs/media:ro
-      - /etc/os-release:/etc/os-release:ro
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}:/mnt/data:ro
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/mnt/media:ro
       - /home:/fs/home:ro
+      - /etc/os-release:/etc/os-release:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - GLANCES_OPT=-w
@@ -148,6 +153,10 @@ services:
       - HOMEPAGE_VAR_PUBLIC_DOMAIN=${PUBLIC_DOMAIN:-example.com}
       - HOMEPAGE_VAR_PIHOLE_PASSWORD=${PIHOLE_PASSWORD}
       - HOMEPAGE_VAR_PORTAINER_API_KEY=${PORTAINER_API_KEY}
+      - HOMEPAGE_VAR_NPM_EMAIL=${NPM_EMAIL}
+      - HOMEPAGE_VAR_NPM_PASSWORD=${NPM_PASSWORD}
+      - HOMEPAGE_VAR_BESZEL_USERNAME=${BESZEL_USERNAME}
+      - HOMEPAGE_VAR_BESZEL_PASSWORD=${BESZEL_PASSWORD}
       - HOMEPAGE_VAR_JELLYFIN_API_KEY=${JELLYFIN_API_KEY}
       - HOMEPAGE_VAR_SEERR_API_KEY=${SEERR_API_KEY}
       - HOMEPAGE_VAR_PROWLARR_API_KEY=${PROWLARR_API_KEY}
@@ -162,6 +171,9 @@ services:
       - 3000 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homepage/config:/app/config
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}:/mnt/data:ro
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/mnt/media:ro
+      - /sys:/sys:ro
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - npm_network
