@@ -13,6 +13,7 @@
 # - DYNU_DOMAIN, DYNU_USERNAME, DYNU_PASSWORD: Dynu DNS provider configuration
 # - DYN6_DOMAIN, DYN6_TOKEN: Dynv6 DNS provider configuration
 # - DUCK_HOST, DUCK_TOKEN: DuckDNS DNS provider configuration
+# - MYADDR_DOMAIN, MYADDR_KEY: Myaddr DNS provider configuration
 #
 # Optional environment variables (TinyAuth v5 + Pocket ID):
 # - TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: Client ID for the Pocket ID OAuth application
@@ -43,9 +44,10 @@ services:
     environment:
       CONFIG: |
         {"settings":[
+        {"provider":"duckdns",  "domain":"${DUCK_HOST}",    "token":"${DUCK_TOKEN}",                                      "ip_version":"ipv4"},
         {"provider":"dynu",     "domain":"${DYNU_DOMAIN}",  "username":"${DYNU_USERNAME}","password":"${DYNU_PASSWORD}",  "ip_version":"ipv4"},
         {"provider":"dynv6",    "domain":"${DYN6_DOMAIN}",  "token":"${DYN6_TOKEN}",                                      "ip_version":"ipv4"},
-        {"provider":"duckdns",  "domain":"${DUCK_HOST}",    "token":"${DUCK_TOKEN}",                                      "ip_version":"ipv4"}
+        {"provider":"myaddr",   "domain":"${MYADDR_DOMAIN}","key":"${MYADDR_KEY}",                                        "ip_version":"ipv4"}
         ]}
       PERIOD: 60m
       UPDATE_COOLDOWN_PERIOD: 5m

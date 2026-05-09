@@ -32,6 +32,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - `DOCKER_DATA_BASEFOLDER`: The absolute path for storing persistent data.
 - `YOUR_DOMAIN`: Your primary domain name.
 - **DDNS Updater**: Credentials for your DNS provider (e.g., Cloudflare, DuckDNS).
+- **DDNS Updater**: Myaddr domain and private key if you use Myaddr as a provider.
 - **Pocket ID & TinyAuth**: Pocket ID OAuth client ID and secret for the Tinyauth v5 integration.
 - **Step CA**: Configuration for your private certificate authority.
 - **VaultLS**: A secret key and URL for the VaultLS service.
