@@ -13,7 +13,7 @@
 # - DYNU_DOMAIN, DYNU_USERNAME, DYNU_PASSWORD: Dynu DNS provider configuration
 # - DYN6_DOMAIN, DYN6_TOKEN: Dynv6 DNS provider configuration
 # - DUCK_HOST, DUCK_TOKEN: DuckDNS DNS provider configuration
-# - MYADDR_DOMAIN, MYADDR_KEY: Myaddr DNS provider configuration
+# - MYADDR_DOMAIN, MYADDR_KEY: Myaddr DNS provider configuration (your-name.myaddr.tools/dev/io and subdomains all resolve to the same target)
 #
 # Optional environment variables (TinyAuth v5 + Pocket ID):
 # - TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: Client ID for the Pocket ID OAuth application
