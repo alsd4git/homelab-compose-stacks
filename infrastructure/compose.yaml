@@ -90,6 +90,7 @@ services:
       PGID: 1000 # Process GID (group ID for file permissions)
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/data:/data
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/deploy:/data/deploy:ro
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/NPM/letsencrypt:/etc/letsencrypt
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/step/certs/root_ca.crt:/etc/nginx/ssl/homelab/root_ca.crt:ro
     healthcheck:
