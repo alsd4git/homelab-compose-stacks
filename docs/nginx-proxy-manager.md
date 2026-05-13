@@ -7,6 +7,7 @@ This repository keeps NPM advanced config short, purpose-driven, and stack-local
 - Keep `ssl_forced`, `http2_support`, `hsts_enabled`, `hsts_subdomains`, and `allow_websocket_upgrade` enabled on normal web UIs.
 - Keep `block_exploits` enabled everywhere except `tinyauth`.
 - Keep `caching_enabled` off by default so dynamic dashboards and admin UIs stay fresh.
+- Shared bridge networks are declared with `external: true` in consumer stacks only. In this repository `npm_network` is a pre-created shared bridge network referenced from every stack, while `pihole_network` is created by the Pi-hole stack and consumed by `media` for DNS attribution.
 
 ## Canonical LAN / Tailscale allow-list
 
@@ -49,7 +50,6 @@ Good fits in this repository:
 
 - `filebrowser-quantum`
 - `convertx`
-- `stirling-pdf`
 
 ## Where the snippets live
 

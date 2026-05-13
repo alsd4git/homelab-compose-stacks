@@ -7,7 +7,7 @@
 # Several services in this stack require elevated privileges:
 # - dashdot: runs as privileged=true (full host access) for system metrics
 # - homeassistant: runs as privileged=true and network_mode=host (required for Bluetooth)
-# - dozzle, glances, homarr, homepage: mount /var/run/docker.sock (Docker daemon access)
+# - dozzle, glances, homepage: mount /var/run/docker.sock (Docker daemon access)
 # - beszel-agent: mounts /var/run/docker.sock for container monitoring
 # These are necessary for monitoring functionality but should only be used in trusted networks.
 # See: https://docs.docker.com/engine/security/
@@ -36,7 +36,6 @@
 # - SPEEDTEST_TRACKER_API_TOKEN: Bearer token for the Homepage Speedtest Tracker widget
 #
 # Optional environment variables:
-# - HOMARR_SECRET_ENCRYPTION_KEY: Secret key for Homarr (generate with: openssl rand -hex 32)
 # - SPEEDTEST_TRACKER_APP_KEY: App key for Speedtest Tracker (generate with: openssl rand -base64 32)
 
 name: monitoring
@@ -178,20 +177,6 @@ services:
     networks:
       - npm_network
 
-  homarr:
-    container_name: homarr
-    image: ghcr.io/homarr-labs/homarr:latest
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homarr/appdata:/appdata
-    environment:
-      - SECRET_ENCRYPTION_KEY=${HOMARR_SECRET_ENCRYPTION_KEY}
-    expose:
-      - 7575 # Web UI (internal, for reverse proxy or internal access)
-    networks:
-      - npm_network
-
   homebox:
     image: ghcr.io/sysadminsmedia/homebox:latest-rootless
     container_name: homebox
@@ -308,5 +293,4 @@ services:
 networks:
   npm_network: # to expose container to NPM for reverse proxy
     name: npm_network
-    driver: bridge
     external: true

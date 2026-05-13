@@ -69,25 +69,6 @@ services:
     networks:
       - npm_network
 
-  stirling-pdf:
-    image: stirlingtools/stirling-pdf:latest
-    container_name: stirling-pdf
-    restart: unless-stopped
-    expose:
-      - 8080 # Web UI (internal, for reverse proxy or internal access)
-    environment:
-      - DOCKER_ENABLE_SECURITY=false
-      - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
-      - LANGS=en_GB
-    volumes:
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/tessdata:/usr/share/tessdata
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/configs:/configs
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/customFiles:/customFiles
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/logs:/logs
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/stirling-pdf/pipeline:/pipeline
-    networks:
-      - npm_network
-
   telegram-files:
     image: ghcr.io/jarvis2f/telegram-files:latest
     container_name: telegram-files
@@ -122,5 +103,4 @@ services:
 networks:
   npm_network:
     name: npm_network
-    driver: bridge
     external: true

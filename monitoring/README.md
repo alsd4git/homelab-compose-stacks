@@ -21,7 +21,6 @@ System monitoring, dashboarding, and homelab visibility for the services in this
 
 ### Dashboard & Management
 
-- **Homarr**: primary dashboard in the compose stack.
 - **Homebox**: asset and inventory management.
 - **Homepage**: optional local dashboard template, mounted from your private config directory.
 
@@ -48,7 +47,6 @@ cp .env.example .env
 
 Optional variables:
 
-- `HOMARR_SECRET_ENCRYPTION_KEY`: Homarr encryption secret
 - `IMMICH_API_KEY`: Immich API key for the Homepage widget
 - `TRACEARR_API_KEY`: Tracearr API key for the Homepage widget
 - `SPEEDTEST_TRACKER_APP_KEY`: Speedtest Tracker app key
@@ -69,7 +67,6 @@ The services on `npm_network` are intended to be reverse-proxied through Nginx P
 | Glances | `61208` | `https://glances.${PUBLIC_DOMAIN}` | Live system metrics. |
 | Home Assistant | `8123` | `http://<host-ip>:8123` | Direct host access by design. |
 | Homebox | `7745` | `https://homebox.${PUBLIC_DOMAIN}` | Asset and inventory manager. |
-| Homarr | `7575` | `https://homarr.${PUBLIC_DOMAIN}` | Primary dashboard in the compose stack. |
 | Homepage | `3000` | `https://homepage.${PUBLIC_DOMAIN}` | Optional dashboard alternative. |
 | NetAlertX | `20211` | `http://<host-ip>:20211` | Direct host access for network scanning. |
 | Scrutiny | `8080` | `https://scrutiny.${PUBLIC_DOMAIN}` | Disk health monitoring UI. |
@@ -87,7 +84,6 @@ The services on `npm_network` are intended to be reverse-proxied through Nginx P
 | Glances | `nicolargo/glances:latest-full` |
 | Home Assistant | `linuxserver/homeassistant:latest` |
 | Homebox | `ghcr.io/sysadminsmedia/homebox:latest-rootless` |
-| Homarr | `ghcr.io/homarr-labs/homarr:latest` |
 | Homepage | `ghcr.io/gethomepage/homepage:latest` |
 | NetAlertX | `ghcr.io/netalertx/netalertx:latest` |
 | Scrutiny | `ghcr.io/analogj/scrutiny:master-omnibus` |
@@ -101,7 +97,7 @@ The services on `npm_network` are intended to be reverse-proxied through Nginx P
 1. Create the data directories:
 
    ```bash
-   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{beszel,homeassistant,homebox,homarr,homepage,netalertx,scrutiny,speedtest-tracker,wyl2,glances}
+   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{beszel,homeassistant,homebox,homepage,netalertx,scrutiny,speedtest-tracker,wyl2,glances}
    ```
 
 2. Seed the Homepage config if you plan to use it:
@@ -111,13 +107,7 @@ The services on `npm_network` are intended to be reverse-proxied through Nginx P
    cp -R monitoring/homepage/config/. ${DOCKER_DATA_BASEFOLDER}/homepage/config/
    ```
 
-3. If needed, create the Homarr appdata directory:
-
-   ```bash
-   mkdir -p ${DOCKER_DATA_BASEFOLDER}/homarr/appdata
-   ```
-
-4. Start the stack:
+3. Start the stack:
 
    ```bash
    docker compose up -d
@@ -131,7 +121,6 @@ The services on `npm_network` are intended to be reverse-proxied through Nginx P
 - Glances: `https://glances.${PUBLIC_DOMAIN}`
 - Home Assistant: `http://<host-ip>:8123`
 - Homebox: `https://homebox.${PUBLIC_DOMAIN}`
-- Homarr: `https://homarr.${PUBLIC_DOMAIN}`
 - Homepage: `https://homepage.${PUBLIC_DOMAIN}`
 - NetAlertX: `http://<host-ip>:20211`
 - Scrutiny: `https://scrutiny.${PUBLIC_DOMAIN}`
@@ -150,7 +139,6 @@ These services can talk to the Docker daemon and should only be run in trusted n
 - `dozzle`
 - `glances`
 - `homepage`
-- `homarr`
 
 **Host Mode and Privileged Services**
 
@@ -174,7 +162,6 @@ These services can talk to the Docker daemon and should only be run in trusted n
 - [Home Assistant Documentation](https://www.home-assistant.io/docs/)
 - [Homebox Documentation](https://github.com/sysadminsmedia/homebox)
 - [Homepage Documentation](https://gethomepage.dev/)
-- [Homarr Documentation](https://homarr.dev/)
 - [NetAlertX Documentation](https://github.com/jokobsk/NetAlertX)
 - [Scrutiny Documentation](https://github.com/AnalogJ/scrutiny)
 - [Speedtest Tracker Documentation](https://docs.linuxserver.io/images/docker-speedtest-tracker)
