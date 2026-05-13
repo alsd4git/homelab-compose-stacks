@@ -120,7 +120,6 @@ networks:
     driver: bridge
   npm_network:
     name: npm_network
-    driver: bridge
     external: true
 
 volumes:

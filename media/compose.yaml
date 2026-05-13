@@ -122,7 +122,8 @@ services:
     image: linuxserver/prowlarr:latest
     container_name: prowlarr
     restart: unless-stopped
-    dns: 1.1.1.1
+    dns:
+      - 10.250.250.10 # Pi-hole on pihole_network for per-container query attribution
     expose:
       - 9696 # Web UI/API (internal, for reverse proxy or internal access)
     environment:
@@ -133,6 +134,7 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/prowlarr:/config
     networks:
       - media_network
+      - pihole_network
       - npm_network
 
   qbittorrent:
@@ -245,5 +247,7 @@ networks:
     driver: bridge
   npm_network: # to expose container to NPM for reverse proxy
     name: npm_network
-    driver: bridge
+    external: true
+  pihole_network:
+    name: pihole_network
     external: true

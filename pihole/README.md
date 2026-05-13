@@ -5,7 +5,7 @@ This stack provides a network-wide ad blocking solution using [Pi-hole](https://
 ## Features
 
 - **Network-wide ad blocking**: DNS sinkhole protection for your devices.
-- **DNS server**: customizable blocklists and local resolution.
+- **DNS server**: customizable blocklists, local resolution, and encrypted upstream DNS via dnscrypt-proxy.
 - **Web interface**: management UI for queries and settings.
 - **Optional DHCP**: can run as a DHCP server if you enable it.
 - **Custom DNS records**: supports local overrides and DNSmasq options.
@@ -16,6 +16,8 @@ This stack provides a network-wide ad blocking solution using [Pi-hole](https://
 ### Environment Variables
 
 This stack requires a `.env` file for configuration. A complete and recommended set of variables can be found in the `.env.example` file.
+
+The live stack also includes `dnscrypt-proxy` as an encrypted upstream resolver for Pi-hole.
 
 **To get started:**
 
@@ -50,6 +52,20 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 - `/etc/pihole`: Pi-hole configuration
 - `/etc/dnsmasq.d`: DNS configuration
+- `/config` for `dnscrypt-proxy`: encrypted upstream resolver configuration and state
+
+## Support Containers
+
+Pi-hole runs with `dnscrypt-proxy` as an internal upstream resolver on the private `pihole_network`.
+
+- `dnscrypt-proxy` is not published on a host port.
+- The container only serves Pi-hole over the internal Docker network.
+- Its persistent data lives under `${DOCKER_DATA_BASEFOLDER}/dnscrypt-proxy`.
+- The Pi-hole container is pinned to `10.250.250.10` on `pihole_network`, with `dnscrypt-proxy` at `10.250.250.11`, so other containers can use that fixed IP as their DNS server when you want per-container query attribution.
+
+> **Network note:** `pihole_network` is the owned bridge network for this stack; other stacks consume it as `external: true` when they need the fixed Pi-hole resolver IP for attribution or internal DNS.
+
+> **Resolver note:** the Docker daemon keeps using its host resolver, while containers that should appear individually in Pi-hole must join `pihole_network` and point `dns` at the fixed Pi-hole IP. `dnscrypt-proxy` stays internal to Pi-hole and never needs a public endpoint.
 
 ## Container Images
 
@@ -104,6 +120,47 @@ To add custom domain records (e.g., `*.yourdomain.com`), create a file in the dn
    ```bash
    docker restart pihole
    ```
+
+## Blocklists and Allowlists
+
+The current Pi-hole policy is based on two simple ideas:
+
+- keep the allowlist small and explicit;
+- use a compact, low-maintenance blocklist set instead of many overlapping lists.
+
+### Allowlist
+
+We currently use the Pi-hole whitelist sources from the "antigravity" allowlist set:
+
+- <https://raw.githubusercontent.com/GoodnessJSON/PiHole-Whitelist/master/lists/whitelist.txt>
+- <https://raw.githubusercontent.com/GoodnessJSON/PiHole-Whitelist/master/lists/referral-sites.txt>
+
+### Blocklists
+
+The blocklist set has been simplified to the Hagezi "Set and forget" combo:
+
+- <https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/adblock/multi.txt>
+- <https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/adblock/popupads.txt>
+- <https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/adblock/tif.txt>
+- <https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/adblock/fake.txt>
+
+Older adlists are intentionally disabled rather than deleted, so they can be re-enabled quickly if a regression appears.
+
+### Apply changes
+
+After changing adlists or allowlists, rebuild gravity with:
+
+```bash
+pihole -g
+```
+
+## Database Maintenance
+
+Pi-hole query history is kept intentionally short to avoid an oversized `pihole-FTL.db`.
+
+- `maxDBdays` is set to `30` days.
+- Periodic `VACUUM` keeps the SQLite database compact.
+- This has already reclaimed roughly `1.4 GB` on the current installation.
 
 ### Common dnsmasq Options
 

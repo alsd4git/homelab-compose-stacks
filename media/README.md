@@ -69,6 +69,10 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 > **Web UI note:** every service with an internal web UI should be exposed on `npm_network` for Nginx Proxy Manager and added to Homepage for quick access; keep direct host exposure reserved for protocols that actually need it.
 
+> **Network note:** shared bridge networks are consumed with `external: true` only. In this repository `npm_network` is a pre-created shared network referenced by every stack, while `pihole_network` is created by the Pi-hole stack and consumed by `media` for DNS attribution.
+
+> **Pi-hole attribution note:** if you want Pi-hole to log queries per container, point that container's `dns` entry at the Pi-hole IP on `pihole_network` instead of using a container name. For the current stack this is `10.250.250.10`, and `Prowlarr` now joins `pihole_network` as the first test case so that resolver can actually be reached from inside the container. Docker still resolves through its embedded DNS, but the upstream resolver is the fixed Pi-hole IP.
+
 > **NPM extra-config note:** when a service needs LAN/Tailscale access or TinyAuth gating, keep the snippet in `media/NPM-extraconf.conf` and follow the shared policy in [`docs/nginx-proxy-manager.md`](../docs/nginx-proxy-manager.md).
 
 ## Container Images
