@@ -50,6 +50,7 @@ Good fits in this repository:
 
 - `filebrowser-quantum`
 - `convertx`
+- `forgejo`
 
 ## Where the snippets live
 

@@ -1,0 +1,77 @@
+name: forgejo
+
+services:
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:${FORGEJO_VERSION:-13-rootless}
+    container_name: forgejo
+    user: "1000:1000"
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    expose:
+      - 3000 # Web UI (internal, for reverse proxy or internal access)
+    ports:
+      - 2222:2222 # SSH git access (external mapping)
+    environment:
+      USER_UID: 1000
+      USER_GID: 1000
+      FORGEJO__database__DB_TYPE: postgres
+      FORGEJO__database__HOST: postgres:5432
+      FORGEJO__database__NAME: ${FORGEJO_DB_NAME:-forgejo}
+      FORGEJO__database__USER: ${FORGEJO_DB_USER:-forgejo}
+      FORGEJO__database__PASSWD: ${FORGEJO_DB_PASSWORD}
+      FORGEJO__server__DOMAIN: forgejo.${YOUR_DOMAIN:-example.com}
+      FORGEJO__server__ROOT_URL: https://forgejo.${YOUR_DOMAIN:-example.com}/
+      FORGEJO__server__SSH_DOMAIN: forgejo.${YOUR_DOMAIN:-example.com}
+      FORGEJO__server__SSH_PORT: ${FORGEJO_SSH_PORT:-2222}
+      FORGEJO__server__SSH_LISTEN_PORT: ${FORGEJO_SSH_PORT:-2222}
+      FORGEJO__server__START_SSH_SERVER: true
+      FORGEJO__service__DISABLE_REGISTRATION: ${FORGEJO_DISABLE_REGISTRATION:-true}
+      FORGEJO__service__REQUIRE_SIGNIN_VIEW: ${FORGEJO_REQUIRE_SIGNIN_VIEW:-true}
+      FORGEJO__service__ALLOWED_USER_VISIBILITY_MODES: ${FORGEJO_ALLOWED_USER_VISIBILITY_MODES:-private}
+      FORGEJO__admin__DEFAULT_USER_VISIBILITY: ${FORGEJO_DEFAULT_USER_VISIBILITY:-private}
+      FORGEJO__admin__DEFAULT_ORG_VISIBILITY: ${FORGEJO_DEFAULT_ORG_VISIBILITY:-private}
+      FORGEJO__repository__FORCE_PRIVATE: ${FORGEJO_FORCE_PRIVATE:-true}
+      FORGEJO__repository__DEFAULT_PRIVATE: ${FORGEJO_DEFAULT_PRIVATE:-private}
+      FORGEJO__repository__DEFAULT_PUSH_CREATE_PRIVATE: ${FORGEJO_DEFAULT_PUSH_CREATE_PRIVATE:-true}
+      FORGEJO__repository__ENABLE_PUSH_CREATE_USER: ${FORGEJO_ENABLE_PUSH_CREATE_USER:-true}
+      FORGEJO__repository__ENABLE_PUSH_CREATE_ORG: ${FORGEJO_ENABLE_PUSH_CREATE_ORG:-true}
+      FORGEJO__admin__DISABLE_REGULAR_ORG_CREATION: ${FORGEJO_DISABLE_REGULAR_ORG_CREATION:-true}
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/forgejo/data:/var/lib/gitea
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/forgejo/config:/etc/gitea
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - forgejo_network
+      - npm_network
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION:-17-alpine}
+    container_name: forgejo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${FORGEJO_DB_NAME:-forgejo}
+      POSTGRES_USER: ${FORGEJO_DB_USER:-forgejo}
+      POSTGRES_PASSWORD: ${FORGEJO_DB_PASSWORD}
+    volumes:
+      - forgejo_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${FORGEJO_DB_USER:-forgejo} -d ${FORGEJO_DB_NAME:-forgejo}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - forgejo_network
+
+networks:
+  forgejo_network:
+    name: forgejo_network
+    driver: bridge
+  npm_network:
+    name: npm_network
+    external: true
+
+volumes:
+  forgejo_postgres_data:
