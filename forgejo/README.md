@@ -100,7 +100,7 @@ With the current defaults, anonymous users cannot view anything and new reposito
 - Keep `FORGEJO_DB_PASSWORD` in `.env` and do not commit it.
 - Leave registration disabled unless you explicitly want public signups.
 - Keep `FORGEJO__service__REQUIRE_SIGNIN_VIEW=true` if you want the site invisible to anonymous visitors.
-- Keep `FORGEJO__admin__DEFAULT_USER_VISIBILITY=private` and `FORGEJO__admin__DEFAULT_ORG_VISIBILITY=private` to avoid accidentally exposing profiles or organizations later.
+- Keep `FORGEJO____DEFAULT_USER_VISIBILITY=private`, `FORGEJO____DEFAULT_ORG_VISIBILITY=private`, and `FORGEJO____ALLOWED_USER_VISIBILITY_MODES=private` to avoid accidentally exposing profiles or organizations later.
 - Keep `FORGEJO__repository__FORCE_PRIVATE=true` and `FORGEJO__repository__DEFAULT_PUSH_CREATE_PRIVATE=true` to avoid accidental public repositories.
 - Use the SSH endpoint only if you need SSH clones; otherwise the web UI is enough.
 - The Postgres database is private on `forgejo_network` and has no published host port.
