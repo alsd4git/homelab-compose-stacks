@@ -42,6 +42,7 @@ cp .env.example .env
 - `BESZEL_SSH_KEY`: SSH public key for Beszel agent authentication
 - `BESZEL_TOKEN`: Beszel agent token
 - `BESZEL_HUB_URL`: public Beszel hub URL
+- `BESZEL_APP_URL`: public Beszel server URL used for notification links and agent config generation
 - `NPM_EMAIL` and `NPM_PASSWORD`: Nginx Proxy Manager credentials reused by the Homepage widget
 - `BESZEL_USERNAME` and `BESZEL_PASSWORD`: Beszel dashboard credentials reused by the Homepage widget
 

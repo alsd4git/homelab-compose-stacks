@@ -19,6 +19,7 @@
 # - BESZEL_SSH_KEY: SSH public key for Beszel agent authentication
 # - BESZEL_TOKEN: Authentication token for Beszel agent
 # - BESZEL_HUB_URL: Beszel hub URL
+# - BESZEL_APP_URL: Public Beszel server URL used for links and agent config generation
 # - PORTAINER_API_KEY: API key for the Homepage Portainer widget
 # - NPM_EMAIL: Nginx Proxy Manager admin email for the Homepage NPM widget
 # - NPM_PASSWORD: Nginx Proxy Manager admin password for the Homepage NPM widget
@@ -47,6 +48,8 @@ services:
     restart: unless-stopped
     expose:
       - 8090 # Web interface (internal, for reverse proxy or internal access)
+    environment:
+      APP_URL: ${BESZEL_APP_URL:-https://beszel.${PUBLIC_DOMAIN:-example.com}/}
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_data:/beszel_data
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/beszel/beszel_socket:/beszel_socket
