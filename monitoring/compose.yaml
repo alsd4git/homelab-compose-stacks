@@ -25,6 +25,7 @@
 # - NPM_PASSWORD: Nginx Proxy Manager admin password for the Homepage NPM widget
 # - BESZEL_USERNAME: Beszel dashboard username for the Homepage Beszel widget
 # - BESZEL_PASSWORD: Beszel dashboard password for the Homepage Beszel widget
+# - HBOX_AUTH_API_KEY_PEPPER: Homebox API key pepper (required by Homebox auth)
 # - JELLYFIN_API_KEY: API key for the Homepage Jellyfin widget
 # - SEERR_API_KEY: API key for the Homepage Seerr widget
 # - PROWLARR_API_KEY: API key for the Homepage Prowlarr widget
@@ -191,6 +192,7 @@ services:
       - HBOX_LOG_FORMAT=text
       - HBOX_WEB_MAX_UPLOAD_SIZE=10
       - HBOX_OPTIONS_ALLOW_REGISTRATION=false
+      - HBOX_AUTH_API_KEY_PEPPER=${HBOX_AUTH_API_KEY_PEPPER}
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homebox:/data
     user: "1000:1000"
