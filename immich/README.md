@@ -29,7 +29,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 - `UPLOAD_LOCATION`: The absolute path on your host machine where Immich will store uploaded photos and videos.
 - `DB_DATA_LOCATION`: The absolute path for storing PostgreSQL data.
-- `IMMICH_VERSION`: The version of Immich to run. It is recommended to use `v2` for the latest stable release, which supports in-app updates.
+- `IMMICH_VERSION`: The version of Immich to run. It is recommended to use `v3` for the latest stable release, which supports in-app updates.
 - `DB_PASSWORD`: A secure password for the database.
 - `DB_USERNAME`: The database user (defaults to `postgres`).
 - `DB_DATABASE_NAME`: The name of the database (defaults to `immich`).
@@ -51,7 +51,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | ---------------- | ---------------------------------------------------------------- |
 | Immich Server    | `ghcr.io/immich-app/immich-server`                               |
 | Machine Learning | `ghcr.io/immich-app/immich-machine-learning`                     |
-| Redis            | `docker.io/valkey/valkey:8`                                      |
+| Redis            | `docker.io/valkey/valkey:9`                                      |
 | Database         | `ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0` |
 
 ## Usage
