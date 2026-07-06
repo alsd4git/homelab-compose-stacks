@@ -22,7 +22,7 @@ name: utilities
 
 services:
   convertx:
-    image: ghcr.io/c4illin/convertx
+    image: ghcr.io/c4illin/convertx:latest
     container_name: convertx
     restart: unless-stopped
     expose:
@@ -41,11 +41,12 @@ services:
     image: ghcr.io/sergi0g/cup:latest
     container_name: cup
     restart: unless-stopped
-    command: serve
+    command: -c /config/cup.json serve -p 8000
     expose:
       - 8000 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/cup/cup.json:/config/cup.json:ro
     networks:
       - npm_network
 

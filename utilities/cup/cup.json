@@ -1,0 +1,12 @@
+{
+  "refresh_interval": "0 */30 * * * *",
+  "images": {
+    "exclude": [
+      "ghcr.io/immich-app",
+      "gtstef/filebrowser",
+      "qmcgaw/ddns-updater",
+      "smallstep/step-ca",
+      "universo-web"
+    ]
+  }
+}

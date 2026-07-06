@@ -63,6 +63,7 @@ Key variables:
 ## Security Notes
 
 - `cup` mounts `/var/run/docker.sock`, so keep the stack on a trusted network.
+- CUP uses `cup/cup.json` from this repo as the source copy; sync it to `${DOCKER_DATA_BASEFOLDER}/cup/cup.json` before deploying.
 - `upsnap` uses `network_mode: host`, which exposes it directly on the host interface.
 - Keep the Telegram credentials and admin password in `.env`.
 
