@@ -1,0 +1,17 @@
+# Universo PWA Stack
+# Minimal stack for the Universo web frontend behind Nginx Proxy Manager.
+
+name: universo-pwa
+
+services:
+  universo-web:
+    image: universo-web:latest
+    container_name: universo-web
+    restart: unless-stopped
+    networks:
+      - npm_network
+
+networks:
+  npm_network:
+    name: npm_network
+    external: true
