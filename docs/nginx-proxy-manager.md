@@ -9,6 +9,20 @@ This repository keeps NPM advanced config short, purpose-driven, and stack-local
 - Keep `caching_enabled` off by default so dynamic dashboards and admin UIs stay fresh.
 - Shared bridge networks are declared with `external: true` in consumer stacks only. In this repository `npm_network` is a pre-created shared bridge network referenced from every stack, while `pihole_network` is created by the Pi-hole stack and consumed by `media` for DNS attribution.
 
+## Port exposure
+
+Docker `ports` bindings listen on all host interfaces unless the host address is
+specified. NPM access lists protect proxied hosts only; they do not restrict a
+published host port. Enforce this intended exposure with the host firewall and
+router rules:
+
+- Internet-facing only when deliberately forwarded: NPM `80`/`443`, torrent peer
+  port `6881`, and Forgejo SSH `2222`.
+- LAN or VPN only: NPM admin `83`, Step CA `9001`, Home Assistant `8123`,
+  WatchYourLAN `8840`, and Pi-hole DNS `53`.
+- All other web UIs: keep them un-published and reach them through NPM on
+  `npm_network`.
+
 ## Canonical LAN / Tailscale allow-list
 
 Use the same allow-list whenever a host should remain reachable from the home LAN and Tailscale:
@@ -55,4 +69,6 @@ Good fits in this repository:
 ## Where the snippets live
 
 - [`media/NPM-extraconf.conf`](../media/NPM-extraconf.conf) contains the TinyAuth-gated LAN template used for `animedl` and `homepage`.
+- [`forgejo/NPM-extraconf.conf`](../forgejo/NPM-extraconf.conf) raises the upload limit for Git pushes and archives.
+- [`immich/NPM-extraconf.md`](../immich/NPM-extraconf.md) covers large uploads and long-running media requests.
 - [`pihole/NPM-extraconf.md`](../pihole/NPM-extraconf.md) contains the Pi-hole reverse-proxy template with the same LAN/Tailscale allow-list.
