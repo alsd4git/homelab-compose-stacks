@@ -1,6 +1,7 @@
 .env
 stack.env
 !.env.example
+.DS_Store
 .idea
 WIP
 repomix*
