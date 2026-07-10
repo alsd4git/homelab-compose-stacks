@@ -2,7 +2,7 @@ name: forgejo
 
 services:
   forgejo:
-    image: codeberg.org/forgejo/forgejo:${FORGEJO_VERSION:-13-rootless}
+    image: codeberg.org/forgejo/forgejo:${FORGEJO_VERSION:-15-rootless}
     container_name: forgejo
     user: "1000:1000"
     restart: unless-stopped
@@ -40,7 +40,6 @@ services:
       FORGEJO__admin__DISABLE_REGULAR_ORG_CREATION: ${FORGEJO_DISABLE_REGULAR_ORG_CREATION:-true}
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/forgejo/data:/var/lib/gitea
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/forgejo/config:/etc/gitea
       - /etc/localtime:/etc/localtime:ro
     networks:
       - forgejo_network

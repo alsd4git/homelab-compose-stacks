@@ -48,7 +48,6 @@ For a homelab-first setup, the stack defaults to a private posture: registration
 | Path or Volume | Purpose |
 | --- | --- |
 | `${DOCKER_DATA_BASEFOLDER}/forgejo/data` | Forgejo repositories, attachments, actions data, and LFS. |
-| `${DOCKER_DATA_BASEFOLDER}/forgejo/config` | Forgejo configuration (`app.ini`) and generated app state. |
 | `forgejo_postgres_data` | Postgres database data. |
 
 ## Services & Ports
@@ -63,7 +62,7 @@ For a homelab-first setup, the stack defaults to a private posture: registration
 
 | Service | Image |
 | --- | --- |
-| Forgejo | `codeberg.org/forgejo/forgejo:${FORGEJO_VERSION:-13-rootless}` |
+| Forgejo | `codeberg.org/forgejo/forgejo:${FORGEJO_VERSION:-15-rootless}` |
 | Postgres | `postgres:${POSTGRES_VERSION:-17-alpine}` |
 
 ## Usage
@@ -72,7 +71,7 @@ For a homelab-first setup, the stack defaults to a private posture: registration
 2. Create the data directories:
 
    ```bash
-   mkdir -p ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/forgejo/{data,config}
+   mkdir -p ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/forgejo/data
    ```
 
    If the directories already exist, make sure they are writable by UID/GID `1000:1000`.
