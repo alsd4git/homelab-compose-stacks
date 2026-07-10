@@ -42,6 +42,10 @@ Key variables:
 | RomM | `rommapp/romm:latest` |
 | MariaDB | `mariadb:latest` |
 
+The official RomM quick-start intentionally uses floating tags for both images.
+Treat each update as a backup-and-verify event rather than pinning an arbitrary
+MariaDB version that diverges from the upstream reference.
+
 ## Usage
 
 1. Copy `.env.example` to `.env`.

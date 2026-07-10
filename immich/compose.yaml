@@ -7,13 +7,15 @@
 # To update Immich, download the latest compose from:
 # https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
 #
-# Minimal changes made to this file:
-# - Modified Watchtower labels (com.centurylinklabs.watchtower.enable=false)
+# Local changes made to this file:
+# - Use stack.env so runtime variables stay aligned with the Portainer stack env
+# - Add IMMICH_HOST, npm_network, and an internal web-port expose for NPM
+# - Run the server as UID/GID 1000 and disable Watchtower updates
 #
 # When updating from upstream:
 # 1. Download the latest docker-compose.yml from releases
-# 2. Reapply ONLY the Watchtower labels and env changes above
-# 3. DO NOT commit large structural changes unless absolutely necessary
+# 2. Reapply the local changes listed above
+# 3. Keep the local patch set small and document any new exception
 #
 # Official Immich documentation: https://immich.app/docs/install/docker-compose
 #

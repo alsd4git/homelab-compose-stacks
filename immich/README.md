@@ -23,7 +23,17 @@ This stack requires a `.env` file for configuration. A complete and recommended 
    cp .env.example .env
    ```
 
-2. Open the `.env` file and edit the variables to match your environment.
+2. Create the runtime env-file symlink used by the Compose services:
+
+   ```bash
+   ln -s .env stack.env
+   ```
+
+   `stack.env` must stay linked to `.env`; it avoids maintaining a second copy of
+   database and application secrets. Portainer deployments must receive the same
+   values through the stack environment.
+
+3. Open the `.env` file and edit the variables to match your environment.
 
 **Key variables include:**
 

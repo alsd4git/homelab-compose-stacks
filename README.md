@@ -36,11 +36,15 @@ Curated public Docker Compose stacks for a homelab, designed to stay consistent,
 
 3. Edit the stack-specific variables in `.env` before deployment.
 
+> Immich and Infrastructure also consume `stack.env` at runtime. Their stack READMEs
+> document the local symlink that keeps it tied to the same untracked `.env` file.
+
 ## Public Stacks
 
 | Stack | Purpose |
 | --- | --- |
 | Automation | Docker event notifications, image monitoring, and container updates |
+| Forgejo | Private Git hosting with Postgres and SSH access |
 | Immich | Photo and video management |
 | Infrastructure | Reverse proxy, DDNS, authentication, and identity services |
 | KaraKeep | Bookmarks and media organization |
@@ -48,6 +52,7 @@ Curated public Docker Compose stacks for a homelab, designed to stay consistent,
 | Monitoring | System monitoring, dashboards, and observability |
 | Paperless-ngx | Document management and archival |
 | Pi-hole | DNS sinkhole and network ad blocking |
+| RomM | Game library management |
 | RustDesk Relay | Remote desktop relay infrastructure |
 | Tracearr | Traceability and media import stack |
 | Utilities | File management, document processing, and utility services |
@@ -64,11 +69,14 @@ Each public stack follows the same core conventions:
 
 ### Recommended Practices
 
-1. Pin critical infrastructure where stability matters most:
+1. Pin critical infrastructure where compatibility matters most:
    - Databases
    - DNS services
    - Reverse proxies
    - Identity and auth services
+
+   Use a floating tag only when the stack README documents why it follows the
+   upstream reference and backups or rollback are available.
 
 2. Allow faster-moving apps to track `latest` when appropriate:
    - Media applications
@@ -79,6 +87,7 @@ Each public stack follows the same core conventions:
 3. Keep the update strategy deliberate:
    - Use [automation](automation/README.md) for container event notifications and image tracking
    - Pin or test critical infrastructure updates before rollout
+   - Record any intentional floating tag in its stack README, especially for stateful services
    - Keep a reverse proxy and monitoring in place for public services
 
 ## Folder Structure
