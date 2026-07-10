@@ -19,16 +19,22 @@ name: paperless-ngx
 
 services:
   broker:
-    image: docker.io/library/redis:7
+    image: docker.io/valkey/valkey:9-alpine
     container_name: paperless-ngx-broker-redis
     restart: unless-stopped
     volumes:
-      - redisdata:/data
+      - valkeydata:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - paperless_network
 
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.7
+    image: docker.io/gotenberg/gotenberg:8.33
     container_name: paperless-ngx-gotenberg
     restart: unless-stopped
     # The gotenberg chromium route is used to convert .eml files. We do not
@@ -55,9 +61,12 @@ services:
     # https://docs.paperless-ngx.com/setup/#installation
     restart: unless-stopped
     depends_on:
-      - broker
-      - gotenberg
-      - tika
+      broker:
+        condition: service_healthy
+      gotenberg:
+        condition: service_started
+      tika:
+        condition: service_started
     volumes:
       - data:/usr/src/paperless/data
       - media:/usr/src/paperless/media
@@ -83,4 +92,4 @@ networks:
 volumes:
   data:
   media:
-  redisdata:
+  valkeydata:

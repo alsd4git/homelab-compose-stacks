@@ -31,7 +31,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Service | Internal Port | Access Pattern | Notes |
 | --- | --- | --- | --- |
 | Paperless-ngx | `8000` | `http://paperless-ngx:8000` | Web UI/API on `npm_network`. |
-| Redis broker | internal only | internal only | Queue and caching backend. |
+| Valkey broker | internal only | internal only | Queue and caching backend. |
 | Gotenberg | internal only | internal only | Conversion backend. |
 | Tika | internal only | internal only | OCR and text extraction backend. |
 
@@ -42,8 +42,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Service   | Image                                        |
 | --------- | -------------------------------------------- |
 | Webserver | `ghcr.io/paperless-ngx/paperless-ngx:latest` |
-| Broker    | `docker.io/library/redis:7`                  |
-| Gotenberg | `docker.io/gotenberg/gotenberg:8.7`          |
+| Broker    | `docker.io/valkey/valkey:9-alpine`           |
+| Gotenberg | `docker.io/gotenberg/gotenberg:8.33`         |
 | Tika      | `docker.io/apache/tika:latest`               |
 
 ## Usage
