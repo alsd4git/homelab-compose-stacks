@@ -8,7 +8,6 @@
 # - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
 # - QBITTORRENT_USERNAME: qBittorrent Web UI username used by qbit_manage
 # - QBITTORRENT_PASSWORD: qBittorrent Web UI password used by qbit_manage
-# - SONARR_API_KEY: API key for Sonarr
 # - AW_APP_KEY: Application key for aw-downloader
 #
 name: media
@@ -109,7 +108,7 @@ services:
     expose:
       - 5055 # Web UI (internal, for reverse proxy or internal access)
     environment:
-      - LOG_LEVEL=debug
+      - LOG_LEVEL=info
       - TZ=Europe/Rome
     user: "1000:1000"
     volumes:

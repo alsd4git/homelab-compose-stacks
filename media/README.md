@@ -43,7 +43,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - `DOCKER_MEDIA_BASEFOLDER`: The absolute path for your media files.
 - `QBITTORRENT_USERNAME`: qBittorrent Web UI username used by `qbit_manage`
 - `QBITTORRENT_PASSWORD`: qBittorrent Web UI password used by `qbit_manage`
-- `SONARR_API_KEY`: Your API key for Sonarr.
+- `AW_APP_KEY`: Application key used by AW Downloader.
 
 ## Services & Ports
 
