@@ -1,0 +1,33 @@
+title: Dockerini
+description: Homelab dashboard and service launcher
+startUrl: https://homepage.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+target: _blank
+headerStyle: boxedWidgets
+iconStyle: theme
+fullWidth: true
+hideVersion: true
+disableIndexing: true
+hideErrors: true
+useEqualHeights: true
+layout:
+  Admin:
+    style: row
+    columns: 4
+  Monitoring:
+    style: row
+    columns: 4
+  Media:
+    style: row
+    columns: 4
+  Documents:
+    style: row
+    columns: 4
+  Home:
+    style: row
+    columns: 4
+  Security:
+    style: row
+    columns: 4
+  Legacy:
+    style: row
+    columns: 4

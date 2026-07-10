@@ -1,0 +1,60 @@
+---
+# Compact quick-links section for Homepage.
+# Bookmarks render below the services grid when no bookmark-specific layout is defined.
+- Quick Links:
+    - Feedly:
+        - abbr: FE
+          href: https://feedly.com/i/collection/
+          description: RSS reader
+    - My GitHub:
+        - abbr: GH
+          href: https://github.com/alsd4git/
+          description: Code and repos
+    - ChatGPT:
+        - abbr: CG
+          href: https://chat.openai.com/
+          description: AI assistant
+    - IT Tools:
+        - abbr: IT
+          href: https://it-tools.tech/
+          description: Web utility toolbox
+    - Selfh.st:
+        - abbr: SH
+          href: https://selfh.st/apps/
+          description: Self-hosted app directory
+    - Omnitools:
+        - abbr: OT
+          href: https://omnitools.app/
+          description: Web utilities
+    - CyberChef:
+        - abbr: CF
+          href: https://gchq.github.io/CyberChef/
+          description: Transform and decode
+    - PairDrop:
+        - abbr: PD
+          href: https://pairdrop.net/
+          description: Local file transfer
+    - Qrding:
+        - abbr: QR
+          href: https://qrding.app/
+          description: QR utility
+    - mini-qr-code:
+        - abbr: MQ
+          href: https://mini-qr-code-generator.vercel.app/
+          description: QR generator
+    - BreezePDF:
+        - abbr: BP
+          href: https://breezepdf.com/
+          description: PDF tools
+    - BentoPDF:
+        - abbr: BT
+          href: https://bentopdf.com/#tools-header
+          description: PDF toolkit
+    - Reddit/selfhosted:
+        - abbr: RE
+          href: https://www.reddit.com/r/selfhosted/
+          description: Self-hosted community
+    - Vert.sh:
+        - abbr: VS
+          href: https://vert.sh/
+          description: Developer shortcuts

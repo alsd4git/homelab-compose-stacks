@@ -1,0 +1,298 @@
+- Admin:
+    - Nginx Proxy Manager:
+        href: https://npm.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Reverse proxy manager
+        icon: https://cdn.simpleicons.org/nginxproxymanager
+        widget:
+          type: npm
+          url: http://nginx-proxy-manager:81
+          username: "{{HOMEPAGE_VAR_NPM_EMAIL}}"
+          password: "{{HOMEPAGE_VAR_NPM_PASSWORD}}"
+    - Portainer:
+        href: https://portainer.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Docker stack manager
+        icon: https://cdn.simpleicons.org/portainer
+        widget:
+          type: portainer
+          url: https://portainer.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+          env: 2
+          key: "{{HOMEPAGE_VAR_PORTAINER_API_KEY}}"
+    - CasaOS:
+        href: https://casaos.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Home server portal
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/casaos.svg
+    - CUP:
+        href: https://cup.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Container update puller
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/cup.svg
+        widget:
+          type: customapi
+          url: http://cup:8000/api/v3/json
+          refreshInterval: 60000
+          mappings:
+            - field: metrics.monitored_images
+              label: Monitored
+            - field: metrics.updates_available
+              label: Updates
+            - field: metrics.up_to_date
+              label: Up to date
+            - field: metrics.unknown
+              label: Unknown
+    - DDNS Updater:
+        href: https://ddns-updater.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Dynamic DNS automation
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/ddns-updater.svg
+    - Webmin:
+        href: https://webmin.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: System administration
+        icon: https://cdn.simpleicons.org/webmin
+- Monitoring:
+    - Beszel:
+        href: https://beszel.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Host and container monitoring
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/beszel.svg
+        widget:
+          type: beszel
+          url: http://beszel:8090
+          username: "{{HOMEPAGE_VAR_BESZEL_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_BESZEL_PASSWORD}}"
+          version: 2
+          fields:
+            - systems
+            - up
+    - Dashdot:
+        href: https://dashdot.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Host metrics dashboard
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/dashdot.png
+    - Dozzle:
+        href: https://dozzle.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Docker log viewer
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/dozzle.svg
+    - Glances:
+        href: https://glances.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Live system metrics
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/glances.svg
+    - Speedtest Tracker:
+        href: https://speedtest-tracker.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Internet speed history
+        icon: https://cdn.simpleicons.org/speedtest
+        widget:
+          type: customapi
+          url: http://speedtest-tracker/api/v1/stats
+          headers:
+            Authorization: Bearer {{HOMEPAGE_VAR_SPEEDTEST_TRACKER_API_TOKEN}}
+            Accept: application/json
+          mappings:
+            - field: data.download.avg_bits
+              label: Download
+              format: bitrate
+            - field: data.upload.avg_bits
+              label: Upload
+              format: bitrate
+            - field: data.ping.avg
+              label: Ping
+              format: float
+              suffix: ms
+    - Scrutiny:
+        href: https://scrutiny.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Disk health monitoring
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/scrutiny.svg
+        widget:
+          type: scrutiny
+          url: http://scrutiny:8080
+    - UpSnap:
+        href: https://upsnap.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Device wake-up and remote power
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/upsnap.svg
+    - WatchYourLAN:
+        href: https://watchyourlan.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: LAN device discovery
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/watchyourlan.png
+- Media:
+    - AW Downloader:
+        href: https://animedl.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Anime downloading backend
+        icon: mdi-download
+    - Cinerr:
+        href: https://cinerr.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Media library browser
+        icon: mdi-movie-open
+    - ConvertX:
+        href: https://convertx.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: File and media conversion
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/convertx.png
+    - Immich:
+        href: https://immich.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Photo and video library
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/immich.svg
+        widget:
+          type: immich
+          url: http://immich_server:2283
+          key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
+          version: 2
+    - Immich mTLS:
+        href: https://immich-mtls.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Photo and video library
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/immich.svg
+    - Jellyfin:
+        href: https://jellyfin.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Media server
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/jellyfin.svg
+        widget:
+          type: jellyfin
+          url: http://jellyfin:8096
+          key: "{{HOMEPAGE_VAR_JELLYFIN_API_KEY}}"
+          enableBlocks: true
+          enableNowPlaying: true
+          enableUser: true
+    - Jellyseerr:
+        href: https://jellyseerr.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Requests and discovery
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/jellyseerr.svg
+        widget:
+          type: seerr
+          url: http://seerr:5055
+          key: "{{HOMEPAGE_VAR_SEERR_API_KEY}}"
+    - Medialyze:
+        href: https://medialyze.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Media browser
+        icon: mdi-movie-search
+    - Prowlarr:
+        href: https://prowlarr.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Indexer manager
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/prowlarr.svg
+        widget:
+          type: prowlarr
+          url: http://prowlarr:9696
+          key: "{{HOMEPAGE_VAR_PROWLARR_API_KEY}}"
+    - qBittorrent:
+        href: https://qbittorrent.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Torrent client
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/qbittorrent.svg
+        widget:
+          type: qbittorrent
+          url: http://qbittorrent:8003
+          username: "{{HOMEPAGE_VAR_QBITTORRENT_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}"
+          enableLeechProgress: true
+          enableLeechSize: true
+    - Qbit Manage:
+        href: https://qbit-manage.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Torrent maintenance
+        icon: mdi-tune-variant
+    - Radarr:
+        href: https://radarr.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Movie automation
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/radarr.svg
+        widget:
+          type: radarr
+          url: http://radarr:7878
+          key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
+          enableQueue: true
+    - Romm:
+        href: https://romm.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: ROM library
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/romm.svg
+        widget:
+          type: romm
+          url: http://romm:8080
+          fields:
+            - platforms
+            - totalRoms
+            - saves
+            - states
+    - Sonarr:
+        href: https://sonarr.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: TV automation
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/sonarr.svg
+        widget:
+          type: sonarr
+          url: http://sonarr:8989
+          key: "{{HOMEPAGE_VAR_SONARR_API_KEY}}"
+          enableQueue: true
+    - Tracearr:
+        href: https://tracearr.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Traceability and import flow
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/tracearr.svg
+        widget:
+          type: tracearr
+          url: http://tracearr:3000
+          key: "{{HOMEPAGE_VAR_TRACEARR_API_KEY}}"
+          view: both
+          enableUser: true
+          showEpisodeNumber: true
+    - Calendar:
+        description: Media release calendar
+        icon: mdi-calendar-month
+        widget:
+          type: calendar
+          view: agenda
+          maxEvents: 8
+          integrations:
+            - type: sonarr
+              service_group: Media
+              service_name: Sonarr
+            - type: radarr
+              service_group: Media
+              service_name: Radarr
+- Documents:
+    - FileBrowser Quantum:
+        href: https://filebrowser-quantum.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Shared file browser
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/filebrowser-quantum.svg
+    - Karakeep:
+        href: https://karakeep.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Bookmark and note keeper
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/karakeep.svg
+    - Paperless-ngx:
+        href: https://paperless.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Document archive
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/paperless-ngx.svg
+    - Telegram Files:
+        href: https://telegram-files.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Telegram file manager
+        icon: https://cdn.simpleicons.org/telegram
+- Home:
+    - Home Assistant:
+        href: https://homeassistant.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Home automation platform
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/home-assistant.svg
+    - Homebox:
+        href: https://homebox.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Asset and inventory manager
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/homebox.svg
+    - Gym:
+        href: https://gym.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Personal fitness portal
+        icon: mdi-dumbbell
+- Security:
+    - Pocket ID:
+        href: https://pocket-id.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Identity provider
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/pocket-id.svg
+    - TinyAuth:
+        href: https://tinyauth.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Authentication middleware
+        icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/tinyauth.svg
+    - Pi-hole:
+        href: https://pihole.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: DNS sinkhole and ad blocking
+        icon: https://cdn.simpleicons.org/pihole
+        widget:
+          type: pihole
+          url: http://pihole
+          version: 6
+          key: "{{HOMEPAGE_VAR_PIHOLE_PASSWORD}}"
+    - VaultLS:
+        href: https://vaultls.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Secrets management
+        icon: mdi-key-variant
+- Legacy:
+    - Old:
+        href: https://old.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Legacy endpoint
+        icon: mdi-archive
+    - Test 403:
+        href: https://test-403.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: NPM auth test endpoint
+        icon: mdi-alert-octagon

@@ -1,0 +1,40 @@
+- resources:
+    label: System
+    cpu: true
+    memory: true
+    cputemp: true
+    uptime: true
+    refresh: 1000
+- resources:
+    label: NVMe
+    expanded: true
+    disk:
+      - /mnt/data
+- resources:
+    label: Media HDD
+    expanded: true
+    disk:
+      - /mnt/media
+# - glances:
+#     label: Glances
+#     url: http://glances:61208
+#     version: 4
+#     cpu: true
+#     mem: true
+#     cputemp: true
+#     uptime: true
+#     disk:
+#       - /mnt/data
+#       - /mnt/media
+- search:
+    provider: google
+    focus: true
+    showSearchSuggestions: true
+    target: _blank
+- datetime:
+    text_size: sm
+    locale: it-IT
+    format:
+      dateStyle: medium
+      timeStyle: short
+      hourCycle: h23
