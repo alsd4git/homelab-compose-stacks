@@ -1,0 +1,54 @@
+# aMule Test Stack
+# eD2k/Kad download stack with aMule plus amutorrent helper UI.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - DOCKER_MEDIA_BASEFOLDER: Base directory for media files
+# - AMULE_GUI_PWD: Password for the aMule GUI
+# - AMULE_WEBUI_PWD: Password for the aMule Web UI
+
+name: amule-test
+
+services:
+  amule:
+    image: ngosang/amule
+    container_name: amule
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - GUI_PWD=${AMULE_GUI_PWD}
+      - WEBUI_PWD=${AMULE_WEBUI_PWD}
+      - MOD_AUTO_RESTART_ENABLED=true
+      - MOD_AUTO_RESTART_CRON=0 6 * * *
+      - MOD_AUTO_SHARE_ENABLED=false
+      - MOD_AUTO_SHARE_DIRECTORIES=/incoming;/my_movies
+      - MOD_FIX_KAD_GRAPH_ENABLED=true
+      - MOD_FIX_KAD_BOOTSTRAP_ENABLED=true
+    ports:
+      - "4711:4711" # web ui
+      - "4712:4712" # remote gui, webserver, cmd ...
+      - "4662:4662" # ed2k tcp
+      - "4665:4665/udp" # ed2k global search udp (tcp port +3)
+      - "4672:4672/udp" # ed2k udp
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/amule:/home/amule/.aMule
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads/incoming:/incoming
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/downloads/temp:/temp
+    restart: unless-stopped
+
+  amutorrent:
+    image: g0t3nks/amutorrent:latest
+    user: "1000:1000"
+    container_name: amutorrent
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/amutorrent/logs:/usr/src/app/server/logs
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/amutorrent/data:/usr/src/app/server/data
+    restart: unless-stopped
