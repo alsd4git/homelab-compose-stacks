@@ -25,13 +25,23 @@ This stack requires a `.env` file for configuration. A complete and recommended 
    cp .env.example .env
    ```
 
-2. Open the `.env` file and edit the variables to match your environment.
+2. Create the runtime env-file symlink used by Pocket ID:
+
+   ```bash
+   ln -s .env stack.env
+   ```
+
+   `stack.env` must stay linked to `.env`; it avoids maintaining a second copy of
+   Pocket ID secrets. Portainer deployments must receive the same values through
+   the stack environment.
+
+3. Open the `.env` file and edit the variables to match your environment.
 
 **Key variables include:**
 
 - `DOCKER_DATA_BASEFOLDER`: The absolute path for storing persistent data.
 - `YOUR_DOMAIN`: Your primary domain name.
-- **DDNS Updater**: Credentials for your DNS provider (e.g., Cloudflare, DuckDNS).
+- **DDNS Updater**: Credentials for a configured provider (DuckDNS, Dynu, Dynv6, or Myaddr).
 - **DDNS Updater**: Myaddr domain and private key if you use Myaddr as a provider. Myaddr domains such as `your-name.myaddr.tools`, `your-name.myaddr.dev`, and `your-name.myaddr.io` all resolve to the same target, and the same applies to their subdomains.
 - **Pocket ID & TinyAuth**: Pocket ID OAuth client ID and secret for the Tinyauth v5 integration.
 - **Step CA**: Configuration for your private certificate authority.

@@ -62,7 +62,7 @@ services:
       ROOT_URL: /
       BACKUP_PERIOD: 0
       BACKUP_DIRECTORY: /updater/data
-      LOG_LEVEL: debug
+      LOG_LEVEL: info
       LOG_CALLER: hidden
       RESOLVER_ADDRESS: 1.1.1.1:53
       SHOUTRRR_ADDRESSES: telegram://${TELEGRAM_BOT_TOKEN}@telegram/?channels=${TELEGRAM_CHAT_ID}&parsemode=Markdown&preview=false
