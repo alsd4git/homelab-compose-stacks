@@ -1,4 +1,7 @@
-# Dockerini
+# Homelab Compose Stacks
+
+> Formerly **Dockerini** — the same repository, now with a name that better
+> describes its purpose.
 
 Curated public Docker Compose stacks for a homelab, designed to stay consistent, documented, and easy to deploy through Portainer or Docker Compose.
 
@@ -22,8 +25,8 @@ Curated public Docker Compose stacks for a homelab, designed to stay consistent,
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/alsd4git/dockerini.git
-   cd dockerini
+   git clone https://github.com/alsd4git/homelab-compose-stacks.git
+   cd homelab-compose-stacks
    ```
 
 2. For each stack you want to use, create a local `.env` file from the example:
