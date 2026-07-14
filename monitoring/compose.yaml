@@ -215,9 +215,14 @@ services:
       - SETUID
       - SETGID
     environment:
+      # Runtime user after the entrypoint prepares writable paths.
+      - PUID=${NETALERTX_UID:-20211}
+      - PGID=${NETALERTX_GID:-20211}
       - LISTEN_ADDR=${LISTEN_ADDR:-0.0.0.0}
       - PORT=20211
       - GRAPHQL_PORT=${GRAPHQL_PORT:-20212}
+      - ALWAYS_FRESH_INSTALL=${ALWAYS_FRESH_INSTALL:-false}
+      - NETALERTX_DEBUG=${NETALERTX_DEBUG:-0}
     volumes:
       - type: bind
         source: ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/netalertx/data
@@ -228,7 +233,7 @@ services:
         target: /etc/localtime
         read_only: true
     tmpfs:
-      - "/tmp:uid=${NETALERTX_UID:-20211},gid=${NETALERTX_GID:-20211},mode=1700,rw,noexec,nosuid,nodev,async,noatime,nodiratime"
+      - "/tmp:uid=0,gid=0,mode=1700,rw,noexec,nosuid,nodev,async,noatime,nodiratime"
     mem_limit: 2048m
     mem_reservation: 1024m
     cpu_shares: 512
