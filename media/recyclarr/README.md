@@ -18,10 +18,19 @@ The policy defines three profiles, each accepting SD, 480p, 576p, 720p, and
 - `Anime original/hardsub SD-1080p` accepts Italian, original-language, or
   English releases and is intended for externally acquired anime/hardsub
   material whose language metadata may not be reliable.
+- `Original SD-1080p` is reserved for intentional original-language TV
+  exceptions. It accepts Italian where present but considers an original or
+  English 1080p release complete, avoiding repeated language-upgrade searches.
 
 The first two profiles are deliberately separate: use the strict profile where
 Italian is a requirement, and the preferred profile where a higher-quality
 original/English fallback is acceptable.
+
+Sonarr Italian profiles stop custom-format upgrades at score `71`: Italian has
+score `21`, the Italian preference has score `10`, and Italian 1080p has score
+`40`. Radarr has no resolution custom formats, so its language target is `31`
+(`21 + 10`). Anime stops custom-format upgrades at score `0`; its profile
+still upgrades by video quality up to 1080p.
 
 `Subtitles: Italian or English Declared` is an advisory score only. Arr does
 not expose a subtitle-media specification, so release-title words cannot prove

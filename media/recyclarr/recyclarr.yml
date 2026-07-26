@@ -13,7 +13,7 @@ sonarr:
         upgrade:
           allowed: true
           until_quality: 1080p
-          until_score: 35000
+          until_score: 71
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
@@ -44,7 +44,41 @@ sonarr:
         upgrade:
           allowed: true
           until_quality: 1080p
-          until_score: 35000
+          until_score: 71
+        min_format_score: 0
+        min_upgrade_format_score: 1
+        qualities:
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: Bluray-576p
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: 1080p
+            qualities:
+              - HDTV-1080p
+              - WEBRip-1080p
+              - WEBDL-1080p
+              - Bluray-1080p
+              - Bluray-1080p Remux
+      # Use this only for intentional original-language exceptions such as
+      # Doctor Who and Fleabag. It accepts Italian where present but considers
+      # an original/English 1080p file complete.
+      - name: Original SD-1080p
+        upgrade:
+          allowed: true
+          until_quality: 1080p
+          until_score: 1
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
@@ -75,7 +109,8 @@ sonarr:
         upgrade:
           allowed: true
           until_quality: 1080p
-          until_score: 35000
+          # Anime metadata is not reliable enough for language CF upgrades.
+          until_score: 0
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
@@ -110,6 +145,8 @@ sonarr:
             score: -10000
           - name: Italian preferred SD-1080p
             score: -10000
+          - name: Original SD-1080p
+            score: -10000
           - name: Anime original/hardsub SD-1080p
             score: -10000
       - trash_ids:
@@ -121,11 +158,13 @@ sonarr:
           - alsd-italian
         assign_scores_to:
           - name: Italian strict SD-1080p
-            score: 20
+            score: 21
           - name: Italian preferred SD-1080p
-            score: 20
+            score: 21
+          - name: Original SD-1080p
+            score: 21
           - name: Anime original/hardsub SD-1080p
-            score: 20
+            score: 21
       - trash_ids:
           - alsd-prefer-italian
         assign_scores_to:
@@ -133,12 +172,16 @@ sonarr:
             score: 10
           - name: Italian preferred SD-1080p
             score: 10
+          - name: Original SD-1080p
+            score: 10
           - name: Anime original/hardsub SD-1080p
             score: 10
       - trash_ids:
           - alsd-original-or-english
         assign_scores_to:
           - name: Italian preferred SD-1080p
+            score: 1
+          - name: Original SD-1080p
             score: 1
           - name: Anime original/hardsub SD-1080p
             score: 1
@@ -149,6 +192,8 @@ sonarr:
             score: 30
           - name: Italian preferred SD-1080p
             score: 30
+          - name: Original SD-1080p
+            score: 30
           - name: Anime original/hardsub SD-1080p
             score: 30
       - trash_ids:
@@ -157,6 +202,8 @@ sonarr:
           - name: Italian strict SD-1080p
             score: 40
           - name: Italian preferred SD-1080p
+            score: 40
+          - name: Original SD-1080p
             score: 40
           - name: Anime original/hardsub SD-1080p
             score: 40
@@ -182,7 +229,9 @@ radarr:
         upgrade:
           allowed: true
           until_quality: 1080p
-          until_score: 35000
+          # Radarr uses Italian (21) plus Prefer Italian (10): 31 is its
+          # attainable language target. Resolution bonuses are Sonarr-only.
+          until_score: 31
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
@@ -215,7 +264,7 @@ radarr:
         upgrade:
           allowed: true
           until_quality: 1080p
-          until_score: 35000
+          until_score: 31
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
@@ -248,7 +297,7 @@ radarr:
         upgrade:
           allowed: true
           until_quality: 1080p
-          until_score: 35000
+          until_score: 0
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
@@ -296,11 +345,11 @@ radarr:
           - alsd-italian
         assign_scores_to:
           - name: Italian strict SD-1080p
-            score: 20
+            score: 21
           - name: Italian preferred SD-1080p
-            score: 20
+            score: 21
           - name: Anime original/hardsub SD-1080p
-            score: 20
+            score: 21
       - trash_ids:
           - alsd-prefer-italian
         assign_scores_to:
