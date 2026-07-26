@@ -22,6 +22,7 @@ A comprehensive media management and automation stack for your homelab environme
 - **AW Downloader**: Automated anime downloading and management
 - **VibraVid**: Manual, provider-targeted fallback for unavailable titles
 - **Recyclarr**: Daily Sonarr/Radarr quality-policy synchronization
+- **Houndarr**: Rate-limited missing and cutoff-unmet search scheduler
 
 ## Configuration
 
@@ -65,6 +66,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | **AW Downloader** | `6547`        | `http://aw-downloader:6547` | Anime downloading and management backend.     |
 | **VibraVid**      | `8000`        | `http://vibravid:8000`      | Manual provider fallback; Arr polling/webhooks disabled. |
 | **Recyclarr**     | —             | —                           | Runs the shared Arr policy daily at 04:17 Europe/Rome. |
+| **Houndarr**      | `8877`        | `http://houndarr:8877`      | Schedules conservative Arr searches; configure it through its UI. |
 
 > **Note:** Most services are meant to be reached through `npm_network`; qBittorrent also publishes its torrent ports on the host for peer connectivity.
 
@@ -87,6 +89,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | AW Downloader    | `ghcr.io/savvymeat/aw-downloader:latest`     |
 | VibraVid         | `ghcr.io/astraelabs/vibravid:latest`         |
 | Recyclarr        | `ghcr.io/recyclarr/recyclarr:8`              |
+| Houndarr         | `ghcr.io/av1155/houndarr:latest`             |
 | Cinerr           | `alexkouzel/cinerr:latest`                   |
 | Medialyze        | `ghcr.io/frederikemmer/medialyze:latest`     |
 | Byparr           | `ghcr.io/thephaseless/byparr:latest`         |

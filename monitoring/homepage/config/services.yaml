@@ -157,6 +157,10 @@
           type: seerr
           url: http://seerr:5055
           key: "{{HOMEPAGE_VAR_SEERR_API_KEY}}"
+    - Houndarr:
+        href: https://houndarr.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Rate-limited Arr search scheduler
+        icon: mdi-magnify-scan
     - Medialyze:
         href: https://medialyze.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
         description: Media browser

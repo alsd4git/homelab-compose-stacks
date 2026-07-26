@@ -57,6 +57,26 @@ services:
       - media_network
       - npm_network
 
+  houndarr:
+    image: ghcr.io/av1155/houndarr:latest
+    container_name: houndarr
+    restart: unless-stopped
+    expose:
+      - 8877 # Web UI/API (internal, for reverse proxy or internal access)
+    environment:
+      - TZ=Europe/Rome
+      - PUID=1000
+      - PGID=1000
+      # Houndarr is served exclusively behind the HTTPS NPM proxy host.
+      - HOUNDARR_SECURE_COOKIES=true
+      # Set this to the npm_network subnet, not a broad private range.
+      - HOUNDARR_TRUSTED_PROXIES=${HOUNDARR_TRUSTED_PROXIES:?HOUNDARR_TRUSTED_PROXIES must be set}
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/houndarr:/data
+    networks:
+      - media_network
+      - npm_network
+
   byparr:
     image: ghcr.io/thephaseless/byparr:latest
     container_name: byparr
