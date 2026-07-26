@@ -1,0 +1,328 @@
+# yaml-language-server: $schema=https://schemas.recyclarr.dev/latest/config-schema.json
+# Secrets belong only in the untracked /config/secrets.yml runtime file.
+
+sonarr:
+  series:
+    base_url: !secret series_base_url
+    api_key: !secret series_api_key
+    delete_old_custom_formats: false
+    quality_definition:
+      type: series
+    quality_profiles:
+      - name: Italian strict SD-1080p
+        upgrade:
+          allowed: true
+          until_quality: 1080p
+          until_score: 35000
+        min_format_score: 0
+        min_upgrade_format_score: 1
+        qualities:
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: Bluray-576p
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: 1080p
+            qualities:
+              - HDTV-1080p
+              - WEBRip-1080p
+              - WEBDL-1080p
+              - Bluray-1080p
+              - Bluray-1080p Remux
+      - name: Italian preferred SD-1080p
+        upgrade:
+          allowed: true
+          until_quality: 1080p
+          until_score: 35000
+        min_format_score: 0
+        min_upgrade_format_score: 1
+        qualities:
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: Bluray-576p
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: 1080p
+            qualities:
+              - HDTV-1080p
+              - WEBRip-1080p
+              - WEBDL-1080p
+              - Bluray-1080p
+              - Bluray-1080p Remux
+      - name: Anime original/hardsub SD-1080p
+        upgrade:
+          allowed: true
+          until_quality: 1080p
+          until_score: 35000
+        min_format_score: 0
+        min_upgrade_format_score: 1
+        qualities:
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: Bluray-576p
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: 1080p
+            qualities:
+              - HDTV-1080p
+              - WEBRip-1080p
+              - WEBDL-1080p
+              - Bluray-1080p
+              - Bluray-1080p Remux
+    custom_formats:
+      - trash_ids:
+          - alsd-not-italian-original-english
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: -10000
+          - name: Italian preferred SD-1080p
+            score: -10000
+          - name: Anime original/hardsub SD-1080p
+            score: -10000
+      - trash_ids:
+          - alsd-not-italian
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: -10000
+      - trash_ids:
+          - alsd-italian
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: 20
+          - name: Italian preferred SD-1080p
+            score: 20
+          - name: Anime original/hardsub SD-1080p
+            score: 20
+      - trash_ids:
+          - alsd-prefer-italian
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: 10
+          - name: Italian preferred SD-1080p
+            score: 10
+          - name: Anime original/hardsub SD-1080p
+            score: 10
+      - trash_ids:
+          - alsd-original-or-english
+        assign_scores_to:
+          - name: Italian preferred SD-1080p
+            score: 1
+          - name: Anime original/hardsub SD-1080p
+            score: 1
+      - trash_ids:
+          - alsd-italian-720p
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: 30
+          - name: Italian preferred SD-1080p
+            score: 30
+          - name: Anime original/hardsub SD-1080p
+            score: 30
+      - trash_ids:
+          - alsd-italian-1080p
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: 40
+          - name: Italian preferred SD-1080p
+            score: 40
+          - name: Anime original/hardsub SD-1080p
+            score: 40
+      - trash_ids:
+          - alsd-declared-ita-or-eng-subs
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: 0
+          - name: Italian preferred SD-1080p
+            score: 0
+          - name: Anime original/hardsub SD-1080p
+            score: 0
+
+radarr:
+  movies:
+    base_url: !secret movies_base_url
+    api_key: !secret movies_api_key
+    delete_old_custom_formats: false
+    quality_definition:
+      type: movie
+    quality_profiles:
+      - name: Italian strict SD-1080p
+        upgrade:
+          allowed: true
+          until_quality: 1080p
+          until_score: 35000
+        min_format_score: 0
+        min_upgrade_format_score: 1
+        qualities:
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
+              - DVD-R
+              - DVDSCR
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: Bluray-576p
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: 1080p
+            qualities:
+              - HDTV-1080p
+              - WEBRip-1080p
+              - WEBDL-1080p
+              - Bluray-1080p
+              - Remux-1080p
+      - name: Italian preferred SD-1080p
+        upgrade:
+          allowed: true
+          until_quality: 1080p
+          until_score: 35000
+        min_format_score: 0
+        min_upgrade_format_score: 1
+        qualities:
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
+              - DVD-R
+              - DVDSCR
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: Bluray-576p
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: 1080p
+            qualities:
+              - HDTV-1080p
+              - WEBRip-1080p
+              - WEBDL-1080p
+              - Bluray-1080p
+              - Remux-1080p
+      - name: Anime original/hardsub SD-1080p
+        upgrade:
+          allowed: true
+          until_quality: 1080p
+          until_score: 35000
+        min_format_score: 0
+        min_upgrade_format_score: 1
+        qualities:
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
+              - DVD-R
+              - DVDSCR
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: Bluray-576p
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: 1080p
+            qualities:
+              - HDTV-1080p
+              - WEBRip-1080p
+              - WEBDL-1080p
+              - Bluray-1080p
+              - Remux-1080p
+    custom_formats:
+      - trash_ids:
+          - alsd-not-italian-original-english
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: -10000
+          - name: Italian preferred SD-1080p
+            score: -10000
+          - name: Anime original/hardsub SD-1080p
+            score: -10000
+      - trash_ids:
+          - alsd-not-italian
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: -10000
+      - trash_ids:
+          - alsd-italian
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: 20
+          - name: Italian preferred SD-1080p
+            score: 20
+          - name: Anime original/hardsub SD-1080p
+            score: 20
+      - trash_ids:
+          - alsd-prefer-italian
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: 10
+          - name: Italian preferred SD-1080p
+            score: 10
+          - name: Anime original/hardsub SD-1080p
+            score: 10
+      - trash_ids:
+          - alsd-original-or-english
+        assign_scores_to:
+          - name: Italian preferred SD-1080p
+            score: 1
+          - name: Anime original/hardsub SD-1080p
+            score: 1
+      - trash_ids:
+          - alsd-declared-ita-or-eng-subs
+        assign_scores_to:
+          - name: Italian strict SD-1080p
+            score: 0
+          - name: Italian preferred SD-1080p
+            score: 0
+          - name: Anime original/hardsub SD-1080p
+            score: 0

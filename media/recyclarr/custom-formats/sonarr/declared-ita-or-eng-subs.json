@@ -1,0 +1,8 @@
+{
+  "trash_id": "alsd-declared-ita-or-eng-subs",
+  "name": "Subtitles: Italian or English Declared",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {"name": "Declared Italian or English subtitles", "implementation": "ReleaseTitleSpecification", "negate": false, "required": false, "fields": {"value": "(?i)\\b(sub[ ._-]?(ita|eng)|ita[ ._-]?sub|eng[ ._-]?sub|vost(it)?|softsub)\\b"}}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "trash_id": "alsd-original-or-english",
+  "name": "Language: Original or English",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {"name": "Original Language", "implementation": "LanguageSpecification", "negate": false, "required": false, "fields": {"value": -2, "exceptLanguage": false}},
+    {"name": "English Language", "implementation": "LanguageSpecification", "negate": false, "required": false, "fields": {"value": 1, "exceptLanguage": false}}
+  ]
+}

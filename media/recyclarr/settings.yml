@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://schemas.recyclarr.dev/latest/settings-schema.json
+resource_providers:
+  - name: alsd-sonarr-language-formats
+    type: custom-formats
+    path: custom-formats/sonarr
+    service: sonarr
+  - name: alsd-radarr-language-formats
+    type: custom-formats
+    path: custom-formats/radarr
+    service: radarr

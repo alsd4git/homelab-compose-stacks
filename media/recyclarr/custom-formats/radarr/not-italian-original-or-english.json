@@ -1,0 +1,10 @@
+{
+  "trash_id": "alsd-not-italian-original-english",
+  "name": "Language: Not Italian, Original or English",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {"name": "Not Original", "implementation": "LanguageSpecification", "negate": true, "required": true, "fields": {"value": -2, "exceptLanguage": false}},
+    {"name": "Not Italian", "implementation": "LanguageSpecification", "negate": true, "required": true, "fields": {"value": 5, "exceptLanguage": false}},
+    {"name": "Not English", "implementation": "LanguageSpecification", "negate": true, "required": true, "fields": {"value": 1, "exceptLanguage": false}}
+  ]
+}

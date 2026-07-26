@@ -1,0 +1,9 @@
+{
+  "trash_id": "alsd-italian-720p",
+  "name": "Italian - 720p",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {"name": "Italian", "implementation": "LanguageSpecification", "negate": false, "required": false, "fields": {"value": 5, "exceptLanguage": false}},
+    {"name": "720p", "implementation": "ResolutionSpecification", "negate": false, "required": false, "fields": {"value": 720}}
+  ]
+}

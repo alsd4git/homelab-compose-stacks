@@ -1,0 +1,8 @@
+{
+  "trash_id": "alsd-prefer-italian",
+  "name": "Language: Prefer Italian",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {"name": "Italian Language", "implementation": "LanguageSpecification", "negate": false, "required": false, "fields": {"value": 5, "exceptLanguage": false}}
+  ]
+}
