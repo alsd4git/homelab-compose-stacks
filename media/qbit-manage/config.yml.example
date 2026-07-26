@@ -30,8 +30,58 @@ cat:
   Uncategorized: "/downloads/*"
 
 tracker:
+  # Private trackers use stable, human-readable tags. qbit_manage applies these
+  # from the announce URL; no passkeys or tracker-specific credentials live here.
+  shareisland:
+    tag: ShareIsland
+  itatorrents:
+    tag: ItaTorrents
+  # Catch-all for trackers not explicitly listed above. Before adding another
+  # private tracker, add an explicit entry and its own share-limit group here.
   other:
-    tag: other
+    tag: Public
+
+# qbit_manage applies per-torrent limits after tracker tagging. The private
+# tracker policies are their respective official H&R minimums plus one day;
+# the Public catch-all has a 24-hour policy. No ratio ceiling is imposed.
+# A private torrent remains available when the tracker reports no other seed.
+# Reaching a limit otherwise pauses the torrent; no files or entries are removed.
+share_limits:
+  ShareIsland:
+    priority: 1
+    include_all_tags:
+      - ShareIsland
+    max_seeding_time: 7d
+    min_num_seeds: 1
+    # 1,000 Kbit/s aggregate across private ShareIsland torrents (125 KiB/s).
+    limit_upload_speed: 125
+    enable_group_upload_speed: true
+    cleanup: false
+    resume_torrent_after_change: true
+    share_limit_action: Stop
+  ItaTorrents:
+    priority: 2
+    include_all_tags:
+      - ItaTorrents
+    max_seeding_time: 8d
+    min_num_seeds: 1
+    # 1,000 Kbit/s aggregate across private ItaTorrents torrents (125 KiB/s).
+    limit_upload_speed: 125
+    enable_group_upload_speed: true
+    cleanup: false
+    resume_torrent_after_change: true
+    share_limit_action: Stop
+  Public:
+    priority: 3
+    include_all_tags:
+      - Public
+    max_seeding_time: 24h
+    # A group cap: qbit_manage divides 100 Kbit/s (about 13 KiB/s) among matching torrents.
+    limit_upload_speed: 13
+    enable_group_upload_speed: true
+    cleanup: false
+    resume_torrent_after_change: false
+    share_limit_action: Stop
 
 nohardlinks:
   Radarr:

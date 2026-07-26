@@ -157,7 +157,8 @@ services:
       - npm_network
 
   qbittorrent:
-    image: linuxserver/qbittorrent:latest
+    # Pin the qBittorrent release while accepting LinuxServer image rebuilds for it.
+    image: linuxserver/qbittorrent:5.2.3
     container_name: qbittorrent
     restart: always
     ports:
@@ -182,7 +183,7 @@ services:
       - npm_network
 
   qbit-manage:
-    image: ghcr.io/stuffanthings/qbit_manage:latest
+    image: ghcr.io/stuffanthings/qbit_manage:v4.11.0
     container_name: qbit-manage
     restart: unless-stopped
     depends_on:
@@ -200,7 +201,8 @@ services:
       - QBT_PORT=8181
       - QBT_CONFIG_DIR=/config
       - QBT_RUN=false
-      - QBT_SCHEDULE=1440
+      # Run hourly so tracker tags and their per-torrent limits are applied promptly.
+      - QBT_SCHEDULE=60
       - QBT_STARTUP_DELAY=120
       - QBT_RECHECK=true
       - QBT_CAT_UPDATE=false
@@ -209,7 +211,7 @@ services:
       - QBT_REM_ORPHANED=false
       - QBT_TAG_TRACKER_ERROR=true
       - QBT_TAG_NOHARDLINKS=true
-      - QBT_SHARE_LIMITS=false
+      - QBT_SHARE_LIMITS=true
       - QBT_SKIP_CLEANUP=true
       - QBT_DRY_RUN=false
       - QBT_LOG_LEVEL=INFO

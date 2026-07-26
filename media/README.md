@@ -72,7 +72,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 > **Jellyfin note:** the media mount is writable so Jellyfin can store metadata sidecars and library state when needed.
 
-> **qbit_manage note:** create `${DOCKER_DATA_BASEFOLDER}/qbit-manage/config.yml` from `qbit-manage/config.yml.example`, keep the qBittorrent credentials in the stack env, and leave cleanup/cat-moves disabled unless you are ready to automate deletions. In the current setup it stays in tagging/recheck mode only, and the category map should mirror the real qBittorrent folder layout, e.g. `/downloads/Radarr/` and `/downloads/Sonarr/`.
+> **qbit_manage note:** create `${DOCKER_DATA_BASEFOLDER}/qbit-manage/config.yml` from `qbit-manage/config.yml.example`, keep the qBittorrent credentials in the stack env, and leave cleanup/cat-moves disabled unless you are ready to automate deletions. The current setup assigns tracker tags and applies non-destructive limits: ShareIsland 7 days and ItaTorrents 8 days with a 1,000 Kbit/s (125 KiB/s) aggregate upload cap per tracker, and the `Public` catch-all 24 hours with a 100 Kbit/s (about 13 KiB/s) aggregate cap. The private groups retain a torrent when the tracker reports no other seed; otherwise qBittorrent pauses it at its limit, while files and the torrent entry remain intact. Add an explicit tracker rule before using any additional private tracker. The category map should mirror the real qBittorrent folder layout, e.g. `/downloads/Radarr/` and `/downloads/Sonarr/`.
 
 > **Web UI note:** every service with an internal web UI should be exposed on `npm_network` for Nginx Proxy Manager and added to Homepage for quick access; keep direct host exposure reserved for protocols that actually need it.
 
@@ -96,8 +96,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Jellyfin         | `linuxserver/jellyfin:latest`                |
 | Seerr            | `ghcr.io/seerr-team/seerr:latest`             |
 | Prowlarr         | `linuxserver/prowlarr:latest`                |
-| qBittorrent      | `linuxserver/qbittorrent:latest`             |
-| qbit_manage      | `ghcr.io/stuffanthings/qbit_manage:latest`   |
+| qBittorrent      | `linuxserver/qbittorrent:5.2.3`               |
+| qbit_manage      | `ghcr.io/stuffanthings/qbit_manage:v4.11.0`   |
 | Radarr           | `linuxserver/radarr:latest`                  |
 | Sonarr           | `linuxserver/sonarr:latest`                  |
 
