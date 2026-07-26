@@ -24,7 +24,10 @@ This stack requires a `.env` file for configuration. A complete and recommended 
    cp .env.example .env
    ```
 
-2. Open the `.env` file and edit the `DOCKER_DATA_BASEFOLDER` variable to match your environment.
+2. Open the `.env` file, set `DOCKER_DATA_BASEFOLDER`, and generate a stable
+   `PAPERLESS_SECRET_KEY` with `python3 -c "import secrets; print(secrets.token_urlsafe(64))"`.
+   Keep this key private and do not rotate it casually: it signs sessions and
+   tokens.
 
 ## Services & Ports
 
@@ -50,7 +53,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 1. **Setup Environment Variables**:
    - Copy the `.env.example` to `.env`.
-   - Set the `DOCKER_DATA_BASEFOLDER` variable as described above.
+   - Set `DOCKER_DATA_BASEFOLDER` and a unique `PAPERLESS_SECRET_KEY` as
+     described above.
 2. Deploy the stack:
 
    ```bash
@@ -66,6 +70,9 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - Change the default admin credentials.
 - Keep the web UI behind a reverse proxy or VPN.
 - Keep Paperless-ngx updated.
+- `PAPERLESS_SECRET_KEY` is mandatory from Paperless-ngx v3. Store it only in
+  the untracked deployment environment (or Portainer stack environment), never
+  in Git. Changing it invalidates active sessions and signed tokens.
 - Monitor logs for unusual activity.
 
 ## Troubleshooting
