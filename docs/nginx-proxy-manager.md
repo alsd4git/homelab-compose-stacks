@@ -68,7 +68,7 @@ Good fits in this repository:
 
 ## Where the snippets live
 
-- [`media/NPM-extraconf.conf`](../media/NPM-extraconf.conf) contains the TinyAuth-gated LAN template used for `animedl` and `homepage`.
+- [`media/NPM-extraconf.conf`](../media/NPM-extraconf.conf) contains the TinyAuth-gated LAN template used for `animedl`, `homepage`, and `vibravid`.
 - [`forgejo/NPM-extraconf.conf`](../forgejo/NPM-extraconf.conf) raises the upload limit for Git pushes and archives.
 - [`immich/NPM-extraconf.md`](../immich/NPM-extraconf.md) covers large uploads and long-running media requests.
 - [`pihole/NPM-extraconf.md`](../pihole/NPM-extraconf.md) contains the Pi-hole reverse-proxy template with the same LAN/Tailscale allow-list.

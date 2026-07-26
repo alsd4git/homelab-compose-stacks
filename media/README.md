@@ -20,6 +20,8 @@ A comprehensive media management and automation stack for your homelab environme
 - **qbit_manage**: qBittorrent maintenance and tagging automation
 - **Byparr**: Cloudflare bypass solution
 - **AW Downloader**: Automated anime downloading and management
+- **VibraVid**: Manual, provider-targeted fallback for unavailable titles
+- **Recyclarr**: Daily Sonarr/Radarr quality-policy synchronization
 
 ## Configuration
 
@@ -44,6 +46,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - `QBITTORRENT_USERNAME`: qBittorrent Web UI username used by `qbit_manage`
 - `QBITTORRENT_PASSWORD`: qBittorrent Web UI password used by `qbit_manage`
 - `AW_APP_KEY`: Application key used by AW Downloader.
+- `VIBRAVID_DJANGO_SECRET_KEY`: Long random secret used by VibraVid.
 
 ## Services & Ports
 
@@ -60,6 +63,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | **Medialyze**     | `8080`        | `http://medialyze:8080`     | Media library browser.                        |
 | **Byparr**        | `8191`        | `http://byparr:8191`        | Cloudflare bypass.                            |
 | **AW Downloader** | `6547`        | `http://aw-downloader:6547` | Anime downloading and management backend.     |
+| **VibraVid**      | `8000`        | `http://vibravid:8000`      | Manual provider fallback; Arr polling/webhooks disabled. |
+| **Recyclarr**     | —             | —                           | Runs the shared Arr policy daily at 04:17 Europe/Rome. |
 
 > **Note:** Most services are meant to be reached through `npm_network`; qBittorrent also publishes its torrent ports on the host for peer connectivity.
 
@@ -80,6 +85,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Service          | Image                                        |
 | ---------------- | -------------------------------------------- |
 | AW Downloader    | `ghcr.io/savvymeat/aw-downloader:latest`     |
+| VibraVid         | `ghcr.io/astraelabs/vibravid:latest`         |
+| Recyclarr        | `ghcr.io/recyclarr/recyclarr:8`              |
 | Cinerr           | `alexkouzel/cinerr:latest`                   |
 | Medialyze        | `ghcr.io/frederikemmer/medialyze:latest`     |
 | Byparr           | `ghcr.io/thephaseless/byparr:latest`         |
@@ -97,7 +104,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
    ```bash
    # Create required directories
-   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{sonarr,radarr,prowlarr,jellyfin,jellyseerr,qbittorrent,qbit-manage,aw-downloader,cinerr,medialyze}
+   mkdir -p ${DOCKER_DATA_BASEFOLDER}/{sonarr,radarr,prowlarr,jellyfin,jellyseerr,qbittorrent,qbit-manage,aw-downloader,cinerr,medialyze,recyclarr,vibravid}
    mkdir -p ${DOCKER_MEDIA_BASEFOLDER}/{tvseries,anime,downloads}
    ```
 
@@ -145,3 +152,5 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - [Byparr Documentation](https://github.com/ThePhaseless/Byparr)
 - [Seerr Documentation](https://github.com/seerr-team/seerr)
 - [AW Downloader Documentation](https://github.com/savvymeat/aw-downloader)
+- [VibraVid Documentation](https://github.com/AstraeLabs/VibraVid)
+- [Recyclarr Documentation](https://recyclarr.dev/)

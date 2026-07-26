@@ -253,6 +253,40 @@ services:
     networks:
       - media_network
 
+  vibravid:
+    image: ghcr.io/astraelabs/vibravid:latest
+    container_name: vibravid
+    restart: unless-stopped
+    expose:
+      - 8000 # Web UI (internal, for reverse proxy or internal access)
+    environment:
+      - DJANGO_DEBUG=false
+      - DJANGO_DB_DIR=/app/data
+      - DJANGO_SECRET_KEY=${VIBRAVID_DJANGO_SECRET_KEY:?VIBRAVID_DJANGO_SECRET_KEY must be set}
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - VIBRAVID_OUTPUT_ROOT=/app/Video
+      # Required when the UI is served through the HTTPS NPM proxy host.
+      - ALLOWED_HOSTS=${VIBRAVID_PUBLIC_HOST:?VIBRAVID_PUBLIC_HOST must be set},localhost,127.0.0.1
+      - CSRF_TRUSTED_ORIGINS=https://${VIBRAVID_PUBLIC_HOST:?VIBRAVID_PUBLIC_HOST must be set}
+      - USE_X_FORWARDED_HOST=true
+      - SECURE_PROXY_SSL_HEADER_ENABLED=true
+      - CSRF_COOKIE_SECURE=true
+      - SESSION_COOKIE_SECURE=true
+      # Keep ARR integration manual-only: no polling and no webhooks.
+      - USE_ARR_SERVICES=false
+      - ENABLE_ARR_POLLING=false
+      - ENABLE_SEERR_WEBHOOK=false
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/vibravid/data:/app/data
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/vibravid/logs:/app/logs
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/vibravid/config:/app/Conf
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/app/Video
+    networks:
+      - media_network
+      - npm_network
+
 networks:
   media_network:
     name: media_network

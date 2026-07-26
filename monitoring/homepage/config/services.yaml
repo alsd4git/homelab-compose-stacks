@@ -113,6 +113,10 @@
         href: https://animedl.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
         description: Anime downloading backend
         icon: mdi-download
+    - VibraVid:
+        href: https://vibravid.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
+        description: Manual provider fallback for unavailable titles
+        icon: mdi-video-search
     - Cinerr:
         href: https://cinerr.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
         description: Media library browser
