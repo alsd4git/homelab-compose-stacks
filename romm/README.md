@@ -67,3 +67,13 @@ MariaDB version that diverges from the upstream reference.
 ## Additional Resources
 
 - [RomM Documentation](https://docs.romm.app/)
+
+## Updates
+
+The `latest` tag follows the upstream stable release, including major versions.
+Before a major update, back up MariaDB and review the matching official release
+notes and configuration reference. After redeploying through Portainer, verify
+that the container is running, its configuration parses correctly, and a small
+library scan completes without errors. RomM 5 continues to read `config.yml`
+from `/romm/config/config.yml`; existing configuration should remain minimal
+and rely on defaults for settings not deliberately overridden.

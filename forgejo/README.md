@@ -110,3 +110,12 @@ With the current defaults, anonymous users cannot view anything and new reposito
 - [Forgejo Reverse Proxy Guide](https://forgejo.org/docs/latest/admin/reverse-proxy/)
 - [Forgejo Configuration Cheat Sheet](https://forgejo.org/docs/latest/admin/config-cheat-sheet/)
 - [Forgejo API Usage](https://forgejo.org/docs/v10.0/user/api-usage/)
+
+## Updates
+
+`15-rootless` intentionally follows the Forgejo 15 LTS series. A new major
+series is never adopted automatically: review its upgrade guide, flush queues,
+back up both Postgres and `/var/lib/gitea`, then verify with `forgejo doctor
+check --all` after the deployment. Keep the rootless config under
+`/var/lib/gitea/custom/conf/app.ini`; it is the supported location for current
+rootless images.

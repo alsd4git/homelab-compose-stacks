@@ -93,3 +93,12 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - [Immich Documentation](https://immich.app/docs/)
 - [Immich GitHub](https://github.com/immich-app/immich)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
+
+## Updates
+
+Immich is deliberately excluded from unattended Watchtower updates. For each
+release, compare the official release Compose file with this repository's
+documented local patch set, then redeploy the live stack through Portainer with
+the `v3` tag re-pulled. Verify the server and machine-learning health checks,
+the reported application version, and migration logs before considering the
+update complete.
