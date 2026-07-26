@@ -18,7 +18,8 @@ repos:
       - id: mixed-line-ending
         args: ["--fix=lf"]
       - id: check-yaml
-        args: ["--allow-multiple-documents"]
+        # Recyclarr uses its documented !secret YAML tag; syntax is still checked.
+        args: ["--allow-multiple-documents", "--unsafe"]
         files: "\\.ya?ml$"
       - id: check-json
   - repo: https://github.com/adrienverge/yamllint
