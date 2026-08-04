@@ -8,5 +8,10 @@
       "smallstep/step-ca",
       "universo-web"
     ]
+  },
+  "registries": {
+    "codeberg.org": {
+      "ignore": true
+    }
   }
 }
