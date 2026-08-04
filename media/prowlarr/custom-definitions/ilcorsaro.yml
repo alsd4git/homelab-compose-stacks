@@ -1,0 +1,103 @@
+---
+# EXPERIMENTAL — DO NOT DEPLOY. See ../research/ilcorsaro.md.
+# SMF rejects Prowlarr's login flow with session-verification failure.
+id: ilcorsaro
+name: ilCorSaRo
+description: "EXPERIMENTAL/BLOCKED: SMF session verification rejects Prowlarr login."
+language: it-IT
+type: semi-private
+encoding: UTF-8
+links:
+  - https://ilcorsaro.net/forum/
+
+caps:
+  categorymappings:
+    - {id: 7, cat: Movies/SD, desc: "Video - Standard Definition"}
+    - {id: 8, cat: Movies/DVD, desc: "Video - DVD"}
+    - {id: 9, cat: Movies/HD, desc: "Video - High Definition H.264"}
+    - {id: 11, cat: Movies/UHD, desc: "Video - Blu-ray Full"}
+    - {id: 74, cat: Movies/HD, desc: "Video - H265/HEVC/H266/AV1"}
+    - {id: 95, cat: Movies, desc: "Video - Portable"}
+    - {id: 12, cat: TV/SD, desc: "Serie TV - Standard Definition"}
+    - {id: 79, cat: TV, desc: "Video - TVRip"}
+    - {id: 102, cat: TV/HD, desc: "Serie TV - High Definition H.264"}
+    - {id: 161, cat: TV/HD, desc: "Serie TV - H265/HEVC/H266/AV1"}
+    - {id: 15, cat: TV/Anime, desc: "Anime"}
+    - {id: 16, cat: TV/Anime, desc: "Anime - Serie TV"}
+    - {id: 17, cat: TV/Anime, desc: "Cartoni Animati"}
+    - {id: 18, cat: TV/Anime, desc: "Cartoni Animati - Serie TV"}
+    - {id: 89, cat: TV/Anime, desc: "Cartoni/Anime - H265/HEVC/H266/AV1"}
+  modes:
+    search: [q]
+    tv-search: [q, season, ep]
+    movie-search: [q]
+
+settings:
+  - name: username
+    type: text
+    label: Username
+  - name: password
+    type: password
+    label: Password
+
+login:
+  path: /forum/index.php?action=login
+  method: form
+  form: form#frmLogin
+  inputs:
+    user: "{{ .Config.username }}"
+    passwrd: "{{ .Config.password }}"
+    # SMF accepts only one of the values exposed by its login form.  The
+    # generic Cardigann value -1 makes its session-verification check fail.
+    cookielength: 3153600
+  test:
+    path: /forum/index.php
+    selector: a[href*="action=logout"]
+
+# Search result rows represent forum topics. This is reliable for films and
+# complete packs; a topic that contains multiple independent episode magnets
+# cannot be expanded into individual Torznab releases by Cardigann.
+search:
+  paths:
+    - path: /forum/index.php?action=search2
+      method: post
+  inputs:
+    search: "{{ if .Keywords }}{{ .Keywords }}{{ else }}Evangelion{{ end }}"
+    searchtype: 1
+    subject_only: 1
+    sort: relevance
+    show_complete: 1
+    advanced: 1
+    $raw: "{{ range .Categories }}&brd[{{.}}]=1{{end}}"
+  rows:
+    selector: "#main_content_section > .windowbg"
+  fields:
+    category:
+      selector: h5 a[href*="board="]
+      attribute: href
+      filters:
+        - name: regexp
+          args: "board=(\\d+)"
+    title:
+      selector: h5 a[href*="topic="]
+      filters:
+        - name: re_replace
+          args: ["(?i)\\bStagion[ei] (\\d{1,3})\\b", "S$1"]
+    details:
+      selector: h5 a[href*="topic="]
+      attribute: href
+    download:
+      selector: h5 a[href*="topic="]
+      attribute: href
+download:
+  before:
+    pathselector:
+      selector: a[href*="action=thank;msg="]
+      attribute: href
+  selectors:
+    - selector: a[href^="magnet:?xt="]
+      attribute: href
+      filters:
+        - name: htmldecode
+        - name: re_replace
+          args: ["\\n", ""]

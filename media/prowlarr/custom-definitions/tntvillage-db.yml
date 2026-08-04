@@ -1,0 +1,51 @@
+---
+# VERIFIED ONLY WITH A Prowlarr manual-only sync profile. See ../research/tntvillage-db.md.
+id: tntvillagedb
+name: TNT Village Database (manual archive)
+description: "Verified manual/recovery archive; never sync automatically to Sonarr or Radarr."
+language: it-IT
+type: public
+encoding: UTF-8
+links:
+  - https://tntvillage-db.programmiedovetrovarli.it/
+
+# The archive mixes films, TV, music, books, software and games and does not
+# expose a trustworthy category, date or swarm status. The Prowlarr test path
+# validates against Movies, while the manual-only sync profile keeps it out of
+# automatic Radarr/Sonarr searches.
+caps:
+  categorymappings:
+    - {id: 1, cat: Movies, desc: "Historic archive — manual searches only", default: true}
+  modes:
+    search: [q]
+
+search:
+  paths:
+    - path: /
+  inputs:
+    # Prowlarr's validation issues an empty query. The archive predates the
+    # current year, so use a broad historical marker rather than Today.Year.
+    search: "{{ if .Keywords }}{{ .Keywords }}{{ else }}ita{{ end }}"
+  rows:
+    # The archive has one result per table row. Header rows have no title or
+    # download field and are discarded by Cardigann while result rows parse.
+    selector: "tr"
+  fields:
+    category:
+      text: 1
+    title:
+      selector: "td:nth-child(1) article > a"
+    details:
+      selector: "td:nth-child(1) article > a"
+      attribute: href
+    download:
+      selector: "a[href*=\"itorrents.org/torrent/\"]"
+      attribute: href
+    size:
+      selector: "td:nth-child(2)"
+    seeders:
+      text: 0
+    leechers:
+      text: 0
+    date:
+      text: "2019-08-30"
