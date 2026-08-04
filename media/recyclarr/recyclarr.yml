@@ -8,6 +8,17 @@ sonarr:
     delete_old_custom_formats: false
     quality_definition:
       type: series
+      # TRaSH's 15 MB/min WEB/HDTV 1080p floor rejects otherwise sensible
+      # long season packs. Keep the guide defaults elsewhere, but accept
+      # releases down to 8 MB/min. This accommodates compact Italian season
+      # packs while retaining the guide defaults for higher-quality sources.
+      qualities:
+        - name: HDTV-1080p
+          min: 8
+        - name: WEBRip-1080p
+          min: 8
+        - name: WEBDL-1080p
+          min: 8
     quality_profiles:
       - name: Italian strict SD-1080p
         upgrade:
@@ -17,22 +28,6 @@ sonarr:
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
-          - name: SD
-            qualities:
-              - SDTV
-              - DVD
-          - name: 480p
-            qualities:
-              - WEBRip-480p
-              - WEBDL-480p
-              - Bluray-480p
-          - name: Bluray-576p
-          - name: 720p
-            qualities:
-              - HDTV-720p
-              - WEBRip-720p
-              - WEBDL-720p
-              - Bluray-720p
           - name: 1080p
             qualities:
               - HDTV-1080p
@@ -40,6 +35,22 @@ sonarr:
               - WEBDL-1080p
               - Bluray-1080p
               - Bluray-1080p Remux
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: Bluray-576p
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
       - name: Italian preferred SD-1080p
         upgrade:
           allowed: true
@@ -48,22 +59,6 @@ sonarr:
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
-          - name: SD
-            qualities:
-              - SDTV
-              - DVD
-          - name: 480p
-            qualities:
-              - WEBRip-480p
-              - WEBDL-480p
-              - Bluray-480p
-          - name: Bluray-576p
-          - name: 720p
-            qualities:
-              - HDTV-720p
-              - WEBRip-720p
-              - WEBDL-720p
-              - Bluray-720p
           - name: 1080p
             qualities:
               - HDTV-1080p
@@ -71,6 +66,22 @@ sonarr:
               - WEBDL-1080p
               - Bluray-1080p
               - Bluray-1080p Remux
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: Bluray-576p
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
       # Use this only for intentional original-language exceptions such as
       # Doctor Who and Fleabag. It accepts Italian where present but considers
       # an original/English 1080p file complete.
@@ -82,22 +93,6 @@ sonarr:
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
-          - name: SD
-            qualities:
-              - SDTV
-              - DVD
-          - name: 480p
-            qualities:
-              - WEBRip-480p
-              - WEBDL-480p
-              - Bluray-480p
-          - name: Bluray-576p
-          - name: 720p
-            qualities:
-              - HDTV-720p
-              - WEBRip-720p
-              - WEBDL-720p
-              - Bluray-720p
           - name: 1080p
             qualities:
               - HDTV-1080p
@@ -105,6 +100,22 @@ sonarr:
               - WEBDL-1080p
               - Bluray-1080p
               - Bluray-1080p Remux
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: Bluray-576p
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
       - name: Anime original/hardsub SD-1080p
         upgrade:
           allowed: true
@@ -114,22 +125,6 @@ sonarr:
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
-          - name: SD
-            qualities:
-              - SDTV
-              - DVD
-          - name: 480p
-            qualities:
-              - WEBRip-480p
-              - WEBDL-480p
-              - Bluray-480p
-          - name: Bluray-576p
-          - name: 720p
-            qualities:
-              - HDTV-720p
-              - WEBRip-720p
-              - WEBDL-720p
-              - Bluray-720p
           - name: 1080p
             qualities:
               - HDTV-1080p
@@ -137,6 +132,22 @@ sonarr:
               - WEBDL-1080p
               - Bluray-1080p
               - Bluray-1080p Remux
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: Bluray-576p
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
     custom_formats:
       - trash_ids:
           - alsd-not-italian-original-english
@@ -235,24 +246,6 @@ radarr:
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
-          - name: SD
-            qualities:
-              - SDTV
-              - DVD
-              - DVD-R
-              - DVDSCR
-          - name: 480p
-            qualities:
-              - WEBRip-480p
-              - WEBDL-480p
-              - Bluray-480p
-          - name: Bluray-576p
-          - name: 720p
-            qualities:
-              - HDTV-720p
-              - WEBRip-720p
-              - WEBDL-720p
-              - Bluray-720p
           - name: 1080p
             qualities:
               - HDTV-1080p
@@ -260,6 +253,24 @@ radarr:
               - WEBDL-1080p
               - Bluray-1080p
               - Remux-1080p
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: Bluray-576p
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
+              - DVD-R
+              - DVDSCR
       - name: Italian preferred SD-1080p
         upgrade:
           allowed: true
@@ -268,24 +279,6 @@ radarr:
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
-          - name: SD
-            qualities:
-              - SDTV
-              - DVD
-              - DVD-R
-              - DVDSCR
-          - name: 480p
-            qualities:
-              - WEBRip-480p
-              - WEBDL-480p
-              - Bluray-480p
-          - name: Bluray-576p
-          - name: 720p
-            qualities:
-              - HDTV-720p
-              - WEBRip-720p
-              - WEBDL-720p
-              - Bluray-720p
           - name: 1080p
             qualities:
               - HDTV-1080p
@@ -293,6 +286,24 @@ radarr:
               - WEBDL-1080p
               - Bluray-1080p
               - Remux-1080p
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: Bluray-576p
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
+              - DVD-R
+              - DVDSCR
       - name: Anime original/hardsub SD-1080p
         upgrade:
           allowed: true
@@ -301,24 +312,6 @@ radarr:
         min_format_score: 0
         min_upgrade_format_score: 1
         qualities:
-          - name: SD
-            qualities:
-              - SDTV
-              - DVD
-              - DVD-R
-              - DVDSCR
-          - name: 480p
-            qualities:
-              - WEBRip-480p
-              - WEBDL-480p
-              - Bluray-480p
-          - name: Bluray-576p
-          - name: 720p
-            qualities:
-              - HDTV-720p
-              - WEBRip-720p
-              - WEBDL-720p
-              - Bluray-720p
           - name: 1080p
             qualities:
               - HDTV-1080p
@@ -326,6 +319,24 @@ radarr:
               - WEBDL-1080p
               - Bluray-1080p
               - Remux-1080p
+          - name: 720p
+            qualities:
+              - HDTV-720p
+              - WEBRip-720p
+              - WEBDL-720p
+              - Bluray-720p
+          - name: Bluray-576p
+          - name: 480p
+            qualities:
+              - WEBRip-480p
+              - WEBDL-480p
+              - Bluray-480p
+          - name: SD
+            qualities:
+              - SDTV
+              - DVD
+              - DVD-R
+              - DVDSCR
     custom_formats:
       - trash_ids:
           - alsd-not-italian-original-english

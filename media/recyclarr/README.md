@@ -10,6 +10,10 @@ mounted `/config` directory. `secrets.yml` is runtime-only and ignored by Git.
 The policy defines three profiles, each accepting SD, 480p, 576p, 720p, and
 1080p releases for older titles and upgrading up to 1080p when available:
 
+Quality groups are declared in descending preference (1080p through SD).
+Recyclarr preserves this order in Arr, so reversing it would make a 720p file
+outrank a 1080p file and prevent the intended upgrades.
+
 - `Italian strict SD-1080p` rejects every release without Italian audio.
 - `Italian preferred SD-1080p` accepts Italian first, then original-language
   or English releases when Italian is unavailable. Italian receives the higher
