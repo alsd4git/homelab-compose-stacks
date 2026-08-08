@@ -76,6 +76,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 > **qBittorrent preferences note:** the reviewed non-secret desired state lives in [`qbittorrent/qBittorrent.conf.example`](qbittorrent/qBittorrent.conf.example). It is a reference applied through the Web UI/API, not a replacement for the private runtime configuration.
 
+> **AW Downloader notifications note:** configure Telegram through the AW Downloader UI's Notifications page using its Apprise destination. Enable both `Download Completato` and `Download Fallito`; the destination URL contains the bot credentials and is stored only in AW Downloader's private runtime database.
+
 > **Web UI note:** every service with an internal web UI should be exposed on `npm_network` for Nginx Proxy Manager and added to Homepage for quick access; keep direct host exposure reserved for protocols that actually need it.
 
 > **Network note:** shared bridge networks are consumed with `external: true` only. In this repository `npm_network` is a pre-created shared network referenced by every stack, while `pihole_network` is created by the Pi-hole stack and consumed by `media` for DNS attribution.
