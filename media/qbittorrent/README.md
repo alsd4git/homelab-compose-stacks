@@ -24,7 +24,7 @@ from the global UI toggle.
 qBittorrent does not provide active-torrent pools by tracker tag. Its active
 upload and active-torrent limits are global, so a public torrent could occupy a
 slot needed by a private tracker. Keep `MaxActiveTorrents` and
-`MaxActiveUploads` at `0` (unlimited), while retaining `MaxActiveDownloads=10`.
+`MaxActiveUploads` at `-1` (unlimited), while retaining `MaxActiveDownloads=10`.
 This preserves download queueing without ever queueing a completed private
 torrent behind public seeding. Per-tracker upload bandwidth and completion
 rules remain enforced by qbit_manage.

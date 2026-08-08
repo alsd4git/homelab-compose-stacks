@@ -19,9 +19,9 @@ Session\MaxActiveCheckingTorrents=2
 Session\MaxActiveDownloads=10
 ; Do not reserve global queue slots for uploads: qBittorrent has no per-tag
 ; pools, so a public torrent must never prevent a private one from seeding.
-; Zero means unlimited. Download concurrency remains capped separately above.
-Session\MaxActiveTorrents=0
-Session\MaxActiveUploads=0
+; -1 means unlimited. Download concurrency remains capped separately above.
+Session\MaxActiveTorrents=-1
+Session\MaxActiveUploads=-1
 Session\Port=6881
 Session\QueueingSystemEnabled=true
 Session\ShareLimitAction=Stop
