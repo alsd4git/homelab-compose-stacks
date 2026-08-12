@@ -50,7 +50,7 @@ jobs:
           - pihole
           - rustdesk-relay
           - utilities
-          - universo-pwa
+          - lan-frontends
     steps:
       - uses: actions/checkout@v4
 

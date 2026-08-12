@@ -1,7 +1,7 @@
-# Universo PWA Stack
-# Minimal stack for the Universo web frontend behind Nginx Proxy Manager.
+# LAN Frontends Stack
+# Minimal private frontends behind Nginx Proxy Manager.
 
-name: universo-pwa
+name: lan-frontends
 
 services:
   universo-web:

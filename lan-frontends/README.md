@@ -1,6 +1,6 @@
-# Universo PWA Stack
+# LAN Frontends Stack
 
-Minimal frontend stack for `universo-web` exposed through the shared reverse-proxy network.
+Minimal private frontend stack exposed through the shared reverse-proxy network.
 
 ## Features
 
