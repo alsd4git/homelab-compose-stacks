@@ -18,7 +18,7 @@ services:
     container_name: aw-downloader
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/aw-downloader:/app/storage
-      ## TV Shows folders
+      # Keep AW's container path identical to Sonarr's root folder.
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}/anime:/media/anime
     environment:
       - APP_KEY=${AW_APP_KEY}
