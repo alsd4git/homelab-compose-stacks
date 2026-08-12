@@ -6,11 +6,15 @@
       "gtstef/filebrowser",
       "qmcgaw/ddns-updater",
       "smallstep/step-ca",
-      "universo-web"
+      "universo-web",
+      "gcr.io"
     ]
   },
   "registries": {
     "codeberg.org": {
+      "ignore": true
+    },
+    "gcr.io": {
       "ignore": true
     }
   }

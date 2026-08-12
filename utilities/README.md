@@ -27,6 +27,8 @@ Key variables:
 - `TELEGRAM_API_ID`
 - `TELEGRAM_API_HASH`
 - `FILEBROWSER_ADMIN_PASSWORD`
+- `CUP_GHCR_TOKEN` — GitHub token with package-read access, required when CUP
+  monitors private GHCR images.
 
 ## Services & Ports
 
@@ -63,7 +65,10 @@ Key variables:
 ## Security Notes
 
 - `cup` mounts `/var/run/docker.sock`, so keep the stack on a trusted network.
-- CUP uses `cup/cup.json` from this repo as the source copy; sync it to `${DOCKER_DATA_BASEFOLDER}/cup/cup.json` before deploying.
+- CUP uses `cup/cup.json` from this repo as the non-secret template; sync it to
+  `${DOCKER_DATA_BASEFOLDER}/cup/cup.json` before deploying. `cup-config`
+  creates the runtime-only configuration in a Docker volume using
+  `CUP_GHCR_TOKEN`, so never add the token to `cup.json` or Git.
 - `upsnap` uses `network_mode: host`, which exposes it directly on the host interface.
 - Keep the Telegram credentials and admin password in `.env`.
 

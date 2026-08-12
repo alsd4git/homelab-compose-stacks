@@ -42,13 +42,44 @@ services:
     container_name: cup
     restart: unless-stopped
     command: -c /config/cup.json serve -p 8000
+    depends_on:
+      cup-config:
+        condition: service_completed_successfully
     expose:
       - 8000 # Web UI (internal, for reverse proxy or internal access)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/cup/cup.json:/config/cup.json:ro
+      - cup_config:/config:ro
     networks:
       - npm_network
+
+  # CUP does not use the Docker daemon's registry credentials. Generate its
+  # runtime-only configuration from the tracked template and Portainer secret.
+  cup-config:
+    image: python:3.13-alpine
+    container_name: cup-config
+    restart: "no"
+    environment:
+      CUP_GHCR_TOKEN: ${CUP_GHCR_TOKEN:?CUP_GHCR_TOKEN must be set}
+    command:
+      - python
+      - -c
+      - |
+        import json
+        import os
+        from pathlib import Path
+
+        template = Path("/template/cup.json")
+        output = Path("/config/cup.json")
+        config = json.loads(template.read_text())
+        config.setdefault("registries", {}).setdefault("ghcr.io", {})["authentication"] = os.environ["CUP_GHCR_TOKEN"]
+        temporary = output.with_suffix(".tmp")
+        temporary.write_text(json.dumps(config, indent=2) + "\n")
+        temporary.chmod(0o600)
+        temporary.replace(output)
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/cup/cup.json:/template/cup.json:ro
+      - cup_config:/config
 
   filebrowser-quantum:
     image: gtstef/filebrowser
@@ -105,3 +136,6 @@ networks:
   npm_network:
     name: npm_network
     external: true
+
+volumes:
+  cup_config:
