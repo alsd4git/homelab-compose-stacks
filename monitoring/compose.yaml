@@ -290,6 +290,8 @@ services:
       - HOST=0.0.0.0
       - PORT=8840
       - TIMEOUT=120
+      # Keep seven days of observation history; old rows are trimmed automatically.
+      - TRIM_HIST=168
       - SHOUTRRR_URL=
       - THEME=sand
       - COLOR=dark
