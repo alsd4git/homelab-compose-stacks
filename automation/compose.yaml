@@ -16,6 +16,7 @@
 # - TELEGRAM_CHAT_ID: Telegram chat ID for notifications
 # - TELEGRAM_BOT_TOKEN: Telegram bot token for sending messages
 # - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+# - DOCKER_CONFIG_FILE: Docker registry config file for Watchtower
 
 name: automation
 
@@ -70,6 +71,7 @@ services:
     hostname: Docker-Watchtower-Notifier
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_CONFIG_FILE:-/home/dietpi/.docker/config.json}:/config.json:ro
     environment:
       TZ: Europe/Rome
       WATCHTOWER_CLEANUP: true

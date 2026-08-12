@@ -21,6 +21,8 @@ cp .env.example .env
 Key variables:
 
 - `DOCKER_DATA_BASEFOLDER`: persistent data root
+- `DOCKER_CONFIG_FILE`: host Docker `config.json` used by Watchtower for
+  private registry authentication
 - `TELEGRAM_BOT_TOKEN`: Telegram bot token
 - `TELEGRAM_CHAT_ID`: Telegram chat ID
 
@@ -55,6 +57,8 @@ Key variables:
 - All services mount `/var/run/docker.sock`, so deploy only in trusted networks.
 - The Telegram token and chat ID must live in `.env`, not in the compose file.
 - Watchtower runs on a schedule and can update containers automatically, so keep the container allowlist intentional.
+- Watchtower reads `DOCKER_CONFIG_FILE` as a read-only mount so it can pull
+  private GHCR images already authorized for Docker on the host.
 
 ## Additional Resources
 
