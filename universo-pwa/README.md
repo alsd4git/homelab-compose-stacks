@@ -4,7 +4,7 @@ Minimal frontend stack for `universo-web` exposed through the shared reverse-pro
 
 ## Features
 
-- **Single web frontend**: lightweight PWA front end for the Universo service.
+- **Web frontends**: lightweight PWA clients for Universo Gym and Dovesonole18.
 - **Reverse-proxy ready**: joined to `npm_network` for published access.
 
 ## Configuration
@@ -17,13 +17,15 @@ This stack has no required environment variables.
 
 | Service | Internal Port | Access Pattern | Notes |
 | --- | --- | --- | --- |
-| `universo-web` | `80` | `http://universo-web:80` | Web frontend on `npm_network`. |
+| `universo-web` | `80` | `http://universo-web:80` | Universo Gym frontend on `npm_network`. |
+| `dovesonole18` | `80` | `http://dovesonole18:80` | Dovesonole18 frontend on `npm_network`. |
 
 ## Container Images
 
 | Service | Image |
 | --- | --- |
-| `universo-web` | `universo-web:latest` |
+| `universo-web` | `ghcr.io/alsd4git/universo-gym-client:main` |
+| `dovesonole18` | `ghcr.io/alsd4git/dovesonole18:main` |
 
 ## Usage
 

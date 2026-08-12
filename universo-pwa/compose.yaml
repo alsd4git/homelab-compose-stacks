@@ -5,8 +5,15 @@ name: universo-pwa
 
 services:
   universo-web:
-    image: universo-web:latest
+    image: ghcr.io/alsd4git/universo-gym-client:main
     container_name: universo-web
+    restart: unless-stopped
+    networks:
+      - npm_network
+
+  dovesonole18:
+    image: ghcr.io/alsd4git/dovesonole18:main
+    container_name: dovesonole18
     restart: unless-stopped
     networks:
       - npm_network
