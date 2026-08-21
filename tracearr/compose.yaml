@@ -30,7 +30,7 @@ services:
       - npm_network
 
   tracearr-db:
-    image: timescale/timescaledb-ha:pg18.1-ts2.25.0
+    image: timescale/timescaledb-ha:pg18.4-ts2.29.1
     container_name: tracearr-db
     restart: unless-stopped
     expose:
@@ -45,11 +45,13 @@ services:
       - -c
       - timescaledb.license=timescale
       - -c
-      - timescaledb.max_tuples_decompressed_per_dml_transaction=0
+      - timescaledb.max_tuples_decompressed_per_dml_transaction=100000
       - -c
       - max_locks_per_transaction=4096
       - -c
       - timescaledb.telemetry_level=off
+      - -c
+      - max_connections=150
     environment:
       POSTGRES_USER: tracearr
       POSTGRES_PASSWORD: ${DB_PASSWORD}

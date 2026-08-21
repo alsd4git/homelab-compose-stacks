@@ -56,7 +56,7 @@ services:
   # CUP does not use the Docker daemon's registry credentials. Generate its
   # runtime-only configuration from the tracked template and Portainer secret.
   cup-config:
-    image: python:3.13-alpine
+    image: python:3.14-alpine
     container_name: cup-config
     restart: "no"
     environment:
@@ -72,6 +72,10 @@ services:
         template = Path("/template/cup.json")
         output = Path("/config/cup.json")
         config = json.loads(template.read_text())
+        config.setdefault("registries", {}).setdefault("gcr.io", {})["ignore"] = True
+        excluded_images = config.setdefault("images", {}).setdefault("exclude", [])
+        if "gcr.io" not in excluded_images:
+            excluded_images.append("gcr.io")
         config.setdefault("registries", {}).setdefault("ghcr.io", {})["authentication"] = os.environ["CUP_GHCR_TOKEN"]
         temporary = output.with_suffix(".tmp")
         temporary.write_text(json.dumps(config, indent=2) + "\n")
