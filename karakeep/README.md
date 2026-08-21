@@ -49,7 +49,7 @@ Key variables:
 | Service | Image |
 | --- | --- |
 | KaraKeep web | `ghcr.io/karakeep-app/karakeep:${KARAKEEP_VERSION:-release}` |
-| Chrome | `gcr.io/zenika-hub/alpine-chrome:124` |
+| Chrome | `ghcr.io/karakeep-app/karakeep-chrome:release` |
 | MeiliSearch | `getmeili/meilisearch:v1.41.0` |
 
 ## Usage

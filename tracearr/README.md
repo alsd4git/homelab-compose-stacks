@@ -42,7 +42,7 @@ Key variables:
 | Service | Image |
 | --- | --- |
 | Tracearr | `ghcr.io/connorgallopo/tracearr:latest` |
-| PostgreSQL | `timescale/timescaledb-ha:pg18.1-ts2.25.0` |
+| PostgreSQL | `timescale/timescaledb-ha:pg18.4-ts2.29.1` |
 | Redis | `redis:8-alpine` |
 
 ## Usage
@@ -60,6 +60,10 @@ Key variables:
 - Keep the database and cookie secrets in `.env`.
 - PostgreSQL and Redis remain on the private `tracearr_network`.
 - The web UI is intended to be published only through the reverse proxy.
+
+The PostgreSQL image and tuning parameters follow Tracearr's official
+PostgreSQL 18 example. Back up the Tracearr database before changing the
+TimescaleDB image or PostgreSQL settings.
 
 ## Additional Resources
 
