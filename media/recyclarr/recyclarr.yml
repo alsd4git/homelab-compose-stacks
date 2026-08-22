@@ -8,10 +8,8 @@ sonarr:
     delete_old_custom_formats: false
     quality_definition:
       type: series
-      # TRaSH's 15 MB/min WEB/HDTV 1080p floor rejects otherwise sensible
-      # long season packs. Keep the guide defaults elsewhere, but accept
-      # releases down to 8 MB/min. This accommodates compact Italian season
-      # packs while retaining the guide defaults for higher-quality sources.
+      # Lower floors reject fewer compact Italian encodes while retaining the
+      # guide-managed limits for higher-quality sources such as Remux.
       qualities:
         - name: HDTV-1080p
           min: 8
@@ -19,6 +17,16 @@ sonarr:
           min: 8
         - name: WEBDL-1080p
           min: 8
+        - name: Bluray-1080p
+          min: 14
+        - name: HDTV-720p
+          min: 6
+        - name: WEBRip-720p
+          min: 6
+        - name: WEBDL-720p
+          min: 6
+        - name: Bluray-720p
+          min: 10
     quality_profiles:
       - name: Italian strict SD-1080p
         upgrade:
@@ -235,6 +243,25 @@ radarr:
     delete_old_custom_formats: false
     quality_definition:
       type: movie
+      # Allow compact H.265/Web encodes while retaining reasonable floors for
+      # 720p/1080p Blu-ray encodes. Remux limits remain guide-managed.
+      qualities:
+        - name: HDTV-1080p
+          min: 8
+        - name: WEBRip-1080p
+          min: 8
+        - name: WEBDL-1080p
+          min: 8
+        - name: Bluray-1080p
+          min: 14
+        - name: HDTV-720p
+          min: 6
+        - name: WEBRip-720p
+          min: 6
+        - name: WEBDL-720p
+          min: 6
+        - name: Bluray-720p
+          min: 10
     quality_profiles:
       - name: Italian strict SD-1080p
         upgrade:

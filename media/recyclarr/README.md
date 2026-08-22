@@ -30,6 +30,11 @@ The first two profiles are deliberately separate: use the strict profile where
 Italian is a requirement, and the preferred profile where a higher-quality
 original/English fallback is acceptable.
 
+Quality-size floors are intentionally relaxed for compact encodes: Sonarr and
+Radarr accept 6 MB/min for 720p WEB/WEBRip/HDTV, 10 MB/min for 720p Blu-ray,
+8 MB/min for 1080p WEB/WEBRip/HDTV, and 14 MB/min for 1080p Blu-ray. Remux
+limits remain managed by the guide and are not overridden.
+
 Sonarr Italian profiles stop custom-format upgrades at score `71`: Italian has
 score `21`, the Italian preference has score `10`, and Italian 1080p has score
 `40`. Radarr has no resolution custom formats, so its language target is `31`
