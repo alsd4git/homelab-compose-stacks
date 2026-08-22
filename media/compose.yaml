@@ -296,10 +296,16 @@ services:
       - SECURE_PROXY_SSL_HEADER_ENABLED=true
       - CSRF_COOKIE_SECURE=true
       - SESSION_COOKIE_SECURE=true
-      # Keep ARR integration manual-only: no polling and no webhooks.
-      - USE_ARR_SERVICES=false
+      # Enable Sonarr integration, but keep polling and webhooks manual-only.
+      - USE_ARR_SERVICES=true
       - ENABLE_ARR_POLLING=false
       - ENABLE_SEERR_WEBHOOK=false
+      - ENABLE_SONARR_WEBHOOK=false
+      - SONARR_URL=http://sonarr:8989
+      - SONARR_API_KEY=${SONARR_API_KEY:?SONARR_API_KEY must be set}
+      # Radarr is configured for manual VibraVid use; keep polling/webhooks off.
+      - RADARR_URL=http://radarr:7878
+      - RADARR_API_KEY=${RADARR_API_KEY:?RADARR_API_KEY must be set}
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/vibravid/data:/app/data
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/vibravid/logs:/app/logs

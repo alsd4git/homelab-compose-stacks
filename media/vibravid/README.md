@@ -2,8 +2,9 @@
 
 VibraVid is a manual, targeted fallback for titles unavailable through the
 normal Arr/indexer path. It shares the same `/media` tree as Sonarr and Radarr,
-but ARR polling and webhooks are deliberately disabled: adding an unrelated
-title cannot cause an automatic download.
+and both Arr clients may be configured for metadata/import support while ARR
+polling and webhooks remain deliberately disabled: adding an unrelated title
+cannot cause an automatic download.
 
 Its web UI is published only through Nginx Proxy Manager, using the same
 LAN/Tailscale-or-TinyAuth policy as AW Downloader. Set `VIBRAVID_PUBLIC_HOST`

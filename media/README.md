@@ -47,6 +47,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - `QBITTORRENT_USERNAME`: qBittorrent Web UI username used by `qbit_manage`
 - `QBITTORRENT_PASSWORD`: qBittorrent Web UI password used by `qbit_manage`
 - `AW_APP_KEY`: Application key used by AW Downloader.
+- `SONARR_API_KEY`: API key used by VibraVid's manual Sonarr integration.
+- `RADARR_API_KEY`: API key used by VibraVid's manual Radarr integration.
 - `VIBRAVID_DJANGO_SECRET_KEY`: Long random secret used by VibraVid.
 
 ## Services & Ports
