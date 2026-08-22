@@ -78,7 +78,9 @@ services:
       - npm_network
 
   byparr:
-    image: ghcr.io/thephaseless/byparr:latest
+    # Temporary pin: Byparr 3.0.3 had Cloudflare timeout regressions.
+    # v3.0.4 is available and must be tested in isolation before changing this pin.
+    image: ghcr.io/thephaseless/byparr:2.1.0
     container_name: byparr
     restart: unless-stopped
     expose:

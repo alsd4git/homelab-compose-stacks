@@ -80,6 +80,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 > **AW Downloader notifications note:** configure Telegram through the AW Downloader UI's Notifications page using its Apprise destination. Enable both `Download Completato` and `Download Fallito`; the destination URL contains the bot credentials and is stored only in AW Downloader's private runtime database.
 
+> **Byparr pin note:** The deployed host currently runs `ghcr.io/thephaseless/byparr:2.1.0`, which has been stable for the MIRCrew/Cloudflare workload. Byparr `v3.0.4` was released on 2026-08-18 with a browser-TLS and Cloudflare-solving fix. Test it in isolation before changing the pin; if the MIRCrew and 1337x checks remain green, update the compose pin and then propagate it to the other environment. Keep the existing 2.1.0 pin until that verification is complete.
+
 > **Web UI note:** every service with an internal web UI should be exposed on `npm_network` for Nginx Proxy Manager and added to Homepage for quick access; keep direct host exposure reserved for protocols that actually need it.
 
 > **Network note:** shared bridge networks are consumed with `external: true` only. In this repository `npm_network` is a pre-created shared network referenced by every stack, while `pihole_network` is created by the Pi-hole stack and consumed by `media` for DNS attribution.
@@ -98,7 +100,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Houndarr         | `ghcr.io/av1155/houndarr:latest`             |
 | Cinerr           | `alexkouzel/cinerr:latest`                   |
 | Medialyze        | `ghcr.io/frederikemmer/medialyze:latest`     |
-| Byparr           | `ghcr.io/thephaseless/byparr:latest`         |
+| Byparr           | `ghcr.io/thephaseless/byparr:2.1.0`          |
 | Jellyfin         | `linuxserver/jellyfin:latest`                |
 | Seerr            | `ghcr.io/seerr-team/seerr:latest`             |
 | Prowlarr         | `linuxserver/prowlarr:latest`                |
