@@ -46,8 +46,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | --------- | -------------------------------------------- |
 | Webserver | `ghcr.io/paperless-ngx/paperless-ngx:latest` |
 | Broker    | `docker.io/valkey/valkey:9-alpine`           |
-| Gotenberg | `docker.io/gotenberg/gotenberg:8.33`         |
-| Tika      | `docker.io/apache/tika:latest`               |
+| Gotenberg | `docker.io/gotenberg/gotenberg:8.34`         |
+| Tika      | `docker.io/apache/tika:3.3.1.0`              |
 
 ## Usage
 

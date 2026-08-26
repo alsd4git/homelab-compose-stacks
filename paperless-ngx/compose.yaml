@@ -34,7 +34,7 @@ services:
       - paperless_network
 
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.33
+    image: docker.io/gotenberg/gotenberg:8.34
     container_name: paperless-ngx-gotenberg
     restart: unless-stopped
     # The gotenberg chromium route is used to convert .eml files. We do not
@@ -47,7 +47,7 @@ services:
       - paperless_network
 
   tika:
-    image: docker.io/apache/tika:latest
+    image: docker.io/apache/tika:3.3.1.0
     container_name: paperless-ngx-tika
     restart: unless-stopped
     networks:
@@ -77,6 +77,7 @@ services:
       # deployment environment; changing it invalidates active sessions/tokens.
       PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY:?PAPERLESS_SECRET_KEY must be set}
       PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBENGINE: sqlite
       PAPERLESS_TIKA_ENABLED: 1
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
       PAPERLESS_TIKA_ENDPOINT: http://tika:9998
