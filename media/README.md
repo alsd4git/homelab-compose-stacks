@@ -80,7 +80,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 > **AW Downloader notifications note:** configure Telegram through the AW Downloader UI's Notifications page using its Apprise destination. Enable both `Download Completato` and `Download Fallito`; the destination URL contains the bot credentials and is stored only in AW Downloader's private runtime database.
 
-> **Byparr pin note:** The deployed host currently runs `ghcr.io/thephaseless/byparr:2.1.0`, which has been stable for the MIRCrew/Cloudflare workload. Byparr `v3.0.4` was released on 2026-08-18 with a browser-TLS and Cloudflare-solving fix. Test it in isolation before changing the pin; if the MIRCrew and 1337x checks remain green, update the compose pin and then propagate it to the other environment. Keep the existing 2.1.0 pin until that verification is complete.
+> **Byparr pin note:** Byparr `v3.0.4` includes the browser-TLS and Cloudflare-solving fixes required by the MIRCrew/1337x workload. The compose pin includes resource limits and a healthcheck; validate both sources after future image updates.
 
 > **Web UI note:** every service with an internal web UI should be exposed on `npm_network` for Nginx Proxy Manager and added to Homepage for quick access; keep direct host exposure reserved for protocols that actually need it.
 
@@ -100,7 +100,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Houndarr         | `ghcr.io/av1155/houndarr:latest`             |
 | Cinerr           | `alexkouzel/cinerr:latest`                   |
 | Medialyze        | `ghcr.io/frederikemmer/medialyze:latest`     |
-| Byparr           | `ghcr.io/thephaseless/byparr:2.1.0`          |
+| Byparr           | `ghcr.io/thephaseless/byparr:3.0.4`          |
 | Jellyfin         | `linuxserver/jellyfin:latest`                |
 | Seerr            | `ghcr.io/seerr-team/seerr:latest`             |
 | Prowlarr         | `linuxserver/prowlarr:latest`                |

@@ -78,13 +78,22 @@ services:
       - npm_network
 
   byparr:
-    # Temporary pin: Byparr 3.0.3 had Cloudflare timeout regressions.
-    # v3.0.4 is available and must be tested in isolation before changing this pin.
-    image: ghcr.io/thephaseless/byparr:2.1.0
+    # v3.0.4 fixes the Cloudflare workload issues seen with earlier releases.
+    image: ghcr.io/thephaseless/byparr:3.0.4
     container_name: byparr
     restart: unless-stopped
+    shm_size: 512mb
+    pids_limit: 512
+    mem_limit: 2g
+    cpus: 2.0
     expose:
       - 8191 # API (internal, for reverse proxy or internal access)
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS --max-time 15 http://127.0.0.1:8191/health >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 30s
     networks:
       - media_network
       - npm_network
