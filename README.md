@@ -1,6 +1,6 @@
 # Homelab Compose Stacks
 
-> Formerly **Dockerini** — the same repository, now with a name that better
+> Formerly **Dockerini**. This is the same repository, with a name that better
 > describes its purpose.
 
 Curated public Docker Compose stacks for a homelab, designed to stay consistent, documented, and easy to deploy through Portainer or Docker Compose.
@@ -46,19 +46,20 @@ Curated public Docker Compose stacks for a homelab, designed to stay consistent,
 
 | Stack | Purpose |
 | --- | --- |
-| Automation | Docker event notifications, image monitoring, and container updates |
-| Forgejo | Private Git hosting with Postgres and SSH access |
-| Immich | Photo and video management |
-| Infrastructure | Reverse proxy, DDNS, authentication, and identity services |
-| KaraKeep | Bookmarks and media organization |
-| Media | Media servers, downloaders, and automation |
-| Monitoring | System monitoring, dashboards, and observability |
-| Paperless-ngx | Document management and archival |
-| Pi-hole | DNS sinkhole and network ad blocking |
-| RomM | Game library management |
-| RustDesk Relay | Remote desktop relay infrastructure |
-| Tracearr | Traceability and media import stack |
-| Utilities | File management, document processing, and utility services |
+| [Automation](automation/README.md) | Docker event notifications, image monitoring, and container updates |
+| [Forgejo](forgejo/README.md) | Private Git hosting with Postgres and SSH access |
+| [Immich](immich/README.md) | Photo and video management |
+| [Infrastructure](infrastructure/README.md) | Reverse proxy, DDNS, authentication, and identity services |
+| [KaraKeep](karakeep/README.md) | Bookmarks and media organization |
+| [LAN frontends](lan-frontends/README.md) | Frontends exposed only on the local network |
+| [Media](media/README.md) | Media servers, downloaders, and automation |
+| [Monitoring](monitoring/README.md) | System monitoring, dashboards, and observability |
+| [Paperless-ngx](paperless-ngx/README.md) | Document management and archival |
+| [Pi-hole](pihole/README.md) | DNS sinkhole and network ad blocking |
+| [RomM](romm/README.md) | Game library management |
+| [RustDesk Relay](rustdesk-relay/README.md) | Remote desktop relay infrastructure |
+| [Tracearr](tracearr/README.md) | Traceability and media import stack |
+| [Utilities](utilities/README.md) | File management, document processing, and utility services |
 
 ## Standardization
 
@@ -116,16 +117,18 @@ Each stack folder follows the same basic shape:
    docker compose up -d
    ```
 
+Before updating a stateful stack, back up its database and persistent volumes, record the currently deployed image versions, and read the upstream migration notes. Validate the rendered configuration with `docker compose config` before deployment. A rollback requires both the previous images and data compatible with those versions.
+
 ## Development
 
-### Pre-commit Hooks
+### Pre-commit hooks
 
 1. Install [uv](https://github.com/astral-sh/uv) if needed.
 2. Install pre-commit with `uv tool install pre-commit`.
 3. Install the repo hooks with `uv run pre-commit install`.
 4. Optionally run the full check with `uv run pre-commit run --all-files`.
 
-The pre-commit setup keeps YAML consistent with `yamllint`, enforces whitespace hygiene, and validates `.env` files with `dotenv-linter`.
+The pre-commit setup keeps YAML consistent with `yamllint`, enforces whitespace hygiene, and validates `.env` files with `dotenv-linter`. GitHub Actions also validates the Compose configuration for public stacks that have complete example environments.
 
 ## Additional Resources
 
