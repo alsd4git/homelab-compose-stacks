@@ -1,5 +1,8 @@
 # Homelab Compose Stacks
 
+[![CI](https://github.com/alsd4git/homelab-compose-stacks/actions/workflows/ci.yml/badge.svg)](https://github.com/alsd4git/homelab-compose-stacks/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
+
 > Formerly **Dockerini**. This is the same repository, with a name that better
 > describes its purpose.
 
