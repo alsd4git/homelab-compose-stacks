@@ -41,6 +41,7 @@ jobs:
       matrix:
         stack:
           - automation
+          - gitlab-runner
           - immich
           - infrastructure
           - karakeep
