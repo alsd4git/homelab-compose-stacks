@@ -51,6 +51,7 @@ Curated public Docker Compose stacks for a homelab, designed to stay consistent,
 | --- | --- |
 | [Automation](automation/README.md) | Docker event notifications, image monitoring, and container updates |
 | [Forgejo](forgejo/README.md) | Private Git hosting with Postgres and SSH access |
+| [GitLab Runner](gitlab-runner/README.md) | Self-hosted GitLab CI runner using the Docker executor |
 | [Immich](immich/README.md) | Photo and video management |
 | [Infrastructure](infrastructure/README.md) | Reverse proxy, DDNS, authentication, and identity services |
 | [KaraKeep](karakeep/README.md) | Bookmarks and media organization |
