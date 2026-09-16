@@ -23,7 +23,7 @@ name: gitlab-runner
 services:
   gitlab-runner:
     container_name: gitlab-runner
-    image: ${GITLAB_RUNNER_IMAGE:-gitlab/gitlab-runner:alpine-v19.3.3}
+    image: ${GITLAB_RUNNER_IMAGE:-gitlab/gitlab-runner:alpine-v19.4.0}
     privileged: false
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/gitlab-runner:/etc/gitlab-runner
