@@ -92,6 +92,12 @@
         server: my-docker
         container: glances
         showStats: true
+        widget:
+          type: glances
+          url: http://glances:61208
+          version: 4
+          metric: cpu
+          chart: false
     - Speedtest Tracker:
         href: https://speedtest-tracker.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
         description: Internet speed history
