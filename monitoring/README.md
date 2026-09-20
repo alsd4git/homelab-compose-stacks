@@ -22,7 +22,7 @@ System monitoring, dashboarding, and homelab visibility for the services in this
 ### Dashboard & Management
 
 - **Homebox**: asset and inventory management.
-- **Homepage**: optional local dashboard template, mounted from your private config directory.
+- **Homepage**: public dashboard for the monitoring stack, mounted from the tracked config template.
 
 ## Configuration
 
@@ -58,6 +58,15 @@ Homebox requires `HBOX_AUTH_API_KEY_PEPPER` to boot cleanly and validate API key
 
 Homepage can be mounted from `${DOCKER_DATA_BASEFOLDER}/homepage/config`, and it also receives read-only mounts for `${DOCKER_DATA_BASEFOLDER}`, `${DOCKER_MEDIA_BASEFOLDER}`, and `/sys` so the `resources` widget can report disk usage and temperature data for the host mounts.
 
+The media compose file has a separate `homepage` profile for additional hosts. Keep that
+profile disabled where this monitoring stack already owns the public `homepage` container.
+
+> **Homepage widget backlog:** Paperless-ngx, Karakeep, Home Assistant, Homebox, and
+> Filebrowser have supported widgets, but they are intentionally not configured yet because
+> they need dedicated tokens or credentials and are currently low-use services. Add them only
+> if their dashboards become part of the daily workflow. Glances is the current exception:
+> its compact CPU widget is enabled here.
+
 The services on `npm_network` are intended to be reverse-proxied through Nginx Proxy Manager. Host-network services keep their direct host endpoints because they need local network visibility.
 
 ## Services & Ports
@@ -71,7 +80,7 @@ The services on `npm_network` are intended to be reverse-proxied through Nginx P
 | Glances | `61208` | `https://glances.${PUBLIC_DOMAIN}` | Live system metrics. |
 | Home Assistant | `8123` | `http://<host-ip>:8123` | Direct host access by design. |
 | Homebox | `7745` | `https://homebox.${PUBLIC_DOMAIN}` | Asset and inventory manager. |
-| Homepage | `3000` | `https://homepage.${PUBLIC_DOMAIN}` | Optional dashboard alternative. |
+| Homepage | `3000` | `https://homepage.${PUBLIC_DOMAIN}` | Public dashboard. |
 | NetAlertX | `20211` | `http://<host-ip>:20211` | Direct host access for network scanning. |
 | Scrutiny | `8080` | `https://scrutiny.${PUBLIC_DOMAIN}` | Disk health monitoring UI. |
 | Speedtest Tracker | `80` | `https://speedtest-tracker.${PUBLIC_DOMAIN}` | Internet speed history. |
