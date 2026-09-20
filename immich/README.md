@@ -39,7 +39,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 - `UPLOAD_LOCATION`: The absolute path on your host machine where Immich will store uploaded photos and videos.
 - `DB_DATA_LOCATION`: The absolute path for storing PostgreSQL data.
-- `IMMICH_VERSION`: The version of Immich to run. It is recommended to use `v3` for the latest stable release, which supports in-app updates.
+- `IMMICH_VERSION`: The major stable line to run. Keep it on `v3` across the fleet and
+  update it deliberately via Portainer after checking the release notes.
 - `DB_PASSWORD`: A secure password for the database.
 - `DB_USERNAME`: The database user (defaults to `postgres`).
 - `DB_DATABASE_NAME`: The name of the database (defaults to `immich`).
@@ -98,7 +99,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 Immich is deliberately excluded from unattended Watchtower updates. For each
 release, compare the official release Compose file with this repository's
-documented local patch set, then redeploy the live stack through Portainer with
-the `v3` tag re-pulled. Verify the server and machine-learning health checks,
+documented local patch set, pull the current `v3` images and redeploy the live
+stacks through Portainer. Verify the server and machine-learning health checks,
 the reported application version, and migration logs before considering the
 update complete.
