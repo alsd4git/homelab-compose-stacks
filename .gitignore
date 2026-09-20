@@ -5,3 +5,6 @@ stack.env
 .idea
 WIP
 repomix*
+
+# Inventario locale della flotta media. Non committare alcun file di questa directory.
+media/fleet/
