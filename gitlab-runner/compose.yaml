@@ -1,0 +1,33 @@
+# GitLab Runner Stack
+# This stack provides a self-hosted GitLab Runner using the Docker executor.
+#
+# Security Warning: Docker Socket Access
+# The runner container mounts /var/run/docker.sock so it can create job containers.
+# This grants the runner container full control over the host Docker daemon.
+# - Use this runner only for trusted projects and pipelines.
+# - Keep job containers non-privileged unless a specific workflow requires otherwise.
+# - Do not mount the Docker socket into job containers unless explicitly needed.
+#
+# Required environment variables:
+# - DOCKER_DATA_BASEFOLDER: Base directory for persistent data
+#
+# Optional environment variables:
+# - GITLAB_RUNNER_IMAGE: GitLab Runner image to deploy
+# - TZ: Container timezone
+#
+# Official documentation:
+# https://docs.gitlab.com/runner/install/docker/
+
+name: gitlab-runner
+
+services:
+  gitlab-runner:
+    container_name: gitlab-runner
+    image: ${GITLAB_RUNNER_IMAGE:-gitlab/gitlab-runner:alpine-v19.4.0}
+    privileged: false
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/gitlab-runner:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: ${TZ:-Europe/Rome}
+    restart: unless-stopped
