@@ -2,6 +2,8 @@ title: Dockerini
 description: Homelab dashboard and service launcher
 startUrl: https://homepage.{{HOMEPAGE_VAR_PUBLIC_DOMAIN}}
 target: _blank
+theme: dark
+color: slate
 headerStyle: boxedWidgets
 iconStyle: theme
 fullWidth: true

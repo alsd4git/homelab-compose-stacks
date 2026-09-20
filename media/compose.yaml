@@ -65,8 +65,10 @@ services:
       - 8877 # Web UI/API (internal, for reverse proxy or internal access)
     environment:
       - TZ=Europe/Rome
-      - PUID=1000
-      - PGID=1000
+      # Keep PUID/PGID unset: the upstream entrypoint recursively chowns the
+      # whole /app/Video tree whenever either variable is present. The host
+      # media tree already uses UID/GID 1000, so omitting them avoids blocking
+      # startup on a multi-terabyte library after every restart.
       # Houndarr is served exclusively behind the HTTPS NPM proxy host.
       - HOUNDARR_SECURE_COOKIES=true
       # Set this to the npm_network subnet, not a broad private range.
@@ -89,11 +91,9 @@ services:
     expose:
       - 8191 # API (internal, for reverse proxy or internal access)
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS --max-time 15 http://127.0.0.1:8191/health >/dev/null || exit 1"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
-      start_period: 30s
+      # /health launches a browser and checks Google; it is not a lightweight
+      # container readiness probe and can accumulate sessions under retries.
+      disable: true
     networks:
       - media_network
       - npm_network
@@ -148,6 +148,36 @@ services:
       - media_network
       - npm_network
 
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    profiles:
+      - homepage
+    expose:
+      - 3000 # Web UI (internal; expose through NPM or a host port on direct-port hosts)
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=${HOMEPAGE_ALLOWED_HOSTS:-localhost:3000}
+      - HOMEPAGE_AUTH_ENABLED=${HOMEPAGE_AUTH_ENABLED:-false}
+      - HOMEPAGE_AUTH_SECRET=${HOMEPAGE_AUTH_SECRET:-}
+      - HOMEPAGE_AUTH_PASSWORD=${HOMEPAGE_AUTH_PASSWORD:-}
+      - HOMEPAGE_EXTERNAL_URL=${HOMEPAGE_EXTERNAL_URL:-http://localhost:3000}
+      - HOMEPAGE_VAR_SONARR_KEY=${SONARR_API_KEY:-}
+      - HOMEPAGE_VAR_RADARR_KEY=${RADARR_API_KEY:-}
+      - HOMEPAGE_VAR_PROWLARR_KEY=${PROWLARR_API_KEY:-}
+      - HOMEPAGE_VAR_SEERR_KEY=${SEERR_API_KEY:-}
+      - HOMEPAGE_VAR_JELLYFIN_KEY=${JELLYFIN_API_KEY:-}
+      - HOMEPAGE_VAR_QBITTORRENT_USERNAME=${QBITTORRENT_USERNAME:-}
+      - HOMEPAGE_VAR_QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD:-}
+      - TZ=Europe/Rome
+    volumes:
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/homepage:/app/config
+      - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/host/media:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - media_network
+      - npm_network
+
   prowlarr:
     image: linuxserver/prowlarr:latest
     container_name: prowlarr
@@ -194,7 +224,7 @@ services:
       - npm_network
 
   qbit-manage:
-    image: ghcr.io/stuffanthings/qbit_manage:v4.11.0
+    image: ghcr.io/stuffanthings/qbit_manage:latest
     container_name: qbit-manage
     restart: unless-stopped
     depends_on:

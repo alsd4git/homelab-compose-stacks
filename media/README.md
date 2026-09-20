@@ -23,6 +23,7 @@ A comprehensive media management and automation stack for your homelab environme
 - **VibraVid**: Manual, provider-targeted fallback for unavailable titles
 - **Recyclarr**: Daily Sonarr/Radarr quality-policy synchronization
 - **Houndarr**: Rate-limited missing and cutoff-unmet search scheduler
+- **Homepage**: Per-host dashboard for media services, calendars, and download status
 
 ## Configuration
 
@@ -69,6 +70,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | **VibraVid**      | `8000`        | `http://vibravid:8000`      | Manual provider fallback; Arr polling/webhooks disabled. |
 | **Recyclarr**     | —             | —                           | Runs the shared Arr policy daily at 04:17 Europe/Rome. |
 | **Houndarr**      | `8877`        | `http://houndarr:8877`      | Schedules conservative Arr searches; configure it through its UI. |
+| **Homepage**      | `3000`        | `http://homepage:3000`     | Dashboard with Arr calendars, queue counters, qBittorrent, and Docker widgets. |
 
 > **Note:** Most services are meant to be reached through `npm_network`; qBittorrent also publishes its torrent ports on the host for peer connectivity.
 
@@ -84,6 +86,16 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 > **Web UI note:** every service with an internal web UI should be exposed on `npm_network` for Nginx Proxy Manager and added to Homepage for quick access; keep direct host exposure reserved for protocols that actually need it.
 
+> **Homepage note:** the Homepage configuration is host-specific and lives under the ignored
+> `media/fleet/<host>/homepage/` directory. Its `services.yaml` uses the internal Docker
+> names for widgets and the host's real access URLs for links. API keys and qBittorrent
+> credentials are injected as `HOMEPAGE_VAR_*` environment variables and are never kept in
+> the tracked compose file. The service uses a separate `homepage` Compose profile for hosts
+> that need a local media dashboard; keep that profile disabled where the monitoring stack
+> already owns the public dashboard. Homepage itself reads those values with
+> `{{HOMEPAGE_VAR_*}}` in the per-host YAML; password login can be enabled per host, with
+> secrets kept only in ignored `.env` files.
+
 > **Network note:** shared bridge networks are consumed with `external: true` only. In this repository `npm_network` is a pre-created shared network referenced by every stack, while `pihole_network` is created by the Pi-hole stack and consumed by `media` for DNS attribution.
 
 > **Pi-hole attribution note:** if you want Pi-hole to log queries per container, point that container's `dns` entry at the Pi-hole IP on `pihole_network` instead of using a container name. For the current stack this is `10.250.250.10`, and `Prowlarr` now joins `pihole_network` as the first test case so that resolver can actually be reached from inside the container. Docker still resolves through its embedded DNS, but the upstream resolver is the fixed Pi-hole IP.
@@ -98,6 +110,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | VibraVid         | `ghcr.io/astraelabs/vibravid:latest`         |
 | Recyclarr        | `ghcr.io/recyclarr/recyclarr:8`              |
 | Houndarr         | `ghcr.io/av1155/houndarr:latest`             |
+| Homepage         | `ghcr.io/gethomepage/homepage:latest`        |
 | Cinerr           | `alexkouzel/cinerr:latest`                   |
 | Medialyze        | `ghcr.io/frederikemmer/medialyze:latest`     |
 | Byparr           | `ghcr.io/thephaseless/byparr:3.0.4`          |
