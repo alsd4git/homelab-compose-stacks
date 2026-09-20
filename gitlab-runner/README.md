@@ -38,7 +38,7 @@ Do not commit this file: it contains runner authentication data.
 1. Create the persistent data directory:
 
    ```bash
-   mkdir -p ${DOCKER_DATA_BASEFOLDER}/gitlab-runner
+   mkdir -p "${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/gitlab-runner"
    ```
 
 2. Start the stack:
