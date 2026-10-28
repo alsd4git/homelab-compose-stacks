@@ -20,10 +20,10 @@ A comprehensive media management and automation stack for your homelab environme
 - **qbit_manage**: qBittorrent maintenance and tagging automation
 - **Byparr**: Cloudflare bypass solution
 - **AW Downloader**: Automated anime downloading and management
-- **VibraVid**: Manual, provider-targeted fallback for unavailable titles
+- **VibraVid**: Automated provider-targeted fallback for unavailable titles, using ARR polling and webhooks with tag whitelists
 - **Recyclarr**: Daily Sonarr/Radarr quality-policy synchronization
 - **Houndarr**: Rate-limited missing and cutoff-unmet search scheduler
-- **Homepage**: Per-host dashboard for media services, calendars, and download status
+- **Homepage**: Optional host-specific dashboard for media services, calendars, and download status
 
 ## Configuration
 
@@ -48,8 +48,8 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - `QBITTORRENT_USERNAME`: qBittorrent Web UI username used by `qbit_manage`
 - `QBITTORRENT_PASSWORD`: qBittorrent Web UI password used by `qbit_manage`
 - `AW_APP_KEY`: Application key used by AW Downloader.
-- `SONARR_API_KEY`: API key used by VibraVid's manual Sonarr integration.
-- `RADARR_API_KEY`: API key used by VibraVid's manual Radarr integration.
+- `SONARR_API_KEY`: API key used by VibraVid's Sonarr integration.
+- `RADARR_API_KEY`: API key used by VibraVid's Radarr integration.
 - `VIBRAVID_DJANGO_SECRET_KEY`: Long random secret used by VibraVid.
 
 ## Services & Ports
@@ -67,34 +67,38 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | **Medialyze**     | `8080`        | `http://medialyze:8080`     | Media library browser.                        |
 | **Byparr**        | `8191`        | `http://byparr:8191`        | Cloudflare bypass.                            |
 | **AW Downloader** | `6547`        | `http://aw-downloader:6547` | Anime downloading and management backend.     |
-| **VibraVid**      | `8000`        | `http://vibravid:8000`      | Manual provider fallback; Arr polling/webhooks disabled. |
+| **VibraVid**      | `8000`        | `http://vibravid:8000`      | Automated provider fallback; ARR polling and Sonarr/Radarr webhooks use tag whitelists. |
 | **Recyclarr**     | —             | —                           | Runs the shared Arr policy daily at 04:17 Europe/Rome. |
 | **Houndarr**      | `8877`        | `http://houndarr:8877`      | Schedules conservative Arr searches; configure it through its UI. |
-| **Homepage**      | `3000`        | `http://homepage:3000`     | Dashboard with Arr calendars, queue counters, qBittorrent, and Docker widgets. |
+| **Homepage**      | `3000`        | `http://homepage:3000`     | Optional dashboard supplied by host-specific configuration or the monitoring stack. |
 
 > **Note:** Most services are meant to be reached through `npm_network`; qBittorrent also publishes its torrent ports on the host for peer connectivity.
 
-> **Jellyfin note:** the media mount is writable so Jellyfin can store metadata sidecars and library state when needed.
+> **Jellyfin note:** the media mount is writable so Jellyfin can store metadata sidecars and library state when needed. Configure metadata options to write NFO files for Film, Serie TV, and Anime. Keep automatic subtitle downloads enabled for Film and Serie TV and disabled for Anime to avoid duplicate subtitles on hardsub releases.
 
-> **qbit_manage note:** create `${DOCKER_DATA_BASEFOLDER}/qbit-manage/config.yml` from `qbit-manage/config.yml.example`, keep the qBittorrent credentials in the stack env, and leave cleanup/cat-moves disabled unless you are ready to automate deletions. The current setup assigns tracker tags and applies non-destructive limits: ShareIsland 7 days and ItaTorrents 8 days with a 1,000 Kbit/s (125 KiB/s) aggregate upload cap per tracker, and the `Public` catch-all 24 hours with a 100 Kbit/s (about 13 KiB/s) aggregate cap. The private groups retain a torrent when the tracker reports no other seed; otherwise qBittorrent pauses it at its limit, while files and the torrent entry remain intact. Add an explicit tracker rule before using any additional private tracker. The category map should mirror the real qBittorrent folder layout, e.g. `/downloads/Radarr/` and `/downloads/Sonarr/`.
+> **qbit_manage note:** create `${DOCKER_DATA_BASEFOLDER}/qbit-manage/config.yml` from `qbit-manage/config.yml.example`, keep the qBittorrent credentials in the stack env, and leave cleanup/cat-moves disabled unless you are ready to automate deletions. Scheduled runs assign tracker tags and apply non-destructive limits: ShareIsland 7 days and ItaTorrents 8 days with a 1,000 Kbit/s (125 KiB/s) aggregate upload cap per tracker, and the `Public` catch-all 24 hours with a 100 Kbit/s (about 13 KiB/s) aggregate cap. Rechecks remain manual. The private groups retain a torrent when the tracker reports no other seed; otherwise qBittorrent pauses it at its limit, while files and the torrent entry remain intact. Add an explicit tracker rule before using any additional private tracker. The category map should mirror the real qBittorrent folder layout, e.g. `/downloads/Radarr/` and `/downloads/Sonarr/`.
 
 > **qBittorrent preferences note:** the reviewed non-secret desired state lives in [`qbittorrent/qBittorrent.conf.example`](qbittorrent/qBittorrent.conf.example). It is a reference applied through the Web UI/API, not a replacement for the private runtime configuration.
 
 > **AW Downloader notifications note:** configure Telegram through the AW Downloader UI's Notifications page using its Apprise destination. Enable both `Download Completato` and `Download Fallito`; the destination URL contains the bot credentials and is stored only in AW Downloader's private runtime database.
 
-> **Byparr pin note:** Byparr `v3.0.4` includes the browser-TLS and Cloudflare-solving fixes required by the MIRCrew/1337x workload. The compose pin includes resource limits and a healthcheck; validate both sources after future image updates.
+> **Byparr pin note:** Byparr `v3.0.4` includes the browser-TLS and Cloudflare-solving fixes required by the MIRCrew/1337x workload. The compose file sets resource limits and disables the image healthcheck because `/health` starts a browser workload. `/docs` is a lightweight readiness probe, but it does not confirm that challenge solving works. Recheck both behaviors after image updates.
 
 > **Web UI note:** every service with an internal web UI should be exposed on `npm_network` for Nginx Proxy Manager and added to Homepage for quick access; keep direct host exposure reserved for protocols that actually need it.
 
-> **Homepage note:** the Homepage configuration is host-specific and lives under the ignored
-> `media/fleet/<host>/homepage/` directory. Its `services.yaml` uses the internal Docker
-> names for widgets and the host's real access URLs for links. API keys and qBittorrent
-> credentials are injected as `HOMEPAGE_VAR_*` environment variables and are never kept in
-> the tracked compose file. The service uses a separate `homepage` Compose profile for hosts
-> that need a local media dashboard; keep that profile disabled where the monitoring stack
-> already owns the public dashboard. Homepage itself reads those values with
-> `{{HOMEPAGE_VAR_*}}` in the per-host YAML; password login can be enabled per host, with
-> secrets kept only in ignored `.env` files.
+> **VibraVid automation note:** configure the intended ARR tag whitelists before
+> enabling polling and adding Sonarr/Radarr webhooks. These private application
+> settings are not supplied by the Compose template. PUID/PGID remain unset to
+> avoid recursively changing ownership of the media tree during startup; its
+> built-in application user uses UID/GID 1000.
+
+> **Homepage note:** the common media compose template does not deploy Homepage. Use
+> the global dashboard in the monitoring stack; a host-specific media stack can add Homepage
+> when a separate dashboard is useful. Private configuration lives under the ignored
+> `media/fleet/<host>/homepage/` directory. The local Docker server entry in `docker.yaml`
+> points to `homepage-socket-proxy:2375`; Homepage does not mount the Docker socket directly.
+> Keep API keys, qBittorrent credentials, and any login password in the private stack
+> environment or ignored `.env` files. Use `{{HOMEPAGE_VAR_*}}` references in per-host YAML.
 
 > **Network note:** shared bridge networks are consumed with `external: true` only. In this repository `npm_network` is a pre-created shared network referenced by every stack, while `pihole_network` is created by the Pi-hole stack and consumed by `media` for DNS attribution.
 
@@ -106,7 +110,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 
 | Service          | Image                                        |
 | ---------------- | -------------------------------------------- |
-| AW Downloader    | `ghcr.io/savvymeat/aw-downloader:latest`     |
+| AW Downloader    | `ghcr.io/savvymeat/aw-downloader:dev`        |
 | VibraVid         | `ghcr.io/astraelabs/vibravid:latest`         |
 | Recyclarr        | `ghcr.io/recyclarr/recyclarr:8`              |
 | Houndarr         | `ghcr.io/av1155/houndarr:latest`             |
@@ -118,7 +122,7 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 | Seerr            | `ghcr.io/seerr-team/seerr:latest`             |
 | Prowlarr         | `linuxserver/prowlarr:latest`                |
 | qBittorrent      | `linuxserver/qbittorrent:5.2.3`               |
-| qbit_manage      | `ghcr.io/stuffanthings/qbit_manage:v4.11.0`   |
+| qbit_manage      | `ghcr.io/stuffanthings/qbit_manage:latest`    |
 | Radarr           | `linuxserver/radarr:latest`                  |
 | Sonarr           | `linuxserver/sonarr:latest`                  |
 
@@ -144,9 +148,10 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 ## Security Notes
 
 1. **API Keys**: Keep your Sonarr API key secure and don't share it
-2. **Port Exposure**: Only expose necessary ports to the internet
-3. **Authentication**: Enable authentication on all services
-4. **Updates**: Keep all services updated to the latest versions
+2. **TMDB**: `TMDB_API_KEY` is optional and used only by VibraVid to try Italian localized titles before ARR searches. Keep the V3 key in the ignored local `.env` or Portainer stack environment; do not commit it.
+3. **Port Exposure**: Only expose necessary ports to the internet
+4. **Authentication**: Enable authentication on all services
+5. **Updates**: Keep all services updated to the latest versions
 
 ## Troubleshooting
 

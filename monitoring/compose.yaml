@@ -7,7 +7,8 @@
 # Several services in this stack require elevated privileges:
 # - dashdot: runs as privileged=true (full host access) for system metrics
 # - homeassistant: runs as privileged=true and network_mode=host (required for Bluetooth)
-# - dozzle, glances, homepage: mount /var/run/docker.sock (Docker daemon access)
+# - dozzle and glances mount /var/run/docker.sock (Docker daemon access)
+# - homepage uses a read-only socket proxy on an internal network
 # - beszel-agent: mounts /var/run/docker.sock for container monitoring
 # These are necessary for monitoring functionality but should only be used in trusted networks.
 # See: https://docs.docker.com/engine/security/
@@ -151,6 +152,9 @@ services:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     restart: unless-stopped
+    depends_on:
+      homepage-socket-proxy:
+        condition: service_started
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=homepage.${PUBLIC_DOMAIN:-example.com},homepage:3000,localhost:3000,127.0.0.1:3000
       - HOMEPAGE_VAR_PUBLIC_DOMAIN=${PUBLIC_DOMAIN:-example.com}
@@ -177,9 +181,9 @@ services:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}:/mnt/data:ro
       - ${DOCKER_MEDIA_BASEFOLDER:-/opt/docker/media}:/mnt/media:ro
       - /sys:/sys:ro
-      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - npm_network
+      - homepage_docker_monitoring
 
   homebox:
     image: ghcr.io/sysadminsmedia/homebox:latest-rootless
@@ -302,7 +306,28 @@ services:
     expose:
       - 8840 # Web UI (internal, for reverse proxy or internal access)
 
+  homepage-socket-proxy:
+    image: linuxserver/socket-proxy:latest
+    container_name: homepage-socket-proxy
+    restart: unless-stopped
+    read_only: true
+    environment:
+      - CONTAINERS=1
+      - PING=1
+      - VERSION=1
+      - POST=0
+      - LOG_LEVEL=info
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    tmpfs:
+      - /run
+    networks:
+      - homepage_docker_monitoring
+
 networks:
   npm_network: # to expose container to NPM for reverse proxy
     name: npm_network
     external: true
+  homepage_docker_monitoring:
+    name: homepage_docker_monitoring
+    internal: true

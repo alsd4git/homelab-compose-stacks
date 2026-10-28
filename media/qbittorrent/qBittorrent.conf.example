@@ -10,8 +10,8 @@
 
 [BitTorrent]
 Session\AddTorrentStopped=false
-Session\AlternativeGlobalDLSpeedLimit=2000
-Session\AlternativeGlobalUPSpeedLimit=200
+Session\AlternativeGlobalDLSpeedLimit=200
+Session\AlternativeGlobalUPSpeedLimit=80
 Session\DefaultSavePath=/downloads/
 Session\DisableAutoTMMByDefault=false
 Session\GlobalUPSpeedLimit=400

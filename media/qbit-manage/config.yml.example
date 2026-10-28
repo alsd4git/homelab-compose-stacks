@@ -1,5 +1,5 @@
 # qbit_manage configuration for the media stack.
-# Conservative defaults: tagging and recheck only, no destructive cleanup.
+# Conservative defaults: scheduled tagging and share limits, no automatic rechecks or cleanup.
 
 qbt:
   host: "qbittorrent:8003"

@@ -22,7 +22,7 @@ System monitoring, dashboarding, and homelab visibility for the services in this
 ### Dashboard & Management
 
 - **Homebox**: asset and inventory management.
-- **Homepage**: public dashboard for the monitoring stack, mounted from the tracked config template.
+- **Homepage**: dashboard for the monitoring stack, using private per-host configuration.
 
 ## Configuration
 
@@ -58,8 +58,12 @@ Homebox requires `HBOX_AUTH_API_KEY_PEPPER` to boot cleanly and validate API key
 
 Homepage can be mounted from `${DOCKER_DATA_BASEFOLDER}/homepage/config`, and it also receives read-only mounts for `${DOCKER_DATA_BASEFOLDER}`, `${DOCKER_MEDIA_BASEFOLDER}`, and `/sys` so the `resources` widget can report disk usage and temperature data for the host mounts.
 
-The media compose file has a separate `homepage` profile for additional hosts. Keep that
-profile disabled where this monitoring stack already owns the public `homepage` container.
+Homepage connects to `homepage-socket-proxy:2375` on a dedicated internal network.
+The proxy allows container inspection and blocks write requests; Homepage has no direct
+Docker socket mount. Preserve the Docker server label used by `services.yaml` when
+changing an existing `docker.yaml` from `socket` to `host` and `port`.
+The common media template does not deploy Homepage. Any host-specific media dashboard
+must have a single owner so its container does not conflict with this stack.
 
 > **Homepage widget backlog:** Paperless-ngx, Karakeep, Home Assistant, Homebox, and
 > Filebrowser have supported widgets, but they are intentionally not configured yet because
@@ -113,12 +117,23 @@ The services on `npm_network` are intended to be reverse-proxied through Nginx P
    mkdir -p ${DOCKER_DATA_BASEFOLDER}/{beszel,homeassistant,homebox,homepage,netalertx,scrutiny,speedtest-tracker,wyl2,glances}
    ```
 
-2. Seed the Homepage config if you plan to use it:
+2. Create the private Homepage config directory:
 
    ```bash
    mkdir -p ${DOCKER_DATA_BASEFOLDER}/homepage/config
-   cp -R monitoring/homepage/config/. ${DOCKER_DATA_BASEFOLDER}/homepage/config/
    ```
+
+   Configure `services.yaml`, `widgets.yaml`, and `settings.yaml` for your host.
+   For a new installation, use this Docker server entry in `docker.yaml`:
+
+   ```yaml
+   local:
+     host: homepage-socket-proxy
+     port: 2375
+   ```
+
+   Keep credentials in the stack environment and reference them with
+   `{{HOMEPAGE_VAR_*}}` placeholders. No live dashboard configuration is tracked here.
 
 3. Start the stack:
 
@@ -151,7 +166,7 @@ These services can talk to the Docker daemon and should only be run in trusted n
 - `beszel-agent`
 - `dozzle`
 - `glances`
-- `homepage`
+- `homepage-socket-proxy`, restricted to read requests on its internal network
 
 **Host Mode and Privileged Services**
 
@@ -163,7 +178,8 @@ These services can talk to the Docker daemon and should only be run in trusted n
 
 **Public Exposure**
 
-- Homepage does not provide built-in authentication. Keep it behind a reverse proxy with auth, TLS, or a VPN.
+- Require authentication for an exposed Homepage dashboard, using its login configuration
+  or the reverse proxy. Use TLS or a VPN for remote access.
 - Avoid committing `.env` or any live hostnames. The repo only uses placeholder values and environment substitution.
 
 ## Additional Resources
