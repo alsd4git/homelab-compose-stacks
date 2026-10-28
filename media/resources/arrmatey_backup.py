@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read and write ArrMatey v0.9.x encrypted backups.
+"""Read and write ArrMatey v0.9.3 and v0.10.3 encrypted backups.
 
 The format matches ArrMatey's Android implementation:
 Base64(salt[16] + iv[16] + AES-256-CBC(ciphertext)), with a PBKDF2-HMAC-SHA256
@@ -169,6 +169,16 @@ def summary(document: dict) -> dict:
                 "hasApiKey": bool(item.get("apiKey")),
             }
             for item in document.get("downloadClients", [])
+        ],
+        "customWebpages": [
+            {
+                "name": item.get("name"),
+                "url": item.get("url"),
+                "headerCount": len(item.get("headers", []))
+                if isinstance(item.get("headers"), (list, dict))
+                else 0,
+            }
+            for item in document.get("customWebpages", [])
         ],
         "hasGlobalPreferences": document.get("globalPreferences") is not None,
     }
