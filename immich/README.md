@@ -45,6 +45,13 @@ This stack requires a `.env` file for configuration. A complete and recommended 
 - `DB_USERNAME`: The database user (defaults to `postgres`).
 - `DB_DATABASE_NAME`: The name of the database (defaults to `immich`).
 
+For this 4-core / 16 GiB host, the ML worker is intentionally conservative:
+`MACHINE_LEARNING_REQUEST_THREADS`, `MACHINE_LEARNING_MODEL_INTER_OP_THREADS`,
+and `MACHINE_LEARNING_MODEL_INTRA_OP_THREADS` are set to `1`. The Compose service
+also has a 1.5 CPU limit, a 3 GiB memory limit, and a 4 GiB combined memory/swap
+limit to reduce resource pressure during bulk indexing. Increase these values
+only after observing CPU, memory, and swap pressure during an import.
+
 ## Services & Ports
 
 | Service | Internal Port | Access Pattern | Notes |

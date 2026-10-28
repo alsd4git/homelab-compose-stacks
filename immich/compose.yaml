@@ -11,6 +11,7 @@
 # - Use stack.env so runtime variables stay aligned with the Portainer stack env
 # - Add IMMICH_HOST, npm_network, and an internal web-port expose for NPM
 # - Run the server as UID/GID 1000 and disable Watchtower updates
+# - Limit ML CPU, memory and swap usage for the small host
 #
 # When updating from upstream:
 # 1. Download the latest docker-compose.yml from releases
@@ -73,6 +74,11 @@ services:
       - stack.env
     environment:
       IMMICH_HOST: ${IMMICH_HOST:-0.0.0.0}
+    # Keep ML from consuming the whole 4-core host during bulk imports.
+    cpus: "1.50"
+    # Leave headroom for model loading while preventing host-wide memory pressure.
+    mem_limit: "3g"
+    memswap_limit: "4g"
     restart: always
     healthcheck:
       disable: false
