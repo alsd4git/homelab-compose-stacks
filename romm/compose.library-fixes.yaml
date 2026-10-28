@@ -1,0 +1,7 @@
+services:
+  romm:
+    image: local/romm:5.4.0-library-fixes
+    pull_policy: never
+    build:
+      context: .
+      dockerfile: Dockerfile.library-fixes

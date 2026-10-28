@@ -1,0 +1,10 @@
+ARG ROMM_BASE_IMAGE=rommapp/romm@sha256:03295f95a6290e752641f9553ac4198b0e5b71b879d57f7b2371b98f608feb54
+FROM ${ROMM_BASE_IMAGE}
+
+# RomM 5.4.0: worker DB cleanup, CIA and PS2 raw-CD title IDs.
+COPY patches/close-worker-database.py /tmp/close-worker-database.py
+COPY patches/enable-title-id-fallbacks.py /tmp/enable-title-id-fallbacks.py
+COPY patches/title_id_fallbacks.py /backend/adapters/services/title_id_fallbacks.py
+RUN python3 /tmp/close-worker-database.py \
+    && python3 /tmp/enable-title-id-fallbacks.py \
+    && rm /tmp/close-worker-database.py /tmp/enable-title-id-fallbacks.py
