@@ -48,7 +48,7 @@ Key variables:
 | --- | --- |
 | ConvertX | `ghcr.io/c4illin/convertx` |
 | CUP | `ghcr.io/sergi0g/cup:latest` |
-| FileBrowser Quantum | `gtstef/filebrowser` |
+| FileBrowser Quantum | `ghcr.io/gtsteffaniak/filebrowser:stable` |
 | Telegram Files | `ghcr.io/jarvis2f/telegram-files:latest` |
 | UpSnap | `ghcr.io/seriousm4x/upsnap:latest` |
 
@@ -71,6 +71,12 @@ Key variables:
   `CUP_GHCR_TOKEN`, so never add the token to `cup.json` or Git.
 - `upsnap` uses `network_mode: host`, which exposes it directly on the host interface.
 - Keep the Telegram credentials and admin password in `.env`.
+- FileBrowser Quantum uses the inline `filebrowser_config` Compose config at
+  `/home/filebrowser/config.yaml`. Its database stays in the persistent data
+  mount. Back up that database before migrating an older installation.
+  The template gives new users view-only source permissions and disables
+  admin, API and sharing privileges by default; review existing users separately.
+  `http.trustProxyHeaders` assumes access through a trusted reverse proxy.
 
 ## Nginx Proxy Manager Notes
 
@@ -81,6 +87,6 @@ Key variables:
 
 - [ConvertX Documentation](https://github.com/c4illin/convertx)
 - [CUP Documentation](https://github.com/sergi0g/cup)
-- [FileBrowser Documentation](https://filebrowser.org/)
+- [FileBrowser Quantum Documentation](https://filebrowserquantum.com/)
 - [Telegram Files Documentation](https://github.com/jarvis2f/telegram-files)
 - [UpSnap Documentation](https://github.com/seriousm4x/upsnap)

@@ -86,15 +86,19 @@ services:
       - cup_config:/config
 
   filebrowser-quantum:
-    image: gtstef/filebrowser
+    image: ghcr.io/gtsteffaniak/filebrowser:stable
     container_name: filebrowser-quantum
     environment:
-      FILEBROWSER_CONFIG: data/config.yaml
+      FILEBROWSER_CONFIG: /home/filebrowser/config.yaml
       FILEBROWSER_ADMIN_PASSWORD: ${FILEBROWSER_ADMIN_PASSWORD}
       TZ: Europe/Rome
+    configs:
+      - source: filebrowser_config
+        target: /home/filebrowser/config.yaml
+        mode: 0444
     volumes:
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/test:/srv
-      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/filebrowser-quantum/data:/home/filebrowser/data # mount the data folder you created with the config file.
+      - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/filebrowser-quantum/data:/home/filebrowser/data
       # Advanced: If you plan to run with a different user besides root or filebrowser, you will need to mount a tmp directory.
       - ${DOCKER_DATA_BASEFOLDER:-/opt/docker/data}/filebrowser-quantum/tmp/:/home/filebrowser/tmp/
     expose:
@@ -143,3 +147,43 @@ networks:
 
 volumes:
   cup_config:
+
+configs:
+  filebrowser_config:
+    content: |
+      http:
+        port: 80
+        baseURL: "/"
+        trustProxyHeaders: true
+      server:
+        database:
+          path: /home/filebrowser/data/database.sqlite
+        logging:
+          - levels: "info|warning|error"
+        sources:
+          - path: "/srv"
+            config:
+              defaultEnabled: true
+              defaultPermissions:
+                view: true
+                modify: false
+                create: false
+                delete: false
+                download: false
+      userDefaults:
+        ui:
+          darkMode: true
+        preview:
+          image: true
+          popup: true
+          video: false
+          office: false
+          highQuality: false
+        account:
+          disableSettings: false
+          permissions:
+            admin: false
+            api: false
+            share: false
+        listing:
+          singleClick: false
