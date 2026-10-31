@@ -39,6 +39,8 @@ services:
     container_name: pihole
     hostname: pi.hole-docker
     image: pihole/pihole:latest
+    # FTL query history exceeds Docker's default 64 MiB shared-memory limit.
+    shm_size: "256m"
     depends_on:
       dnscrypt-proxy:
         condition: service_healthy
